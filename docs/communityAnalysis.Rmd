@@ -1,0 +1,131 @@
+Overarching summary using Micaela's combined data
+
+```{r getData}
+combdat<-read.csv("../data/duv.ordered.by.season.and.site.csv")
+colnames(combdat)[1]<-"Date"
+```
+
+
+
+
+But I can create a graph showing the numbers of species for each type of seagrass habitats.
+
+```{r}
+duvSummary<-data.frame(
+  Status=paste(combdat$Season,combdat$seagrass_cover,sep="_"),
+  Leptonotus=combdat$L.elevatus,
+  Stigmatopora=combdat$S.nigra,
+  Shrimp=combdat$Shrimp_spp,
+  Flounder=combdat$Flounder,
+  Crabs=rowSums(combdat[,25:30]),
+  Snails=rowSums(combdat[,33:38]),
+  OtherFish=rowSums(combdat[,17:23]),
+  Other=rowSums(combdat[,c(31,32,39:34)])
+  )
+
+```
+
+```{r}
+duvCounts<-as.data.frame(duvSummary %>%
+  group_by(Status) %>%
+  summarise_all( sum))
+```
+
+```{r}
+
+bareLept<-barplot(duvCounts[grep("Bare",duvCounts$Status),2],col = seasonCols)
+
+barplot(duvCounts[grep("Bare",duvCounts$Status),3])
+
+
+barplot(duvCounts[grep("Bare",duvCounts$Status),4],col = seasonCols)
+
+
+
+
+```
+
+```{r}
+sppCols<-c('#8dd3c7','#ffffb3','#bebada','#fb8072','#80b1d3','#fdb462')
+spp<-colnames(duvSummary)[4:9]
+```
+
+```{r}
+CountsPlot<-function(summaryMatrix, spp, sppCols,x.lim=c(0,7),y.lim=c(0,300)){
+  
+  
+  plot(rep(1,nrow(summaryMatrix)),
+       summaryMatrix[,1],
+       xlim=x.lim,
+       ylim=y.lim,
+       xlab="",
+       ylab="Counts",
+       axes=F,
+       type='n')
+  axis(1,at=1:length(spp),labels=spp,lty = 0,las=2)
+  axis(2,las=1)
+  
+  
+  for(i in 1:length(spp)){
+    points(rep(i,length(summaryMatrix[,spp[i]])),
+       summaryMatrix[,spp[i]],
+       pch=21,
+       bg=scales::alpha(sppCols[i],0.75),
+       col="dark grey",
+       cex=2.5)
+    lines(x=c(i-0.25,i+0.25),
+          y=c(mean(summaryMatrix[,spp[i]]),
+              mean(summaryMatrix[,spp[i]])),
+          lwd=4,
+          col=sppCols[i])
+  }
+}
+```
+
+
+```{r seagrassPlots}
+
+par(mfrow=c(1,4))
+CountsPlot(duvSummary[grep("Bare",duvSummary$Status),4:9],spp=spp,sppCols = sppCols)
+CountsPlot(duvSummary[grep("Sparse",duvSummary$Status),4:9],spp=spp,sppCols = sppCols)
+CountsPlot(duvSummary[grep("Patchy",duvSummary$Status),4:9],spp=spp,sppCols = sppCols)
+CountsPlot(duvSummary[grep("Dense",duvSummary$Status),4:9],spp=spp,sppCols = sppCols)
+
+```
+
+
+
+```{r seasonPlots}
+
+par(mfrow=c(1,4))
+CountsPlot(duvSummary[grep("Spring",duvSummary$Status),4:9],spp=spp,sppCols = sppCols)
+CountsPlot(duvSummary[grep("Summer",duvSummary$Status),4:9],spp=spp,sppCols = sppCols)
+CountsPlot(duvSummary[grep("Autumn",duvSummary$Status),4:9],spp=spp,sppCols = sppCols)
+CountsPlot(duvSummary[grep("Winter",duvSummary$Status),4:9],spp=spp,sppCols = sppCols)
+
+```
+
+
+```{r getImages}
+bare <- image_read('../figs/seagrass_cover_images/Bare.PNG')
+bare_png <- image_convert(bare, "png")
+
+sparse <- image_read('../figs/seagrass_cover_images/Sparse.PNG')
+sparse_png <- image_convert(sparse, "png")
+
+patchy <- image_read('../figs/seagrass_cover_images/Patchy.PNG')
+patchy_png <- image_convert(patchy, "png")
+
+dense <- image_read('../figs/seagrass_cover_images/Dense.PNG')
+dense_png <- image_convert(dense, "png")
+
+
+image_append(image_scale(c(
+  bare_png,
+  sparse_png,
+  patchy_png,
+  dense_png
+)))
+```
+
+
