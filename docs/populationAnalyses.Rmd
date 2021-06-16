@@ -99,12 +99,16 @@ for(i in 1:length(seasonCols)){
 
 ```
 
-chi-squared test -- sizes independent of season?
+GLMER Poisson counts by seasons 
 
 ```{r}
+library(lme4)
 
+flounderGLM<-glmer(flounder_long$count ~ flounder_long$Season*flounder_long$size + (1 | flounder_long$Date),
+                   family = poisson)
 ```
 
+While controlling for sampling dates, and accounting for size classes, flounder were most abundant in fall and least abundant in summer.  
 
 # Pipefish
 
