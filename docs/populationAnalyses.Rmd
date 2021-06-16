@@ -23,6 +23,7 @@ library(tidyr)
 ```
 
 ```{r}
+rawdat<-read.csv("../data/MonthlyRawSampling_Duvauchelle_2020.csv")
 seasonCols<-c(Spring="coral",Summer="olivedrab3",Fall="gold",Winter="dodgerblue")
 ```
 
@@ -31,6 +32,7 @@ seasonCols<-c(Spring="coral",Summer="olivedrab3",Fall="gold",Winter="dodgerblue"
 
 ```{r}
 rawdat<-read.csv("../data/MonthlyRawSampling_Duvauchelle_2020.csv")
+
 flounder<-rawdat[,grep("flounder",colnames(rawdat))]
 
 flounder$Date<-as.Date(
