@@ -1,0 +1,153 @@
+---
+title: "Data processing"
+author: "Sarah Flanagan"
+date: "16/06/2021"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,out.extra='',fig.pos="H",
+                      fig.path = "./figs/",dpi = 300,fig.keep='last',dev='png')
+knitr::opts_knit$set(root.dir='../results/',fig_path="./figs/")
+```
+
+```{r loadLibs, include=FALSE, echo=FALSE}
+library(scales)
+library(knitr)
+library(dplyr)
+library(tidyr)
+library(geosphere)
+```
+
+# Community data
+
+```{r}
+rawdat<-read.csv("../data/MonthlyRawSampling_Duvauchelle_2020.csv")
+
+# remove unnecessary column
+rawdat<-subset(rawdat,select=-X)
+
+```
+
+First, check for NAs that should be zeros
+
+```{r}
+rawdat[,17:62][is.na(rawdat[,17:62])]<-0
+```
+
+Then add a date column
+
+```{r}
+rawdat$Day<-as.Date(
+  paste0(
+    gsub("^(\\d)$","0\\1",rawdat$Date),
+    gsub("^(\\d)$","0\\1",rawdat$Month),
+    rawdat$Year),
+  format = "%d%m%Y")
+```
+
+And group them by season
+
+```{r}
+rawdat$Season<-gsub("\\d+-(\\d+)-\\d+","\\1",rawdat$Day)
+rawdat$Season[rawdat$Season %in% c("09","10","11")]<-"Spring"
+rawdat$Season[rawdat$Season %in% c("12","01","02")]<-"Summer"
+rawdat$Season[rawdat$Season %in% c("03","04","05")]<-"Fall"
+rawdat$Season[rawdat$Season %in% c("06","07","08")]<-"Winter"
+```
+
+
+Calculate the distance of the tows
+
+```{r}
+towDist<-apply(rawdat,1,function(dat){
+  distm(c(as.numeric(dat["long_start"]),
+          as.numeric(dat["lat_start"])),
+        c(as.numeric(dat["long_stop"]),
+          as.numeric(dat["lat_stop"])))
+})
+# turn zeroes into 1s
+towDist[which(towDist==0)]<-1
+
+# add to data sheet
+rawdat$towDist<-towDist
+```
+
+
+Combine columns so that each organism has its a single column
+
+```{r}
+combNames<-grep("mm$",colnames(rawdat),value=TRUE)
+combNames<-combNames[combNames!="whitebait_below50mm"] # only whitebait instance
+combPatts<-unique(gsub("_.*$","",combNames))
+combPatts[combPatts=="austrovenus"]<-"venus" # one included 'venus_bivalve'
+
+totals<-as.data.frame(do.call(cbind,lapply(combPatts,function(pattern,dat){
+  tot<-rowSums(dat[,grep(pattern,colnames(dat))])
+  return(tot)
+},dat=rawdat)))
+colnames(totals)<-combPatts
+colnames(totals)[colnames(totals)=="venus"]<-"austrovenus"
+totals$isopod<-rowSums(rawdat[,c("isopod","green_centipede")])
+
+nonCombNames<-colnames(rawdat[,17:62])[!colnames(rawdat[,17:62]) %in% combNames]
+nonCombNames<-grep("wrasse",nonCombNames,invert=TRUE,value=TRUE)
+nonCombNames<-grep("venus",nonCombNames,invert=TRUE,value=TRUE)
+nonCombNames<-nonCombNames[!nonCombNames %in% c("isopod","green_centipede")]
+```
+
+
+Create summary data frame
+
+```{r}
+combDat<-data.frame(cbind(
+  Date=rawdat$Day,
+  Season=rawdat$Season,
+  TowNum=rownames(rawdat),
+  TowDist=rawdat$towDist,
+  SeagrassCover=rawdat$seagrass_cover,
+  totals,
+  rawdat[,nonCombNames]
+  )
+)
+```
+
+```{r}
+write.csv(combDat,"cleanedCommunity.csv",quote=FALSE, row.names = FALSE)
+```
+
+
+I wonder if I need to group these by a common taxonomic level (Family or Order, most likely)
+
+Shrimp species likely included in our counts:
+
+- *Palaemon affinis* (glass shrimp), family Palaemonidae, infraorder Caridea
+- *Alphaeus novazealandiae* or *A. socialis* (snapping shrimp | kowhitiwhiti moana), family alpheidae, infraorder caridea
+- *Alope spinifrons* (painted shrimp), family Hippolytidae, infraorder Caridea
+- *Pontophilus* or *Parapontophilus* species, infraorder Caridea
+- *Hippolyte* spp. (chamaeleon shrimp), family Hippolytidae, infraorder Caridea
+
+```{r}
+names<-read.csv("../data/species_names.csv")
+kable(names,booktabs=TRUE)
+```
+
+Should I combine any of these, and if so, at what level?
+ 
+ 
+# Pipefish data
+
+```{r}
+lengths<-read.csv("../data/pipefish.lengths.csv")
+counts<-read.csv("../data/pipefish.counts.csv")
+```
+
+
+# Other size-classed organisms
+
+```{r}
+grep("mm$",colnames(rawdat),value=TRUE)
+```
+
