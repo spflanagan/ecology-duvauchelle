@@ -31,7 +31,6 @@ seasonCols<-c(Spring="coral",Summer="olivedrab3",Fall="gold",Winter="dodgerblue"
 # Flounder
 
 ```{r}
-rawdat<-read.csv("../data/MonthlyRawSampling_Duvauchelle_2020.csv")
 
 flounder<-rawdat[,grep("flounder",colnames(rawdat))]
 
