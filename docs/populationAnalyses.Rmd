@@ -33,6 +33,8 @@ seasonCols<-c(Spring="coral",Summer="olivedrab3",Fall="gold",Winter="dodgerblue"
 ```{r}
 
 flounder<-rawdat[,grep("flounder",colnames(rawdat))]
+flounder[is.na(flounder)]<-0
+flounder$tow<-rownames(rawdat)
 
 flounder$Date<-as.Date(
   paste0(
