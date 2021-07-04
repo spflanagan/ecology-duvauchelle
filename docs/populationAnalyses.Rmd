@@ -23,7 +23,7 @@ library(tidyr)
 ```
 
 ```{r}
-rawdat<-read.csv("../data/MonthlyRawSampling_Duvauchelle_2020.csv")
+rawdat<-read.csv("../data/cleanedCommunity.csv")
 seasonCols<-c(Spring="coral",Summer="olivedrab3",Fall="gold",Winter="dodgerblue")
 ```
 
@@ -114,7 +114,11 @@ While controlling for sampling dates, and accounting for size classes, flounder 
 
 
 ```{r pipefishDat}
-pipecounts<-rawdat[rawdat$Location=="Dur",c("Month","Leptonotus","S_nigra")]
+pipecounts<-rawdat[,c("Day","Season","towDist","seagrass_cover",
+                      "leptonotus_below50mm","leptonotus_above50mm",
+                      "s.nigra_below50mm","s.nigra_above50mm")]
+
+
 stig_counts<-tapply(pipecounts$S_nigra,pipecounts$Month,sum)
 lept_counts<-tapply(pipecounts$Leptonotus,pipecounts$Month,sum)
 
