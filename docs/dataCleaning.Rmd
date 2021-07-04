@@ -156,8 +156,32 @@ names<-read.csv("../data/species_names.csv")
 kable(names,booktabs=TRUE)
 ```
 
-Should I combine any of these, and if so, at what level?
+
+To ensure that the varying levels of lowest taxonomic identification don't impact the results, I'll create a data.frame where all of the animals have been grouped at the level of Order -- so I'll sum up any of the obervations at lower levels.  
+
+```{r}
+orders<-combDat
+names<-names[match(colnames(orders[,4:ncol(orders)]),names$ID ),]
+colnames(orders)[4:ncol(orders)]<-as.character(names$order)
+
+ordAbund<-do.call(cbind,lapply( levels(names$order), function(name,dat){
+  
+  if(length(which((colnames(dat) %in% name)==TRUE))>1){
+    ordAbund<-rowSums(dat[,colnames(dat) %in% name])
+    return(ordAbund)
+  }else{
+    return(dat[,name])
+  }
+}, dat=orders))
+colnames(ordAbund)<-levels(names$order)
+
+ordAbund<-cbind(combDat[,c("Season","SeagrassCover","TowDist")],ordAbund)
+```
  
+```{r}
+ordAbund<-write.csv(ordAbund,"cleanedCommunityOrders.csv",quote=FALSE,row.names = FALSE)
+```
+
  
 # Pipefish data
 
