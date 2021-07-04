@@ -87,6 +87,10 @@ Fix inconsistent seagrass cover typing
 rawdat$seagrass_cover<-tolower(rawdat$seagrass_cover)
 rawdat$seagrass_cover[rawdat$seagrass_cover=="spare"]<-"sparse"
 ```
+```{r}
+write.csv(rawdat,"../data/cleanedCommunity.csv",quote=FALSE, row.names = FALSE)
+```
+
 
 Combine columns so that each organism has its a single column
 
