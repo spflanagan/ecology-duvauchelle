@@ -75,6 +75,18 @@ towDist[which(towDist==0)]<-1
 rawdat$towDist<-towDist
 ```
 
+Finally remove any rows with missing seagrass covers
+
+```{r}
+rawdat<-rawdat[!is.na(rawdat$seagrass_cover),]
+```
+
+Fix inconsistent seagrass cover typing
+
+```{r}
+rawdat$seagrass_cover<-tolower(rawdat$seagrass_cover)
+rawdat$seagrass_cover[rawdat$seagrass_cover=="spare"]<-"sparse"
+```
 
 Combine columns so that each organism has its a single column
 
@@ -99,10 +111,11 @@ nonCombNames<-nonCombNames[!nonCombNames %in% c("isopod","green_centipede")]
 ```
 
 
+
 Create summary data frame
 
 ```{r}
-combDat<-data.frame(cbind(
+combdat<-data.frame(cbind(
   Date=rawdat$Day,
   Season=rawdat$Season,
   TowNum=rownames(rawdat),
