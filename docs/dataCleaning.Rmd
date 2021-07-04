@@ -132,7 +132,10 @@ combdat<-data.frame(cbind(
 ```
 
 ```{r}
-write.csv(combDat,"cleanedCommunity.csv",quote=FALSE, row.names = FALSE)
+write.csv(combdat,"cleanedCombinedCommunity.csv",quote=FALSE, row.names = FALSE)
+```
+```{r}
+combdat<-read.csv("cleanedCombinedCommunity.csv")
 ```
 
 
