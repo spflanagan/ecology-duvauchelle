@@ -139,9 +139,9 @@ combdat<-read.csv("cleanedCombinedCommunity.csv")
 ```
 
 
-I wonder if I need to group these by a common taxonomic level (Family or Order, most likely)
+## Group to common taxonomic level
 
-Shrimp species likely included in our counts:
+Some animals we identified to species, but others we grouped at higher orders. Shrimp in particular were a challenge -- the shrimp species likely included in our counts include:
 
 - *Palaemon affinis* (glass shrimp), family Palaemonidae, infraorder Caridea
 - *Alphaeus novazealandiae* or *A. socialis* (snapping shrimp | kowhitiwhiti moana), family alpheidae, infraorder caridea
@@ -149,7 +149,9 @@ Shrimp species likely included in our counts:
 - *Pontophilus* or *Parapontophilus* species, infraorder Caridea
 - *Hippolyte* spp. (chamaeleon shrimp), family Hippolytidae, infraorder Caridea
 
-```{r}
+Which means infraorder is the lowest taxonomic unit for these animals. To summarize all of our species, see \@ref(tab:taxonomicTable).
+
+```{r taxonomicTable}
 names<-read.csv("../data/species_names.csv")
 kable(names,booktabs=TRUE)
 ```
