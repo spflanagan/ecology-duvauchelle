@@ -103,7 +103,22 @@ summary(seasonIndics)
 ```
 
 
+```{r reformatWithMudvGrass}
+# only keep tows with > 0 observations
+divdat<-combdat[rowSums(combdat[,6:ncol(combdat)])>0,]
+divabunds<-as.matrix(divdat[rowSums(divdat[,6:ncol(divdat)])>0,6:ncol(divdat)])
+# flip the dataset
+divabunds<-t(divabunds)
 
+# add column names
+colnames(divabunds)<-divdat$Date
+
+
+# combine samples from the same days 
+# https://stackoverflow.com/questions/35626945/row-wise-sum-of-values-grouped-by-columns-with-same-name
+abund<-t(rowsum(t(divabunds), group = colnames(divabunds), na.rm = T))
+relabund<-sapply(1:ncol(abund),function(k)	abund[,k]/sum(abund[,k]))
+colnames(relabund)<-colnames(abund)
 
 ```
 
@@ -234,26 +249,6 @@ image_append(image_scale(c(
 
 
 
-## Reformat data
-
-```{r extractAbundances}
-animals<-colnames(dat)[grep("leptonotus_below",colnames(dat)):(ncol(dat)-1)]
-# get the abundances
-abundance<-t(dat[,animals])
-# add column names
-colnames(abundance)<-paste("SI",dat$Estuary,dat$Location,dat$DDMMYY,sep="_")
-# replace NAs with 0s
-abundance[is.na(abundance)]<-0
-# remove tows with 0 observations
-keepCols<-which(colSums(abundance)>0)
-abundance<-abundance[,keepCols]
-
-# combine samples from the same days 
-# https://stackoverflow.com/questions/35626945/row-wise-sum-of-values-grouped-by-columns-with-same-name
-abund<-t(rowsum(t(abundance), group = colnames(abundance), na.rm = T))
-
-write.table(abundance,"../data/Sep2020_abundances.txt",
-            row.names = TRUE,quote=FALSE,col.names = TRUE,sep='\t')
 ```
 
 ```{r extractPopStru}
