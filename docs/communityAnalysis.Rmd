@@ -381,27 +381,6 @@ image_append(image_scale(c(
 
 
 
-```{r plotAvonHeathcoteQs,fig.width=7,fig.height=6,fig.keep='high',dpi=300}
-par(mfrow=c(2,1),oma=c(2.5,2.5,2.5,1.5),mar=c(3,3,2,2))
-AHSSqs<-Qs[grep("AHE_SS",rownames(Qs)),]
-qsPlot(AHSSqs,"date")
-
-AHCWqs<-Qs[grep("AHE_CW",rownames(Qs)),]
-qsPlot(AHCWqs,"date")
-mtext("Species diversity",2,outer=TRUE)
-
-```
-
-
-```{r AHEQs_MudvGrass,fig.width=8,fig.height=6,fig.keep='high',dpi=300}
-par(mfrow=c(1,2),oma=c(2.5,2.5,2.5,1.5),mar=c(3,3,3,2))
-qsPlot(Qs[grep("AHE_.*_Grass",rownames(Qs)),],"date")
-legend("topleft","Seagrass",bty='n')
-qsPlot(Qs[grep("AHE_.*_Bare",rownames(Qs)),],"date")
-legend("topleft","Mud",bty='n')
-mtext("Species Diversity",2,outer=TRUE)
-```
-
 
 
 
