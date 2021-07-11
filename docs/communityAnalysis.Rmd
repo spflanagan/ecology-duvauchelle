@@ -127,6 +127,9 @@ kable(div_dat)
 ```
 
 
+### Hill numbers analysis
+
+
 ```{r reformatWithMudvGrass}
 # only keep tows with > 0 observations
 divdat<-combdat[rowSums(combdat[,6:ncol(combdat)])>0,]
@@ -146,6 +149,109 @@ colnames(relabund)<-colnames(abund)
 
 ```
 
+
+```{r calc_hill}
+calc_hill<-function(vec,q){
+  qD<-(sum(vec[vec>0]^q))^(1/(1-q))
+  if(q==1){
+    qD<-exp(-1*sum(vec[vec>0]*log(vec[vec>0])))
+  }
+  return(qD)
+}
+```
+
+```{r calcQs}
+q0<-apply(relabund,2,calc_hill,q=0)
+q1<-apply(relabund,2,calc_hill,q=1)
+q2<-apply(relabund,2,calc_hill,q=2)
+
+Qs<-data.frame(q0=q0,q1=q1,q2=q2)
+Qs$date<-as.Date(gsub("(\\d+)_\\w+_\\w+","\\1",rownames(Qs)))
+
+Qs<-Qs[order(Qs$date),]
+```
+
+
+```{r qsPlot_function}
+# assumes the columns are q0,q1,q2 and lab_col is the name of the row with the x-axis labels
+qsPlot<-function(Qs,lab_col,qcols=c("#a1dab4","#41b6c4","#225ea8")){
+
+  plot(Qs$q0,type="l",xlab=lab_col,ylab="Species diversity",
+     ylim=c(0,max(Qs$q0)+2),cex=2,lwd=2,axes=FALSE,col=qcols[1])
+  axis(1,labels=c("",as.character(Qs[,lab_col])),at=0:nrow(Qs))
+  axis(2,las=2,seq(-10,max(Qs$q0)+5,5))
+  points(Qs$q0,pch=19,cex=2,lwd=2,col=qcols[1])
+  text(1,Qs$q0[1]-1,"q=0",font = 3,col=qcols[1])
+  
+  points(Qs$q1,pch=16,col=qcols[2],cex=2,lwd=2)
+  points(Qs$q1,lty=2,col=qcols[2],type='l',lwd=2)
+  text(1,Qs$q1[1]+1,"q=1",col=qcols[2],font = 3)
+  
+  points(Qs$q2,pch=17,col=qcols[3],cex=2,lwd=2)
+  points(Qs$q2,lty=3,col=qcols[3],type='l',lwd=2)
+  text(1,Qs$q2[1]-1,"q=2",col=qcols[3],font = 3)
+}
+```
+
+```{r plotDuvauchelleQs}
+
+qsPlot(Qs,"date")
+
+```
+
+
+#### Compare seagrass vs bare 
+
+
+```{r reformatWithMudvGrass}
+# only keep tows with > 0 observations
+divdat<-combdat[rowSums(combdat[,6:ncol(combdat)])>0,]
+divabunds<-as.matrix(divdat[rowSums(divdat[,6:ncol(divdat)])>0,6:ncol(divdat)])
+# flip the dataset
+divabunds<-t(divabunds)
+
+# add column names
+colnames(divabunds)<-paste(divdat$Date,divdat$Season,divdat$SeagrassCover,sep="_")
+
+
+# combine samples from the same days 
+# https://stackoverflow.com/questions/35626945/row-wise-sum-of-values-grouped-by-columns-with-same-name
+abund<-t(rowsum(t(divabunds), group = colnames(divabunds), na.rm = T))
+relabund<-sapply(1:ncol(abund),function(k)	abund[,k]/sum(abund[,k]))
+colnames(relabund)<-colnames(abund)
+
+```
+
+
+```{r calcQsMudvGrass,fig.width=7,fig.height=6,fig.keep='high',dpi=300}
+q0<-apply(relabund,2,calc_hill,q=0)
+q1<-apply(relabund,2,calc_hill,q=1)
+q2<-apply(relabund,2,calc_hill,q=2)
+
+Qs<-data.frame(q0=q0,q1=q1,q2=q2)
+Qs$date<-as.Date(gsub("(\\d+)_\\w+_\\w+","\\1",rownames(Qs)))
+
+Qs<-Qs[order(Qs$date),]
+```
+
+
+```{r DuvQs_MudvGrass,fig.width=8,fig.height=6,fig.keep='high',dpi=300}
+
+par(mfrow=c(1,4),oma=c(2.5,2.5,2.5,1.5),mar=c(3,3,3,2))
+qsPlot(Qs[grep("bare",rownames(Qs)),],"date")
+legend("topleft","Bare",bty='n')
+
+qsPlot(Qs[grep("sparse",rownames(Qs)),],"date")
+legend("topleft","Sparse",bty='n')
+
+qsPlot(Qs[grep("patchy",rownames(Qs)),],"date")
+legend("topleft","Patchy",bty='n')
+
+qsPlot(Qs[grep("dense",rownames(Qs)),],"date")
+legend("topleft","Dense Seagrass",bty='n')
+
+mtext("Species Diversity",2,outer=TRUE)
+```
 
 
 ## Summaries
@@ -274,63 +380,6 @@ image_append(image_scale(c(
 
 
 
-## Hill numbers analysis
-
-```{r relativeAbund}
-relabund<-sapply(1:ncol(abund),function(k)	abund[,k]/sum(abund[,k]))
-colnames(relabund)<-colnames(abund)
-
-```
-
-```{r calc_hill}
-calc_hill<-function(vec,q){
-  qD<-(sum(vec[vec>0]^q))^(1/(1-q))
-  if(q==1){
-    qD<-exp(-1*sum(vec[vec>0]*log(vec[vec>0])))
-  }
-  return(qD)
-}
-```
-
-```{r calcQs}
-q0<-apply(relabund,2,calc_hill,q=0)
-q1<-apply(relabund,2,calc_hill,q=1)
-q2<-apply(relabund,2,calc_hill,q=2)
-
-Qs<-data.frame(q0=q0,q1=q1,q2=q2)
-Qs$date<-gsub("\\w+_\\w+_\\w+_(\\d\\d)(\\d\\d?)(\\d\\d\\d\\d)","\\3-\\2-\\1",rownames(Qs))
-Qs$date<-gsub("(\\d+-)(\\d)(-\\d+)","\\10\\2\\3",Qs$date)
-Qs$date<-gsub("\\w+_\\w+_\\w+_(\\d)(\\d)(\\d\\d\\d\\d)","\\3-0\\2-0\\1",Qs$date)
-Qs<-Qs[order(Qs$date),]
-```
-
-
-```{r qsPlot_function}
-# assumes the columns are q0,q1,q2 and lab_col is the name of the row with the x-axis labels
-qsPlot<-function(Qs,lab_col,qcols=c("#a1dab4","#41b6c4","#225ea8")){
-
-  plot(Qs$q0,type="l",xlab=lab_col,ylab="Species diversity",
-     ylim=c(0,max(Qs$q0)+2),cex=2,lwd=2,axes=FALSE,col=qcols[1])
-  axis(1,labels=c("",as.character(Qs[,lab_col])),at=0:nrow(Qs))
-  axis(2,las=2,seq(-10,max(Qs$q0)+5,5))
-  points(Qs$q0,pch=19,cex=2,lwd=2,col=qcols[1])
-  text(1,Qs$q0[1]-1,"q=0",font = 3,col=qcols[1])
-  
-  points(Qs$q1,pch=16,col=qcols[2],cex=2,lwd=2)
-  points(Qs$q1,lty=2,col=qcols[2],type='l',lwd=2)
-  text(1,Qs$q1[1]+1,"q=1",col=qcols[2],font = 3)
-  
-  points(Qs$q2,pch=17,col=qcols[3],cex=2,lwd=2)
-  points(Qs$q2,lty=3,col=qcols[3],type='l',lwd=2)
-  text(1,Qs$q2[1]-1,"q=2",col=qcols[3],font = 3)
-}
-```
-
-```{r plotDuvauchelleQs}
-duvQs<-Qs[grep("Dur",rownames(Qs)),]
-qsPlot(duvQs,"date")
-
-```
 
 ```{r plotAvonHeathcoteQs,fig.width=7,fig.height=6,fig.keep='high',dpi=300}
 par(mfrow=c(2,1),oma=c(2.5,2.5,2.5,1.5),mar=c(3,3,2,2))
@@ -343,50 +392,6 @@ mtext("Species diversity",2,outer=TRUE)
 
 ```
 
-### Compare seagrass vs bare 
-
-```{r reformatWithMudvGrass}
-animals<-colnames(dat)[grep("Leptonotus",colnames(dat)):(ncol(dat)-1)]
-# get the abundances
-abundance<-t(dat[,animals])
-# add column names
-colnames(abundance)<-paste("SI",dat$Estuary,dat$Location,dat$DDMMYY,dat$Mud_vs_Grass,sep="_")
-# replace NAs with 0s
-abundance[is.na(abundance)]<-0
-# remove tows with 0 observations
-keepCols<-which(colSums(abundance)>0)
-abundance<-abundance[,keepCols]
-
-# combine samples from the same days 
-# https://stackoverflow.com/questions/35626945/row-wise-sum-of-values-grouped-by-columns-with-same-name
-abund<-t(rowsum(t(abundance), group = colnames(abundance), na.rm = T))
-relabund<-sapply(1:ncol(abund),function(k)	abund[,k]/sum(abund[,k]))
-colnames(relabund)<-colnames(abund)
-
-```
-
-```{r calcQsMudvGrass,fig.width=7,fig.height=6,fig.keep='high',dpi=300}
-q0<-apply(relabund,2,calc_hill,q=0)
-q1<-apply(relabund,2,calc_hill,q=1)
-q2<-apply(relabund,2,calc_hill,q=2)
-
-Qs<-data.frame(q0=q0,q1=q1,q2=q2)
-Qs$date<-gsub("\\w+_\\w+_\\w+_(\\d\\d)(\\d\\d?)(\\d\\d\\d\\d)_\\w+","\\3-\\2-\\1",rownames(Qs))
-Qs$date<-gsub("(\\d+-)(\\d)(-\\d+)","\\10\\2\\3",Qs$date)
-Qs$date<-gsub("\\w+_\\w+_\\w+_(\\d)(\\d)(\\d\\d\\d\\d)_\\w+","\\3-0\\2-0\\1",Qs$date)
-Qs<-Qs[order(Qs$date),]
-```
-
-
-```{r DuvQs_MudvGrass,fig.width=8,fig.height=6,fig.keep='high',dpi=300}
-duvQs<-Qs[grep("Dur",rownames(Qs)),]
-par(mfrow=c(1,2),oma=c(2.5,2.5,2.5,1.5),mar=c(3,3,3,2))
-qsPlot(duvQs[grep("Grass",rownames(duvQs)),],"date")
-legend("topleft","Seagrass",bty='n')
-qsPlot(duvQs[grep("Bare",rownames(duvQs)),],"date")
-legend("topleft","Mud",bty='n')
-mtext("Species Diversity",2,outer=TRUE)
-```
 
 ```{r AHEQs_MudvGrass,fig.width=8,fig.height=6,fig.keep='high',dpi=300}
 par(mfrow=c(1,2),oma=c(2.5,2.5,2.5,1.5),mar=c(3,3,3,2))
