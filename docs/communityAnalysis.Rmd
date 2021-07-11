@@ -36,6 +36,55 @@ seagrassPs<-c(bare=16, sparse=18, patchy=17, dense=15)
 ## Community analysis
 
 
+### dbrda
+
+
+```{r}
+abunds<-as.matrix(combdat[rowSums(combdat[,6:ncol(combdat)])>4,6:ncol(combdat)])
+ys<-combdat[rowSums(combdat[,6:ncol(combdat)])>4,c("SeagrassCover","Season","TowDist")]
+
+
+seasonRDA<-capscale(abunds~SeagrassCover*Season + Condition(TowDist),
+                 ys,
+                 dist="bray")
+```
+```{r}
+plot(seasonRDA)
+anova(seasonRDA,by="terms")
+seasonSum<-summary(seasonRDA)
+```
+
+These results suggest that season and seagrass cover -- and their interaction -- are important in determining the community in seagrass beds. 
+
+
+
+
+```{r RDAplot, fig.cap="dbRDA plot of the first two axes, which describe >50% of the constrained variation. The colours of points represent seagrass cover categories (bare, sparse, patchy, dense) and the shapes of the points represent the season during which the sample was collected (winter, spring, summer, fall). Overlaid on top are the species, with flounder and shrimp being the most obvious species driving divergence."}
+
+plot(seasonRDA,
+     type='none',
+     xlab=paste0(
+       "CAP1 (",
+       round(seasonSum$cont$importance[2,1]*100,2),
+       "% of total; ", 
+       round(seasonSum$concont$importance[2,1]*100,2),
+       "% of constrained)"),
+     ylab=paste0(
+       "CAP2 (",
+       round(seasonSum$cont$importance[2,2]*100,2),
+       "% of total; ",
+       round(seasonSum$concont$importance[2,2]*100,2),
+       "% of constrained)")
+     )
+points(seasonRDA,
+       cex=1.5,
+       col=scales::alpha(
+         seagrassCs[ys$SeagrassCover],0.5
+       ),
+       pch=seasonPchs[ys$Season])
+text(seasonRDA, scaling = 2, display = "sp") 
+```
+
 ```
 
 
