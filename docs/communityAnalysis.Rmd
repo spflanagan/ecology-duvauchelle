@@ -85,6 +85,19 @@ points(seasonRDA,
 text(seasonRDA, scaling = 2, display = "sp") 
 ```
 
+### Indicator species analysis
+
+```{r}
+coverIndics<-multipatt(abunds,ys$SeagrassCover)
+summary(coverIndics)
+```
+
+```{r}
+seasonIndics<-multipatt(abunds,ys$Season)
+summary(seasonIndics)
+```
+
+
 ```
 
 
