@@ -23,14 +23,10 @@ source("../R/iDIP.R")
 ```
 
 ```{r getData}
+combdat<-read.csv("cleanedCommunity.csv",stringsAsFactors = TRUE)
+levels(combdat$SeagrassCover)<-c("bare","sparse","patchy","dense")
+```
 
-dat<-read.csv("../data/MonthlyRawSampling_Duvauchelle_2020.csv")
-dat$Day<-as.Date(
-  paste0(
-    gsub("^(\\d)$","0\\1",dat$Date),
-    gsub("^(\\d)$","0\\1",dat$Month),
-    rawdat$Year),
-  format = "%d%m%Y")
 ```
 
 
