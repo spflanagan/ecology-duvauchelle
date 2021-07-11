@@ -33,6 +33,11 @@ seasonPchs<-c(Spring=15,Summer=17,Fall=18,Winter=19)
 seagrassPs<-c(bare=16, sparse=18, patchy=17, dense=15)
 ```
 
+
+## Rarefaction
+
+
+
 ## Community analysis
 
 
