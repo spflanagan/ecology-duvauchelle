@@ -98,6 +98,8 @@ summary(seasonIndics)
 ```
 
 
+## Diversity analysis
+
 ```
 
 
