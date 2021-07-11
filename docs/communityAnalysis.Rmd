@@ -16,6 +16,9 @@ knitr::opts_knit$set(root.dir='../results/',fig_path="./figs/")
 ```{r loadLibs, include=FALSE, echo=FALSE}
 library(scales)
 library(knitr)
+library(vegan)
+library(indicspecies)
+library(HierDpart)
 source("../R/iDIP.R")
 ```
 
