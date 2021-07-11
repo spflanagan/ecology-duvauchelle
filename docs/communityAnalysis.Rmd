@@ -109,6 +109,7 @@ summary(seasonIndics)
 
 
 
+## Summaries
 
 I can create a graph showing the numbers of species for each type of seagrass habitats.
 
