@@ -26,6 +26,12 @@ source("../R/iDIP.R")
 combdat<-read.csv("cleanedCommunity.csv",stringsAsFactors = TRUE)
 levels(combdat$SeagrassCover)<-c("bare","sparse","patchy","dense")
 ```
+```{r}
+seasonCols<-c(Spring="coral",Summer="olivedrab3",Fall="gold",Winter="dodgerblue")
+seagrassCs<-c(bare="coral",sparse="olivedrab3",patchy="gold",dense="dodgerblue")#c(bare="#ffffcc",sparse="#c2e699",patchy="#78c679",dense="#238443")
+seasonPchs<-c(Spring=15,Summer=17,Fall=18,Winter=19)
+seagrassPs<-c(bare=16, sparse=18, patchy=17, dense=15)
+```
 
 ```
 
