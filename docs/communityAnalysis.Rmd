@@ -110,7 +110,7 @@ summary(seasonIndics)
 
 
 
-But I can create a graph showing the numbers of species for each type of seagrass habitats.
+I can create a graph showing the numbers of species for each type of seagrass habitats.
 
 ```{r}
 duvSummary<-data.frame(
