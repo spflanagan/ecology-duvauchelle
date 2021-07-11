@@ -342,17 +342,5 @@ mtext("Species Diversity",2,outer=TRUE)
 ```
 
 
-## PCoA
 
-```{r PCoA,fig.height=7,fig.width=7,dpi=300}
-colors<-gsub(".*_(\\w+$)","\\1",colnames(abund))
-colors[colors=="Grass"]<-"green"
-colors[colors=="Bare"]<-"brown"
-library(vegan)
-mod <- capscale(t(abund)~1, dist="bray")
-biplot(mod)
-```
-
-
-## Indispecies analysis
 
