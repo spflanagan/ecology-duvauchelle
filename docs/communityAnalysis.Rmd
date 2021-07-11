@@ -100,6 +100,30 @@ summary(seasonIndics)
 
 ## Diversity analysis
 
+### iDIP analysis
+
+
+```{r iDIP}
+stru<-Str(n=nrow(abunds),
+          nreg=length(unique(combdat$Date)),
+          r=tapply(combdat$SeagrassCover,combdat$Date,length))
+
+stru<-t(data.frame(Island=rep("South Island",ncol(abund)),
+                   Estuary=gsub("(\\w+)_(\\w+)_(\\d+)","\\1",colnames(abund)),
+                 Location=gsub("(\\w+)_(\\w+)_(\\d+)","\\2",colnames(abund)),
+                 Date=gsub("(\\w+)_(\\w+)_(\\d+)","\\3",colnames(abund))))
+write.table(stru,"../data/Sep2020_structure.txt",
+            row.names = FALSE,quote=FALSE,col.names = FALSE,sep='\t')
+div<-iDIP(abun = abund,struc=stru)
+```
+
+Let's reformat for improved interpretation
+
+```{r iDipFormat}
+div_dat<-data.frame(Within=c(NA,div["D_alpha.3",],div["D_alpha.2",],div["D_alpha.1",]),
+           Between=c(NA,div["D_beta.3",],div["D_beta.2",],div["D_beta.1",]),
+           Total=c(div["D_gamma",],div["D_gamma",],div["D_alpha.3",],div["D_alpha.2",]))
+kable(div_dat)
 ```
 
 
@@ -248,34 +272,6 @@ image_append(image_scale(c(
 
 
 
-
-```
-
-```{r extractPopStru}
-stru<-t(data.frame(Island=rep("South Island",ncol(abund)),
-                   Estuary=gsub("(\\w+)_(\\w+)_(\\d+)","\\1",colnames(abund)),
-                 Location=gsub("(\\w+)_(\\w+)_(\\d+)","\\2",colnames(abund)),
-                 Date=gsub("(\\w+)_(\\w+)_(\\d+)","\\3",colnames(abund))))
-
-write.table(stru,"../data/Sep2020_structure.txt",
-            row.names = FALSE,quote=FALSE,col.names = FALSE,sep='\t')
-```
-
-## iDIP analysis
-
-
-```{r iDIP}
-div<-iDIP(abun = abund,struc=stru)
-```
-
-Let's reformat for improved interpretation
-
-```{r iDipFormat}
-div_dat<-data.frame(Within=c(NA,div["D_alpha.3",],div["D_alpha.2",],div["D_alpha.1",]),
-           Between=c(NA,div["D_beta.3",],div["D_beta.2",],div["D_beta.1",]),
-           Total=c(div["D_gamma",],div["D_gamma",],div["D_alpha.3",],div["D_alpha.2",]))
-kable(div_dat)
-```
 
 
 ## Hill numbers analysis
