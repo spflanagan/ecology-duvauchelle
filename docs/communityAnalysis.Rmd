@@ -172,7 +172,6 @@ make_species_map(gpsdat,whitebait,"whitebait_below50mm",center,zoom)
 
 ##### seagrass indicators
 
-```{r seagrassIndics}
 ```{r arrowCrab}
 # not bare
 arrowCrab<-combdat[combdat$arrowheadCrab>0,]
@@ -207,7 +206,6 @@ make_species_map(gpsdat,spotty,"spotty",center,zoom)
 
 ```{r whitebait}
 bristleworm<-combdat[combdat$bristleworm>0,] 
-#patchy: smelt
 make_species_map(gpsdat,bristleworm,"bristleworm",center,zoom)
 
 ```
@@ -219,26 +217,8 @@ make_species_map(gpsdat,bristleworm,"bristleworm",center,zoom)
 ### Rarefaction
 
 ```{r}
-```
-
-
-### iDIP analysis
-
 ssz<-sum(abunds[which.min(ys$TowDist),])
 
-```{r iDIP}
-stru<-Str(n=nrow(abunds),
-          nreg=length(unique(combdat$Date)),
-          r=tapply(combdat$SeagrassCover,combdat$Date,length))
-
-stru<-t(data.frame(Island=rep("South Island",ncol(abund)),
-                   Estuary=gsub("(\\w+)_(\\w+)_(\\d+)","\\1",colnames(abund)),
-                 Location=gsub("(\\w+)_(\\w+)_(\\d+)","\\2",colnames(abund)),
-                 Date=gsub("(\\w+)_(\\w+)_(\\d+)","\\3",colnames(abund))))
-write.table(stru,"../data/Sep2020_structure.txt",
-            row.names = FALSE,quote=FALSE,col.names = FALSE,sep='\t')
-div<-iDIP(abun = abund,struc=stru)
-```
 rars<-lapply(1:999,function(i,dat=abunds,size=ssz){
   # rarify
   rar<-suppressWarnings(rrarefy(abunds,ssz))
@@ -248,13 +228,7 @@ rars<-lapply(1:999,function(i,dat=abunds,size=ssz){
   return(rar)
 })
 
-Let's reformat for improved interpretation
 
-```{r iDipFormat}
-div_dat<-data.frame(Within=c(NA,div["D_alpha.3",],div["D_alpha.2",],div["D_alpha.1",]),
-           Between=c(NA,div["D_beta.3",],div["D_beta.2",],div["D_beta.1",]),
-           Total=c(div["D_gamma",],div["D_gamma",],div["D_alpha.3",],div["D_alpha.2",]))
-kable(div_dat)
 ```
 
 
