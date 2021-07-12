@@ -241,10 +241,8 @@ rars<-lapply(1:999,function(i,dat=divdat){
                        divdat$SeagrassCover,
                        sep="_")
   
-  # calculate Hill numbers
   return(rar)
 })
-
 
 relrar<-lapply(rars,decostand,method="total",MARGIN=1)
 ```
@@ -252,15 +250,9 @@ relrar<-lapply(rars,decostand,method="total",MARGIN=1)
 
 ### Hill numbers analysis
 
-
-```{r calc_hill}
-calc_hill<-function(vec,q){
-  qD<-(sum(vec[vec>0]^q))^(1/(1-q))
-  if(q==1){
-    qD<-exp(-1*sum(vec[vec>0]*log(vec[vec>0])))
-  }
-  return(qD)
-}
+```{r}
+files.sources <- list.files(path = "../R/hierDiversity",full.names = TRUE)
+tmp<-sapply(files.sources, source)
 ```
 
 ```{r reformatDates}
@@ -273,6 +265,18 @@ divabunds<-t(divabunds)
 # add column names
 colnames(divabunds)<-divdat$Date
 
+```{r}
+# hierDiversity takes the non-relativized abundances
+grps<-as.matrix(cbind(divdat[,c("SeagrassCover","Season")], # least inclusive to most inclusive L->R
+            Site="Duvauchelle"))
+hierDiversity(divabunds, 
+              grps, 
+              replace = NULL, 
+              reps = 99, 
+              q = 1,
+              quant = c(0.025, 0.975),
+              sims = FALSE)
+```
 
 # combine samples from the same days 
 # https://stackoverflow.com/questions/35626945/row-wise-sum-of-values-grouped-by-columns-with-same-name
