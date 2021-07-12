@@ -143,16 +143,6 @@ m
 
 
 
-```{r}
-library(RgoogleMaps)
-
-#lots of visual options, just like google maps: maptype = c("roadmap", "mobile", "satellite", "terrain", "hybrid", "mapmaker-roadmap", "mapmaker-hybrid")
-terrmap <- GetMap(center=center, 
-                  zoom=zoom, 
-                  maptype= "terrain", 
-                  destfile = "terrain.png",tileDir="./figs/"
-                  ) 
-
 ```
 
 
