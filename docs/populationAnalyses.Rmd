@@ -445,3 +445,9 @@ whitebait<-combdat[combdat$whitebait_below50mm>0,] # Spring - Fall
 ```
 
 
+# Shrimp
+
+```{r}
+shrimp<-combdat[combdat$shrimp>0,] 
+```
+
