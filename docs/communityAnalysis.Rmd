@@ -106,6 +106,16 @@ limpets<-combdat[combdat$limpets>0,] # not abundant enough
 smelt<-combdat[combdat$smelt>0,] # lots of smelt on one day
 blueCod<-combdat[combdat$blue_cod_juv>0,] # almost all from one day
 ```
+
+```{r}
+lat <- c(-43.794,-43.752) #define our map's ylim
+lon <- c(172.930,172.933) #define our map's xlim
+center <- c(mean(c(gpsdat$lat_start,gpsdat$lat_stop)), 
+            mean(c(gpsdat$long_start,gpsdat$long_stop)))  #tell what point to center on
+zoom <- 16  #zoom: 1 = furthest out (entire globe), larger numbers = closer in
+
+```
+
 ```{r seagrassIndics}
 # not bare
 arrowCrab<-combdat[combdat$arrowheadCrab>0,]
