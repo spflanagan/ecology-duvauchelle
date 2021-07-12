@@ -114,6 +114,8 @@ kahawai<-combdat[combdat$kahawai>0,]
 limpets<-combdat[combdat$limpets>0,] # not abundant enough
 smelt<-combdat[combdat$smelt>0,] # lots of smelt on one day
 blueCod<-combdat[combdat$blue_cod_juv>0,] # almost all from one day
+```{r getGPS}
+gpsdat<-read.csv("../data/gpsdat.csv")
 ```
 
 ```{r}
@@ -150,7 +152,6 @@ m
 
 ```{r}
 
-gpsdat<-read.csv("../data/gpsdat.csv")
 map("worldHires",
     "New Zealand",
     xlim=c(172.930,172.933), #longitude
