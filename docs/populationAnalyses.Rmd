@@ -175,6 +175,17 @@ cnts[is.na(cnts)]<-0
 
 ```
 
+```{r}
+duv_sizes<-duv_traits[,c("date","Sex","TotalLength_Avg","SVL_Avg")]
+duv_sizes$TotalLength_Avg[is.na(duv_sizes$TotalLength_Avg)]<-50
+duv_sizes$SVL_Avg[is.na(duv_sizes$SVL_Avg)]<-25
+
+duv_sizes$Sex[which(duv_sizes$Sex=="")]<-"juvenile"
+duv_sizes$Sex<-factor(duv_sizes$Sex,
+                      levels = c("juvenile","female","male"))
+
+
+```
 ```{r pipefishDat}
 pipecounts<-rawdat[,c("Day","Season","towDist","seagrass_cover",
                       "leptonotus_below50mm","leptonotus_above50mm",
