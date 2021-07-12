@@ -139,7 +139,7 @@ combdat<-data.frame(cbind(
 )
 ```
 
-```{r}
+```{r, eval=FALSE}
 write.csv(combdat,"cleanedCombinedCommunity.csv",quote=FALSE, row.names = FALSE)
 ```
 ```{r}
