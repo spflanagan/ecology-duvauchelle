@@ -219,12 +219,12 @@ make_species_map(gpsdat,bristleworm,"bristleworm",center,zoom)
 ### Rarefaction
 
 ```{r}
-rar<-rrarefy(abunds)
 ```
 
 
 ### iDIP analysis
 
+ssz<-sum(abunds[which.min(ys$TowDist),])
 
 ```{r iDIP}
 stru<-Str(n=nrow(abunds),
@@ -239,6 +239,14 @@ write.table(stru,"../data/Sep2020_structure.txt",
             row.names = FALSE,quote=FALSE,col.names = FALSE,sep='\t')
 div<-iDIP(abun = abund,struc=stru)
 ```
+rars<-lapply(1:999,function(i,dat=abunds,size=ssz){
+  # rarify
+  rar<-suppressWarnings(rrarefy(abunds,ssz))
+  # relative abundances
+  
+  # calculate Hill numbers
+  return(rar)
+})
 
 Let's reformat for improved interpretation
 
