@@ -116,6 +116,29 @@ zoom <- 16  #zoom: 1 = furthest out (entire globe), larger numbers = closer in
 
 ```
 
+
+```{r}
+long<-rowMeans(gpsdat[gpsdat$TowNum %in% kahawai$TowNum,
+                      c("long_start","long_stop")])
+lat<-rowMeans(gpsdat[gpsdat$TowNum %in% kahawai$TowNum,
+                     c("lat_start","lat_stop")])
+radius<-kahawai$kahawai
+
+m <- leaflet() %>%
+  addTiles() %>%  # Add default OpenStreetMap map tiles
+  setView(lng=center[2], lat=center[1],zoom=zoom) %>% 
+   #addProviderTiles("NASAGIBS.ViirsEarthAtNight2012")
+  addProviderTiles("Esri.WorldImagery") %>%
+  addCircles(lng = long, lat = lat, weight = 1,
+    radius = radius*5,col="yellow")
+
+m
+
+
+
+
+```
+
 ```{r seagrassIndics}
 # not bare
 arrowCrab<-combdat[combdat$arrowheadCrab>0,]
