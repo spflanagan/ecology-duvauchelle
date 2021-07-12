@@ -325,6 +325,27 @@ qsPlot(Qs,"date")
 
 
 #### Compare seagrass vs bare 
+```{r}
+
+rareQ<-function(divdat,group="Date"){
+  # get minimum sample size
+  ssz<-sum(divdat[which.min(divdat$TowDist),])
+  # rarify
+  rar<-suppressWarnings(rrarefy(abunds,ssz))
+  # Add group labels
+  colnames(divabunds)<-paste(divdat$Date,
+                             divdat$Season,
+                             divdat$SeagrassCover,
+                             sep="_")
+  # relative abundances
+  relabund<-calc_relabund(divabunds)
+  # calculate Hill numbers
+  Qs<-calcQs(relabund)
+  
+  return(Qs)
+}
+
+```
 
 
 ```{r reformatWithMudvGrass}
