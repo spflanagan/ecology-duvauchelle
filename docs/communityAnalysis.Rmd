@@ -143,20 +143,6 @@ m
 
 
 
-```
-
-```{r}
-
-map("worldHires",
-    "New Zealand",
-    xlim=c(172.930,172.933), #longitude
-    ylim=c(-43.794,-43.752), # latitude
-    col="gray90", 
-    fill=TRUE)  
-#plot the species range
-points(samps$lon, samps$lat, pch=19, col="red", cex=0.5)  #plot my sample sites
-```
-
 ```{r}
 library(RgoogleMaps)
 
