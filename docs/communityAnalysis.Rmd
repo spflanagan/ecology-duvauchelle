@@ -138,6 +138,16 @@ kable(div_dat)
 ### Hill numbers analysis
 
 
+```{r calc_hill}
+calc_hill<-function(vec,q){
+  qD<-(sum(vec[vec>0]^q))^(1/(1-q))
+  if(q==1){
+    qD<-exp(-1*sum(vec[vec>0]*log(vec[vec>0])))
+  }
+  return(qD)
+}
+```
+
 ```{r reformatDates}
 # only keep tows with > 0 observations
 divdat<-combdat[rowSums(combdat[,6:ncol(combdat)])>0,]
@@ -158,15 +168,6 @@ colnames(relabund)<-colnames(abund)
 ```
 
 
-```{r calc_hill}
-calc_hill<-function(vec,q){
-  qD<-(sum(vec[vec>0]^q))^(1/(1-q))
-  if(q==1){
-    qD<-exp(-1*sum(vec[vec>0]*log(vec[vec>0])))
-  }
-  return(qD)
-}
-```
 
 ```{r calcQs}
 q0<-apply(relabund,2,calc_hill,q=0)
