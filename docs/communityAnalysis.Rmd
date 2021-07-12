@@ -106,6 +106,21 @@ limpets<-combdat[combdat$limpets>0,] # not abundant enough
 smelt<-combdat[combdat$smelt>0,] # lots of smelt on one day
 blueCod<-combdat[combdat$blue_cod_juv>0,] # almost all from one day
 ```
+```{r seagrassIndics}
+# not bare
+arrowCrab<-combdat[combdat$arrowheadCrab>0,]
+blenny<-combdat[combdat$blenny>0,]
+stigmatopora<-combdat[combdat$s.nigra>0,]
+mudWhelk<-combdat[combdat$mud_whelk>0,]
+
+#sparse: also kahawai
+spotty<-combdat[combdat$spotty>0,] 
+bristleworm<-combdat[combdat$bristleworm>0,] 
+#patchy: smelt
+```
+
+
+
 ## Diversity analysis
 
 ### Rarefaction
