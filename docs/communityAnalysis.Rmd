@@ -23,7 +23,7 @@ source("../R/iDIP.R")
 ```
 
 ```{r getData}
-combdat<-read.csv("cleanedCommunity.csv",stringsAsFactors = TRUE)
+combdat<-read.csv("cleanedCombinedCommunity.csv",stringsAsFactors = TRUE)
 levels(combdat$SeagrassCover)<-c("bare","sparse","patchy","dense")
 ```
 ```{r}
