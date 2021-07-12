@@ -273,16 +273,16 @@ hierDiversity(divabunds,
 
 
 ```{r calcQs}
-q0<-apply(relabund,2,calc_hill,q=0)
-q1<-apply(relabund,2,calc_hill,q=1)
-q2<-apply(relabund,2,calc_hill,q=2)
+calcQs<-function(relabund){
+  q0<-apply(relabund,2,calc_hill,q=0)
+  q1<-apply(relabund,2,calc_hill,q=1)
+  q2<-apply(relabund,2,calc_hill,q=2)
+  
+  Qs<-data.frame(q0=q0,q1=q1,q2=q2)  
+  return(Qs)
+}
 
-Qs<-data.frame(q0=q0,q1=q1,q2=q2)
-Qs$date<-as.Date(gsub("(\\d+)_\\w+_\\w+","\\1",rownames(Qs)))
-
-Qs<-Qs[order(Qs$date),]
 ```
-
 
 ```{r qsPlot_function}
 # assumes the columns are q0,q1,q2 and lab_col is the name of the row with the x-axis labels
