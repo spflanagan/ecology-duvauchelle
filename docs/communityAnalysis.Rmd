@@ -214,6 +214,16 @@ make_species_map(gpsdat,bristleworm,"bristleworm",center,zoom)
 
 ## Diversity analysis
 
+
+```{r reformatForDiversity}
+# only keep tows with > 0 observations
+divdat<-combdat[rowSums(combdat[,6:ncol(combdat)])>0,]
+divabunds<-as.matrix(divdat[rowSums(divdat[,6:ncol(divdat)])>0,6:ncol(divdat)])
+# relative
+relabunds<-decostand(divabunds,method="total",MARGIN = 1)
+```
+
+
 ### Rarefaction
 
 ```{r}
