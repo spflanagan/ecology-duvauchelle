@@ -146,6 +146,12 @@ write.csv(combdat,"cleanedCombinedCommunity.csv",quote=FALSE, row.names = FALSE)
 combdat<-read.csv("cleanedCombinedCommunity.csv")
 ```
 
+```{r}
+gpsdat<-cbind(TowNum=rownames(rawdat),
+              rawdat[,c("long_start","long_stop","lat_start","lat_stop")])
+write.csv(gpsdat,"../data/gpsdat.csv",quote=FALSE,row.names=FALSE)
+```
+
 
 ## Group to common taxonomic level
 
