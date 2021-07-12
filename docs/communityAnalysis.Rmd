@@ -116,11 +116,6 @@ zoom <- 16  #zoom: 1 = furthest out (entire globe), larger numbers = closer in
 ```
 
 
-```{r seasonIndics}
-kahawai<-combdat[combdat$kahawai>0,]
-limpets<-combdat[combdat$limpets>0,] # not abundant enough
-smelt<-combdat[combdat$smelt>0,] # lots of smelt on one day
-blueCod<-combdat[combdat$blue_cod_juv>0,] # almost all from one day
 ```{r makeSpeciesMap}
 make_species_map<-function(gpsdat,speciesdat,speciesName,
                            center,zoom,color="yellow",
@@ -151,6 +146,15 @@ long<-rowMeans(gpsdat[gpsdat$TowNum %in% kahawai$TowNum,
 lat<-rowMeans(gpsdat[gpsdat$TowNum %in% kahawai$TowNum,
                      c("lat_start","lat_stop")])
 radius<-kahawai$kahawai
+##### season indicators
+
+```{r kahawai}
+kahawai<-combdat[combdat$kahawai>0,]
+make_species_map(gpsdat,kahawai,"kahawai",center,zoom)
+```
+```{r limpets}
+limpets<-combdat[combdat$limpets>0,] # not abundant enough
+make_species_map(gpsdat,limpets,"limpets",center,zoom)
 
 m <- leaflet() %>%
   addTiles() %>%  # Add default OpenStreetMap map tiles
