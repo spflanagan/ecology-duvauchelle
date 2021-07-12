@@ -307,6 +307,18 @@ qsPlot<-function(Qs,lab_col,qcols=c("#a1dab4","#41b6c4","#225ea8")){
 
 ```{r plotDuvauchelleQs}
 
+```{r DuvauchelleQsbyDate}
+# add column names
+colnames(divabunds)<-divdat$Date
+
+# calculate relative abundance
+relabund<-calc_relabund(divabunds)
+
+Qs<-calcQs(relabund)
+Qs$date<-rownames(Qs)
+
+Qs<-Qs[order(Qs$date),]
+
 qsPlot(Qs,"date")
 
 ```
