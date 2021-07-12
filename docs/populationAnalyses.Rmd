@@ -20,6 +20,7 @@ library(knitr)
 library(dplyr)
 library(magick)
 library(tidyr)
+library("googledrive")
 ```
 
 ```{r}
@@ -111,6 +112,17 @@ flounderGLM<-glmer(flounder_long$count ~ flounder_long$Season*flounder_long$size
 While controlling for sampling dates, and accounting for size classes, flounder were most abundant in fall and least abundant in summer.  
 
 # Pipefish
+
+```{r driveDownload,eval=FALSE}
+drive_dat<-drive_download("NZsyngnathids_measurements", 
+                          path="../data/NZsyngnathids_measurements",
+                          type = "csv",
+                          overwrite=TRUE)
+```
+```{r readCSV}
+body_dat<-read.csv("../data/NZsyngnathids_measurements.csv")
+body_dat$ID<-gsub("(\\w{2})0(\\d{2})","\\1\\2",body_dat$ID)
+```
 
 
 ```{r pipefishDat}
