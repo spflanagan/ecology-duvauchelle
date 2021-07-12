@@ -34,10 +34,6 @@ seagrassPs<-c(bare=16, sparse=18, patchy=17, dense=15)
 ```
 
 
-## Rarefaction
-
-
-
 ## Community analysis
 
 
@@ -104,6 +100,13 @@ summary(seasonIndics)
 
 
 ## Diversity analysis
+
+### Rarefaction
+
+```{r}
+rar<-rrarefy(abunds)
+```
+
 
 ### iDIP analysis
 
