@@ -138,7 +138,7 @@ kable(div_dat)
 ### Hill numbers analysis
 
 
-```{r reformatWithMudvGrass}
+```{r reformatDates}
 # only keep tows with > 0 observations
 divdat<-combdat[rowSums(combdat[,6:ncol(combdat)])>0,]
 divabunds<-as.matrix(divdat[rowSums(divdat[,6:ncol(divdat)])>0,6:ncol(divdat)])
