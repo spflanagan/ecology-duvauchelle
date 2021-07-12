@@ -301,9 +301,7 @@ dev.off()
 
 
 ```{r pipefishDat}
-pipecounts<-rawdat[,c("Day","Season","towDist","seagrass_cover",
-                      "leptonotus_below50mm","leptonotus_above50mm",
-                      "s.nigra_below50mm","s.nigra_above50mm")]
+pipecounts<-read.csv("../data/pipefish.counts.csv")
 
 
 stig_counts<-tapply(pipecounts$S_nigra,pipecounts$Month,sum)
