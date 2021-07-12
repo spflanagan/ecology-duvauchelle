@@ -101,6 +101,14 @@ summary(seasonIndics)
 
 
 #### exploring indicators
+
+```{r}
+library(maps)
+library(mapdata)
+library(maptools)  #for shapefiles
+library(scales)
+```
+
 ```{r seasonIndics}
 kahawai<-combdat[combdat$kahawai>0,]
 limpets<-combdat[combdat$limpets>0,] # not abundant enough
