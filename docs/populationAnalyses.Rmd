@@ -134,6 +134,19 @@ body_dat$SnoutWidth_Avg<-rowMeans(body_dat[,c(grep("SnoutWidth",colnames(body_da
 body_dat$HeadLength_Avg<-rowMeans(body_dat[,grep("HeadLength",colnames(body_dat))],na.rm = TRUE)
 ```
 
+```{r}
+duv_traits<-body_dat[body_dat$LocationName=="Duvauchelle Bay",]
+
+sni_dat<-combdat[,c("Day","towDist","Season","seagrass_cover",
+                   grep("nigra",colnames(combdat),value = TRUE))]
+sni_dat$total_snigra<-rowSums(sni_dat[,5:6])
+
+sni_num<-as.data.frame(do.call(rbind,by(sni_dat,sni_dat$Day,function(dat){
+  return(sum(dat$total_snigra))
+},simplify = FALSE)))
+colnames(sni_num)<-"totalN"
+
+```
 ```{r pipefishDat}
 pipecounts<-rawdat[,c("Day","Season","towDist","seagrass_cover",
                       "leptonotus_below50mm","leptonotus_above50mm",
