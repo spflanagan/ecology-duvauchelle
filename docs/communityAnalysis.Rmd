@@ -121,6 +121,28 @@ kahawai<-combdat[combdat$kahawai>0,]
 limpets<-combdat[combdat$limpets>0,] # not abundant enough
 smelt<-combdat[combdat$smelt>0,] # lots of smelt on one day
 blueCod<-combdat[combdat$blue_cod_juv>0,] # almost all from one day
+```{r makeSpeciesMap}
+make_species_map<-function(gpsdat,speciesdat,speciesName,
+                           center,zoom,color="yellow",
+                           scale=5){
+  long<-rowMeans(gpsdat[gpsdat$TowNum %in% speciesdat$TowNum,
+                       c("long_start","long_stop")])
+  lat<-rowMeans(gpsdat[gpsdat$TowNum %in% speciesdat$TowNum,
+                       c("lat_start","lat_stop")])
+  radius<-speciesdat[,speciesName]
+  
+  m <- leaflet() %>%
+    addTiles() %>%  # Add default OpenStreetMap map tiles
+    setView(lng=center[2], lat=center[1],zoom=zoom) %>% 
+     #addProviderTiles("NASAGIBS.ViirsEarthAtNight2012")
+    addProviderTiles("Esri.WorldImagery") %>%
+    addCircles(lng = long, lat = lat, weight = 1,
+      radius = radius*scale,col=color)
+  
+  m
+  return(m)
+}
+
 ```
 
 ```{r}
