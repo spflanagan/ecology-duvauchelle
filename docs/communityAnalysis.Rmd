@@ -150,25 +150,66 @@ make_species_map(gpsdat,kahawai,"kahawai",center,zoom)
 limpets<-combdat[combdat$limpets>0,] # not abundant enough
 make_species_map(gpsdat,limpets,"limpets",center,zoom)
 
-
-
-
-
+```
+```{r smelt}
+# also patchy
+smelt<-combdat[combdat$smelt>0,] # lots of smelt on one day
+make_species_map(gpsdat,smelt,"smelt",center,zoom)
 
 ```
 
+```{r bluecod}
+blueCod<-combdat[combdat$blue_cod_juv>0,] # almost all from one day
+make_species_map(gpsdat,blueCod,"blue_cod_juv",center,zoom)
+
+```
+
+```{r whitebait}
+whitebait<-combdat[combdat$whitebait_below50mm>0,] # almost all from one day
+make_species_map(gpsdat,whitebait,"whitebait_below50mm",center,zoom)
+
+```
+
+##### seagrass indicators
 
 ```{r seagrassIndics}
+```{r arrowCrab}
 # not bare
 arrowCrab<-combdat[combdat$arrowheadCrab>0,]
-blenny<-combdat[combdat$blenny>0,]
-stigmatopora<-combdat[combdat$s.nigra>0,]
-mudWhelk<-combdat[combdat$mud_whelk>0,]
+make_species_map(gpsdat,arrowCrab,"arrowheadCrab",center,zoom)
 
+```
+
+```{r whitebait}
+blenny<-combdat[combdat$blenny>0,]
+make_species_map(gpsdat,blenny,"blenny",center,zoom,scale=2)
+
+```
+
+```{r whitebait}
+stigmatopora<-combdat[combdat$s.nigra>0,]
+make_species_map(gpsdat,stigmatopora,"s.nigra",center,zoom)
+
+```
+
+```{r whitebait}
+mudWhelk<-combdat[combdat$mud_whelk>0,]
+make_species_map(gpsdat,mudWhelk,"mud_whelk",center,zoom)
+
+```
+
+```{r whitebait}
 #sparse: also kahawai
 spotty<-combdat[combdat$spotty>0,] 
+make_species_map(gpsdat,spotty,"spotty",center,zoom)
+
+```
+
+```{r whitebait}
 bristleworm<-combdat[combdat$bristleworm>0,] 
 #patchy: smelt
+make_species_map(gpsdat,bristleworm,"bristleworm",center,zoom)
+
 ```
 
 
