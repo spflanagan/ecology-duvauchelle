@@ -140,12 +140,6 @@ make_species_map<-function(gpsdat,speciesdat,speciesName,
 
 ```
 
-```{r}
-long<-rowMeans(gpsdat[gpsdat$TowNum %in% kahawai$TowNum,
-                      c("long_start","long_stop")])
-lat<-rowMeans(gpsdat[gpsdat$TowNum %in% kahawai$TowNum,
-                     c("lat_start","lat_stop")])
-radius<-kahawai$kahawai
 ##### season indicators
 
 ```{r kahawai}
@@ -156,15 +150,7 @@ make_species_map(gpsdat,kahawai,"kahawai",center,zoom)
 limpets<-combdat[combdat$limpets>0,] # not abundant enough
 make_species_map(gpsdat,limpets,"limpets",center,zoom)
 
-m <- leaflet() %>%
-  addTiles() %>%  # Add default OpenStreetMap map tiles
-  setView(lng=center[2], lat=center[1],zoom=zoom) %>% 
-   #addProviderTiles("NASAGIBS.ViirsEarthAtNight2012")
-  addProviderTiles("Esri.WorldImagery") %>%
-  addCircles(lng = long, lat = lat, weight = 1,
-    radius = radius*5,col="yellow")
 
-m
 
 
 
