@@ -368,7 +368,7 @@ colnames(relabund)<-colnames(abund)
 ```
 
 
-```{r calcQsMudvGrass,fig.width=7,fig.height=6,fig.keep='high',dpi=300}
+```{r calcQsCover}
 q0<-apply(relabund,2,calc_hill,q=0)
 q1<-apply(relabund,2,calc_hill,q=1)
 q2<-apply(relabund,2,calc_hill,q=2)
@@ -380,7 +380,7 @@ Qs<-Qs[order(Qs$date),]
 ```
 
 
-```{r DuvQs_MudvGrass,fig.width=8,fig.height=6,fig.keep='high',dpi=300}
+```{r DuvQs_Cover,fig.width=8,fig.height=6,fig.keep='high',dpi=300}
 
 par(mfrow=c(1,4),oma=c(2.5,2.5,2.5,1.5),mar=c(3,3,3,2))
 qsPlot(Qs[grep("bare",rownames(Qs)),],"date")
