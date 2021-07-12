@@ -438,3 +438,10 @@ mtext("Number of pipefish",side=2,outer=TRUE)
 
 ```
 
+# Whitebait
+
+```{r}
+whitebait<-combdat[combdat$whitebait_below50mm>0,] # Spring - Fall
+```
+
+
