@@ -152,6 +152,19 @@ map("worldHires",
 points(samps$lon, samps$lat, pch=19, col="red", cex=0.5)  #plot my sample sites
 ```
 
+```{r}
+library(RgoogleMaps)
+
+#lots of visual options, just like google maps: maptype = c("roadmap", "mobile", "satellite", "terrain", "hybrid", "mapmaker-roadmap", "mapmaker-hybrid")
+terrmap <- GetMap(center=center, 
+                  zoom=zoom, 
+                  maptype= "terrain", 
+                  destfile = "terrain.png",tileDir="./figs/"
+                  ) 
+
+```
+
+
 ```{r seagrassIndics}
 # not bare
 arrowCrab<-combdat[combdat$arrowheadCrab>0,]
