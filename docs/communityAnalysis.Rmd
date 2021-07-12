@@ -350,8 +350,6 @@ rareQ<-function(divdat,group="Date"){
 
 ```{r reformatCover}
 
-# only keep tows with > 0 observations
-divdat<-combdat[rowSums(combdat[,6:ncol(combdat)])>0,]
 divabunds<-as.matrix(divdat[rowSums(divdat[,6:ncol(divdat)])>0,6:ncol(divdat)])
 # flip the dataset
 divabunds<-t(divabunds)
