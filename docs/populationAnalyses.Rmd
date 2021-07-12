@@ -124,6 +124,15 @@ body_dat<-read.csv("../data/NZsyngnathids_measurements.csv")
 body_dat$ID<-gsub("(\\w{2})0(\\d{2})","\\1\\2",body_dat$ID)
 ```
 
+```{r AvgVals}
+body_dat$TotalLength_Avg<-rowMeans(body_dat[,grep("TotalLength",colnames(body_dat))],na.rm = TRUE)
+body_dat$SVL_Avg<-rowMeans(body_dat[,grep("SVL",colnames(body_dat))],na.rm = TRUE)
+body_dat$BodyWidth_Avg<-rowMeans(body_dat[,grep("BodyWidth",colnames(body_dat))],na.rm = TRUE)
+body_dat$BodyDepth_Avg<-rowMeans(body_dat[,grep("BodyDepth",colnames(body_dat))],na.rm = TRUE)
+body_dat$SnoutLength_Avg<-rowMeans(body_dat[,grep("SnoutLength",colnames(body_dat))],na.rm = TRUE)
+body_dat$SnoutWidth_Avg<-rowMeans(body_dat[,c(grep("SnoutWidth",colnames(body_dat)),grep("SnoutDepth",colnames(body_dat)))],na.rm = TRUE)
+body_dat$HeadLength_Avg<-rowMeans(body_dat[,grep("HeadLength",colnames(body_dat))],na.rm = TRUE)
+```
 
 ```{r pipefishDat}
 pipecounts<-rawdat[,c("Day","Season","towDist","seagrass_cover",
