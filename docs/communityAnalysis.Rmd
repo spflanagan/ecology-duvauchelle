@@ -227,21 +227,26 @@ relabunds<-decostand(divabunds,method="total",MARGIN = 1)
 ### Rarefaction
 
 ```{r}
-ssz<-sum(abunds[which.min(ys$TowDist),])
 rarecurve(t(divabunds))
 ```
 ```{r}
 
-rars<-lapply(1:999,function(i,dat=abunds,size=ssz){
+rars<-lapply(1:999,function(i,dat=divdat){
+  dat<-divdat[,6:ncol(divdat)]
+  ssz<-sum(dat[which.min(divdat$TowDist),])
   # rarify
-  rar<-suppressWarnings(rrarefy(abunds,ssz))
-  # relative abundances
+  rar<-suppressWarnings(rrarefy(dat,ssz))
+  rownames(rar)<-paste(divdat$Date,
+                       divdat$Season,
+                       divdat$SeagrassCover,
+                       sep="_")
   
   # calculate Hill numbers
   return(rar)
 })
 
 
+relrar<-lapply(rars,decostand,method="total",MARGIN=1)
 ```
 
 
