@@ -255,16 +255,6 @@ files.sources <- list.files(path = "../R/hierDiversity",full.names = TRUE)
 tmp<-sapply(files.sources, source)
 ```
 
-```{r reformatDates}
-# only keep tows with > 0 observations
-divdat<-combdat[rowSums(combdat[,6:ncol(combdat)])>0,]
-divabunds<-as.matrix(divdat[rowSums(divdat[,6:ncol(divdat)])>0,6:ncol(divdat)])
-# flip the dataset
-divabunds<-t(divabunds)
-
-# add column names
-colnames(divabunds)<-divdat$Date
-
 ```{r}
 # hierDiversity takes the non-relativized abundances
 grps<-as.matrix(cbind(divdat[,c("SeagrassCover","Season")], # least inclusive to most inclusive L->R
@@ -278,13 +268,7 @@ hierDiversity(divabunds,
               sims = FALSE)
 ```
 
-# combine samples from the same days 
-# https://stackoverflow.com/questions/35626945/row-wise-sum-of-values-grouped-by-columns-with-same-name
-abund<-t(rowsum(t(divabunds), group = colnames(divabunds), na.rm = T))
-relabund<-sapply(1:ncol(abund),function(k)	abund[,k]/sum(abund[,k]))
-colnames(relabund)<-colnames(abund)
 
-```
 
 
 
