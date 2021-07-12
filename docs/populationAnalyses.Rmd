@@ -147,6 +147,21 @@ sni_num<-as.data.frame(do.call(rbind,by(sni_dat,sni_dat$Day,function(dat){
 colnames(sni_num)<-"totalN"
 
 ```
+
+```{r}
+library(lubridate)
+sni_num$date<-ymd(rownames(sni_num))
+
+duv_traits$date<-ymd(gsub(" NZDT","",strptime(duv_traits$DateSampled,format="%d-%b-%Y")))
+
+db_num<-data.frame(measuredN=tapply(duv_traits$ID,as.factor(duv_traits$date),length))
+db_num$date<-ymd(rownames(db_num))
+
+sni_num<-merge(sni_num,db_num,by="date",all.x=TRUE)
+sni_num$unmeasured<-sni_num$totalN-sni_num$measuredN
+```
+
+
 ```{r pipefishDat}
 pipecounts<-rawdat[,c("Day","Season","towDist","seagrass_cover",
                       "leptonotus_below50mm","leptonotus_above50mm",
