@@ -305,7 +305,6 @@ qsPlot<-function(Qs,lab_col,qcols=c("#a1dab4","#41b6c4","#225ea8")){
 }
 ```
 
-```{r plotDuvauchelleQs}
 
 ```{r DuvauchelleQsbyDate}
 # add column names
@@ -324,7 +323,6 @@ qsPlot(Qs,"date")
 ```
 
 
-#### Compare seagrass vs bare 
 ```{r}
 
 rareQ<-function(divdat,group="Date"){
@@ -347,8 +345,11 @@ rareQ<-function(divdat,group="Date"){
 
 ```
 
+#### Compare diversity indices across seagrass cover 
 
-```{r reformatWithMudvGrass}
+
+```{r reformatCover}
+
 # only keep tows with > 0 observations
 divdat<-combdat[rowSums(combdat[,6:ncol(combdat)])>0,]
 divabunds<-as.matrix(divdat[rowSums(divdat[,6:ncol(divdat)])>0,6:ncol(divdat)])
