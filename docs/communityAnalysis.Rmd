@@ -102,12 +102,6 @@ summary(seasonIndics)
 
 #### exploring indicators
 
-
-```{r seasonIndics}
-kahawai<-combdat[combdat$kahawai>0,]
-limpets<-combdat[combdat$limpets>0,] # not abundant enough
-smelt<-combdat[combdat$smelt>0,] # lots of smelt on one day
-blueCod<-combdat[combdat$blue_cod_juv>0,] # almost all from one day
 ```{r getGPS}
 gpsdat<-read.csv("../data/gpsdat.csv")
 ```
@@ -121,6 +115,13 @@ zoom <- 16  #zoom: 1 = furthest out (entire globe), larger numbers = closer in
 
 ```
 
+
+```{r seasonIndics}
+kahawai<-combdat[combdat$kahawai>0,]
+limpets<-combdat[combdat$limpets>0,] # not abundant enough
+smelt<-combdat[combdat$smelt>0,] # lots of smelt on one day
+blueCod<-combdat[combdat$blue_cod_juv>0,] # almost all from one day
+```
 
 ```{r}
 long<-rowMeans(gpsdat[gpsdat$TowNum %in% kahawai$TowNum,
