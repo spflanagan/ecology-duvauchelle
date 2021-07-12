@@ -186,6 +186,43 @@ duv_sizes$Sex<-factor(duv_sizes$Sex,
 
 
 ```
+
+
+```{r}
+png("../figs/DuvauchelleTrends.png",height=6,width=6,units="in",res=300)
+par(mfrow=c(2,1),oma=c(1,1,1,1),mar=c(4,4,1,1))
+# counts
+plot(cnts$juvenile~cnts$date,las=2,
+     xlab="",ylab="Number of individuals",
+     pch=0,lty=2,lwd=2,cex=2,xaxt='n',bty='n',
+     col="dark grey",ylim=c(0,25))
+lines(cnts$juvenile~cnts$date,lwd=2,lty=2,col="dark grey")
+axis(1,pos=0,labels=cnts$date,at=cnts$date,las=2)
+
+points(cnts$female~cnts$date,
+       lwd=2,cex=2,col="#af8dc3")
+lines(cnts$female~cnts$date,lwd=2,lty=3,col="#af8dc3")
+
+points(cnts$male~cnts$date,pch=2,
+       lwd=2,cex=2,col="#7fbf7b")
+lines(cnts$male~cnts$date,lwd=2,lty=1,col="#7fbf7b")
+legend("topleft",c("males","females","juveniles"),
+       col=c("#7fbf7b","#af8dc3","dark grey"),
+       pch=c(2,1,0),pt.cex =2,lwd=2,lty=c(1,3,2),bty='n')
+
+# sizes
+par(mar=c(6,4,1,1))
+plot(duv_sizes$SVL_Avg~duv_sizes$date,
+        xlab="",las=2,ylab="SVL (mm)",
+     col=c("dark grey","#af8dc3","#7fbf7b")[duv_sizes$Sex],
+     pch=c(0,1,2)[duv_sizes$Sex],
+     xlim=c(min(unique(cnts$date)),max(unique(cnts$date))),
+     cex=2,lwd=2,xaxt='n',bty='n',ylim=c(20,80))
+abline(h=25,lty=4,col="light grey",lwd=2)
+axis(1,at=unique(cnts$date),labels=ymd(unique(cnts$date)),las=2)
+dev.off()
+```
+
 ```{r pipefishDat}
 pipecounts<-rawdat[,c("Day","Season","towDist","seagrass_cover",
                       "leptonotus_below50mm","leptonotus_above50mm",
