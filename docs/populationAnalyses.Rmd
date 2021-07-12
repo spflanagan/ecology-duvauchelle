@@ -23,7 +23,7 @@ library(tidyr)
 ```
 
 ```{r}
-rawdat<-read.csv("../data/cleanedCommunity.csv")
+combdat<-read.csv("../data/cleanedCommunity.csv")
 seasonCols<-c(Spring="coral",Summer="olivedrab3",Fall="gold",Winter="dodgerblue")
 ```
 
@@ -32,15 +32,15 @@ seasonCols<-c(Spring="coral",Summer="olivedrab3",Fall="gold",Winter="dodgerblue"
 
 ```{r}
 
-flounder<-rawdat[,grep("flounder",colnames(rawdat))]
+flounder<-combdat[,grep("flounder",colnames(combdat))]
 flounder[is.na(flounder)]<-0
-flounder$tow<-rownames(rawdat)
+flounder$tow<-rownames(combdat)
 
 flounder$Date<-as.Date(
   paste0(
-    gsub("^(\\d)$","0\\1",rawdat$Date),
-    gsub("^(\\d)$","0\\1",rawdat$Month),
-    rawdat$Year),
+    gsub("^(\\d)$","0\\1",combdat$Date),
+    gsub("^(\\d)$","0\\1",combdat$Month),
+    combdat$Year),
   format = "%d%m%Y")
 ```
 
