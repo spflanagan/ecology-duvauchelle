@@ -162,6 +162,19 @@ sni_num$unmeasured<-sni_num$totalN-sni_num$measuredN
 ```
 
 
+
+### S. nigra
+
+```{r}
+cnts<-as.data.frame.matrix(table(duv_traits$date,duv_traits$Sex))
+colnames(cnts)[1]<-"juvenile"
+cnts$date<-ymd(rownames(cnts))
+
+cnts<-merge(sni_num,cnts,by="date",all.x=TRUE)
+cnts[is.na(cnts)]<-0
+
+```
+
 ```{r pipefishDat}
 pipecounts<-rawdat[,c("Day","Season","towDist","seagrass_cover",
                       "leptonotus_below50mm","leptonotus_above50mm",
