@@ -228,6 +228,9 @@ relabunds<-decostand(divabunds,method="total",MARGIN = 1)
 
 ```{r}
 ssz<-sum(abunds[which.min(ys$TowDist),])
+rarecurve(t(divabunds))
+```
+```{r}
 
 rars<-lapply(1:999,function(i,dat=abunds,size=ssz){
   # rarify
