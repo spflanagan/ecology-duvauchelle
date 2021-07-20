@@ -177,6 +177,35 @@ sni_num<-as.data.frame(do.call(rbind,by(sni_dat,sni_dat$Day,function(dat){
   return(sum(dat$total_snigra))
 },simplify = FALSE)))
 colnames(sni_num)<-"totalN"
+seagrassPlot<-function(flounderMeanCnts,flounderSEMCnts,cover){
+  plot(as.numeric(as.factor(flounderMeanCnts$Season[flounderMeanCnts$SeagrassCover %in% cover])),
+     flounderMeanCnts$value[flounderMeanCnts$SeagrassCover %in% cover],
+     type='n',xlab="",ylab="Number of flounder",axes=FALSE,
+     ylim=c(0,100))
+  axis(1,
+       labels = levels(as.factor(flounderMeanCnts$Season)),
+       at=unique(as.numeric(as.factor(flounderMeanCnts$Season))),
+       pos=0)
+  axis(2,las=1)
+  cnt=0
+  for(size in levels(flounderMeanCnts$SizeClass)){
+    
+    subMean<-flounderMeanCnts[flounderMeanCnts$SeagrassCover %in% cover & 
+                             flounderMeanCnts$SizeClass %in% size,]
+    xs<-as.numeric(as.factor(subMean$Season))
+    points(xs,
+           subMean$value,pch=cnt+15,col=size_cols[cnt+1],cex=2)
+    
+    subSEM<-flounderSEMCnts[flounderMeanCnts$SeagrassCover %in% cover & 
+                             flounderMeanCnts$SizeClass %in% size,]
+    arrows(x0=xs,
+           x1=xs,
+           y0=subMean$value-subSEM$value,
+           y1=subMean$value+subSEM$value,
+          col=size_cols[cnt+1],lwd=2,code=3,length=0)
+    cnt<-cnt+1
+  }
+}
 
 ```
 
