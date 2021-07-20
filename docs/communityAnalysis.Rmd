@@ -502,6 +502,9 @@ CountsPlot<-function(summaryMatrix, spp, sppCols,x.lim=c(0,7),y.lim=c(0,300)){
 
 
 ```{r seagrassPlots}
+spp<-colnames(duvCounts)[3:ncol(duvCounts)]
+sppCols<-c('#8dd3c7','#ffffb3','#bebada','#fb8072','#80b1d3','#fdb462','#b3de69','#fccde5')
+names(sppCols)<-duvCounts[,3:ncol(duvCounts)]
 
 par(mfrow=c(1,4))
 CountsPlot(duvSummary[grep("Bare",duvSummary$Status),4:9],spp=spp,sppCols = sppCols)
