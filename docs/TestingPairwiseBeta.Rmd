@@ -30,7 +30,7 @@ set.seed(8675309) # Jenny Jenny
 ```
 
 
-I've added the calculation of pairwise turnover to the hierDiversity R code. I did so by incorporating Zach's functions from the script `diversityFunctionsNGBA.R` (which was associated with the Bayes paper) into the `div.part` and `dz` functions in hierDiversity. But now I want to test to make sure that the function is behaving as expected, so I'll test it using the simulations/data Zach used for the Bayes paper (from `PairwiseBetaSource.R` downloaded as an Appendix). 
+I've added the calculation of pairwise turnover to the hierDiversity R code. I did so by incorporating Zach's functions from the script `diversityFunctionsNGBA.R` (which was associated with the pairwise beta paper) into the `div.part` and `dz` functions in hierDiversity. But now I want to test to make sure that the function is behaving as expected, so I'll test it using the simulations/data Zach used for the pairwise beta paper (from `PairwiseBetaSource.R` downloaded as an Appendix). 
 
 He used the BCI dataset, and did a bunch of sub-samples to test the method. I think I can just compare his estimates of 'true' diversity to estimates using hierDiversity.
 
@@ -40,7 +40,7 @@ data(BCI)
 bci <- as.matrix(BCI)
 ```
 
-```{r BayesCalcs}
+```{r PairwiseCalcs, eval=FALSE}
 ### We were only interested in diversity orders 0, 1, & 2 
 ### but this vector could contain any order of interest.
 q.seq <- 0:2 
