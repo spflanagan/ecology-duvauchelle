@@ -589,7 +589,37 @@ dev.off()
 image_append(c(relfig,seagrassPhotos), stack = TRUE)
 ```
 
+Try it using `imager` instead:
+```{r}
+library(imager)
+bare_fig <- load.image('../figs/seagrass_cover_images/Bare.PNG')
+sparse_fig <- load.image('../figs/seagrass_cover_images/Sparse.PNG')
+patchy_fig <- load.image('../figs/seagrass_cover_images/Patchy.PNG')
+dense_fig <- load.image('../figs/seagrass_cover_images/Dense.PNG')
+```
 
+```{r}
 
+par(mfrow=c(2,4),mar=c(5,0,2,0),xpd=TRUE,oma=c(1,3,1,0))
+CountsPlot(duvCounts[grep("bare",duvCounts$Status),],spp=spp,sppCols = sppCols,y.lim = c(0,30))
+mtext("Relative abundance",side=2,outer=FALSE,line=1.9,cex=0.75)
 
+CountsPlot(duvCounts[grep("sparse",duvCounts$Status),],spp=spp,sppCols = sppCols,y.lim = c(0,30))
+#rasterImage(sparse_png,xleft = 0,xright = 5,ytop = -26,ybottom=-30,xpd=TRUE)
+
+CountsPlot(duvCounts[grep("patchy",duvCounts$Status),],spp=spp,sppCols = sppCols,y.lim = c(0,30))
+#rasterImage(patchy_png,xleft = 0,xright = 5,ytop = -26,ybottom=-30,xpd=TRUE)
+
+CountsPlot(duvCounts[grep("dense",duvCounts$Status),],spp=spp,sppCols = sppCols,y.lim = c(0,30))
+#rasterImage(dense_png,xleft = 0,xright = 5,ytop = -26,ybottom=-30,xpd=TRUE)
+
+par(mar=c(0,0,0,0))
+plot(bare_fig,axes=FALSE)
+plot(sparse_fig,axes=FALSE)
+plot(patchy_fig,axes=FALSE)
+plot(dense_fig,axes=FALSE)
+
+outer_legend("top",spp,col=sppCols,pch=21,pt.bg=sppCols,lty=1,bty='n',ncol=4,cex=1.2,lwd=2,pt.cex=1.3)
+
+```
 
