@@ -88,7 +88,26 @@ for(i in 1:length(seasonCols)){
 ```
 
 ```{r}
+multi_tapply<-function(dat,focalCol,factors,FUN){
+  
+  fac<-NULL
+  for(i in 1:length(factors)){
+    fac<-paste(fac,dat[,factors[i]])
+  }
+  val<-tapply(dat[,focalCol],
+                     fac,
+                     match.fun(FUN))
+  output<-data.frame(matrix(nrow=length(val),ncol=length(factors)+1))
+  output[,1]<-val
+  for(i in 1:length(factors)){
+    output[,i+1]<-unlist(lapply(strsplit(names(val)," "), `[[`, i+1) )
+      
+      
+  }
+  colnames(output)<-c("value",factors)
+  return(output)
 
+}
 ```
 
 
