@@ -311,13 +311,39 @@ saveRDS(divDensities,"divDensities.RDS")
 ```
 
 
+```{r, eval=FALSE}
+rareQ0<-lapply(rars,
+               hierDiversity,
+               group=grps,
+               replace = NULL,
+               reps = 1, 
+               q = 0,
+               quant = c(0.025, 0.975),
+               sims = FALSE)
+saveRDS(rareQ0,"rarefied_Q0.RDS")
+
+rareQ1<-lapply(rars,
+               hierDiversity,
+               group=grps,
+               replace = NULL,
+               reps = 1, 
+               q = 1,
+               quant = c(0.025, 0.975),
+               sims = FALSE)
+saveRDS(rareQ1,"rarefied_Q1.RDS")
+
+rareQ2<-lapply(rars,
+               hierDiversity,
+               group=grps,
+               replace = NULL,
+               reps = 1, 
+               q = 2,
+               quant = c(0.025, 0.975),
+               sims = FALSE)
+saveRDS(rareQ2,"rarefied_Q2.RDS")
+```
 
 
-```{r calcQs}
-calcQs<-function(relabund){
-  q0<-apply(relabund,2,calc_hill,q=0)
-  q1<-apply(relabund,2,calc_hill,q=1)
-  q2<-apply(relabund,2,calc_hill,q=2)
   
   Qs<-data.frame(q0=q0,q1=q1,q2=q2)  
   return(Qs)
