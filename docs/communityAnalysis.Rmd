@@ -463,34 +463,36 @@ duvCounts<-duvCounts[,c("Status","Season","Leptonotus","Stigmatopora","Shrimp","
 #requires a column called "Season" that is a factor. 
 CountsPlot<-function(summaryMatrix, spp, sppCols,x.lim=c(0,7),y.lim=c(0,300)){
   
-  
-  plot(rep(1,nrow(summaryMatrix)),
-       summaryMatrix[,1],
   # adjust the ylimit if necessary
   # make an empty plot
+  plot(as.numeric(summaryMatrix[order(as.numeric(summaryMatrix[,"Season"])),"Season"]),
+       summaryMatrix[order(as.numeric(summaryMatrix[,"Season"])),spp[1]],
        xlim=x.lim,
        ylim=y.lim,
        xlab="",
        ylab="Counts",
        axes=F,
-       type='n')
-  axis(1,at=1:length(spp),labels=spp,lty = 0,las=2)
-  axis(2,las=1)
+       type='n',
+       xpd=TRUE)
+  axis(1,at=as.numeric(summaryMatrix[order(as.numeric(summaryMatrix[,"Season"])),"Season"]),
+       labels=levels(summaryMatrix[order(as.numeric(summaryMatrix[,"Season"])),"Season"]),
+       lty = 0,las=2,cex=1)
+  axis(2,las=1,cex=1)
   
   
   for(i in 1:length(spp)){
-    points(rep(i,length(summaryMatrix[,spp[i]])),
-       summaryMatrix[,spp[i]],
     # add points for each species
+    points(as.numeric(summaryMatrix[order(as.numeric(summaryMatrix[,"Season"])),"Season"]),
+       summaryMatrix[order(as.numeric(summaryMatrix[,"Season"])),spp[i]],
+       col=sppCols[i],
+       lwd=2,
+       type = "l")
+    points(as.numeric(summaryMatrix[order(as.numeric(summaryMatrix[,"Season"])),"Season"]),
+       summaryMatrix[order(as.numeric(summaryMatrix[,"Season"])),spp[i]],
        pch=21,
        bg=scales::alpha(sppCols[i],0.75),
        col="dark grey",
        cex=2.5)
-    lines(x=c(i-0.25,i+0.25),
-          y=c(mean(summaryMatrix[,spp[i]]),
-              mean(summaryMatrix[,spp[i]])),
-          lwd=4,
-          col=sppCols[i])
   }
 }
 ```
