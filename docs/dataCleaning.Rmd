@@ -182,7 +182,7 @@ kable(names,booktabs=TRUE)
 To ensure that the varying levels of lowest taxonomic identification don't impact the results, I'll create a data.frame where all of the animals have been grouped at the level of Order -- so I'll sum up any of the obervations at lower levels.  
 
 ```{r}
-orders<-combDat
+orders<-combdat
 names<-names[match(colnames(orders[,4:ncol(orders)]),names$ID ),]
 colnames(orders)[4:ncol(orders)]<-as.character(names$order)
 
