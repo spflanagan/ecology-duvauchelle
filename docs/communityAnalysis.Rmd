@@ -434,15 +434,15 @@ I can create a graph showing the numbers of species for each type of seagrass ha
 
 ```{r}
 duvSummary<-data.frame(
-  Status=paste(combdat$Season,combdat$seagrass_cover,sep="_"),
-  Leptonotus=combdat$L.elevatus,
-  Stigmatopora=combdat$S.nigra,
-  Shrimp=combdat$Shrimp_spp,
-  Flounder=combdat$Flounder,
-  Crabs=rowSums(combdat[,25:30]),
-  Snails=rowSums(combdat[,33:38]),
-  OtherFish=rowSums(combdat[,17:23]),
-  Other=rowSums(combdat[,c(31,32,39:34)])
+  Status=paste(combdat$Season,combdat$SeagrassCover,sep="_"),
+  Leptonotus=combdat$leptonotus,
+  Stigmatopora=combdat$s.nigra,
+  Shrimp=combdat$shrimp,
+  Flounder=combdat$flounder,
+  Crabs=rowSums(combdat[,grep("crab",tolower(colnames(combdat)))]),
+  Molluscs=rowSums(combdat[,c("Diloma","austrovenus","Lunella_smaragda","mud_whelk","whelk","paphies_australis")]),
+  OtherFish=rowSums(combdat[,c("blenny","kahawai","spotty","wrasse","blue_cod_juv","whitebait_below50mm","smelt")]),
+  Other=rowSums(combdat[,c("Seastar","sea_squirt","isopod","bristleworm")])
   )
 
 ```
