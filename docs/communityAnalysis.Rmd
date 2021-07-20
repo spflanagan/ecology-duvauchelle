@@ -265,6 +265,10 @@ rars<-lapply(1:999,function(i,dat=divdat){
 })
 
 relrar<-lapply(rars,decostand,method="total",MARGIN=1)
+saveRDS(relrar,"rarefiedCommunities.RDS")
+```
+```{r}
+relrar<-readRDS("rarefiedCommunities.RDS")
 ```
 
 
