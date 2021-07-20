@@ -197,7 +197,7 @@ ordAbund<-do.call(cbind,lapply( levels(names$order), function(name,dat){
 }, dat=orders))
 colnames(ordAbund)<-levels(names$order)
 
-ordAbund<-cbind(combDat[,c("Season","SeagrassCover","TowDist")],ordAbund)
+ordAbund<-cbind(combdat[,c("Season","SeagrassCover","TowArea")],ordAbund)
 ```
  
 ```{r}
