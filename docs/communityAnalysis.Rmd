@@ -441,8 +441,7 @@ Qs$date<-as.Date(gsub("(\\d+)_\\w+_\\w+","\\1",rownames(Qs)))
 Qs<-Qs[order(Qs$date),]
 ```
 
-
-```{r DuvQs_Cover,fig.width=8,fig.height=6,fig.keep='high',dpi=300}
+```{r DuvQs_Cover,fig.width=8,fig.height=6,fig.keep='high',dpi=300, eval=FALSE}
 
 par(mfrow=c(1,4),oma=c(2.5,2.5,2.5,1.5),mar=c(3,3,3,2))
 qsPlot(Qs[grep("bare",rownames(Qs)),],"date")
