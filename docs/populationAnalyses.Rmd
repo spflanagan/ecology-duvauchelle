@@ -51,9 +51,6 @@ plot(as.Date(flounder$Day),flounder$flounder_above50mm)
 
 
 ```{r}
-
-```{r}
-flounder_long <- gather(flounder, size, count, 1:4, factor_key=TRUE)
 flounder_long$size<-as.factor(gsub("flounder_","",flounder_long$size))
 levels(flounder_long$size)<-c("below10mm","10to20mm","20to50mm","above50mm")
 
