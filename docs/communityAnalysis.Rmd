@@ -513,9 +513,32 @@ CountsPlot(duvCounts[grep("patchy",duvCounts$Status),],spp=spp,sppCols = sppCols
 CountsPlot(duvCounts[grep("dense",duvCounts$Status),],spp=spp,sppCols = sppCols,y.lim = c(0,3500))
 ```
 
+```{r}
+# plot the relative abundances
 
+duvRelSum<-data.frame(
+  Status=paste(divdat$Season,divdat$SeagrassCover,sep="_"),
+  Leptonotus=relabunds[,"leptonotus"],
+  Stigmatopora=relabunds[,"s.nigra"],
+  Shrimp=relabunds[,"shrimp"],
+  Flounder=relabunds[,"flounder"],
+  Crabs=rowSums(relabunds[,grep("crab",tolower(colnames(relabunds)))]),
+  Molluscs=rowSums(relabunds[,c("Diloma","austrovenus","Lunella_smaragda","mud_whelk","whelk","paphies_australis")]),
+  OtherFish=rowSums(relabunds[,c("blenny","kahawai","spotty","wrasse","blue_cod_juv","whitebait_below50mm","smelt")]),
+  Other=rowSums(relabunds[,c("Seastar","sea_squirt","isopod","bristleworm")])
+  )
+
+```
 
 ```{r seasonPlots}
+```{r}
+duvCounts<-as.data.frame(duvRelSum %>%
+  group_by(Status) %>%
+  summarise_all( sum))
+duvCounts$Season<-factor(gsub("(\\w+)_\\w+","\\1",duvCounts$Status),
+                         levels=c("Winter","Spring","Summer","Fall"))
+duvCounts<-duvCounts[,c("Status","Season","Leptonotus","Stigmatopora","Shrimp","Flounder","Crabs","Molluscs","OtherFish","Other")]
+```
 
 par(mfrow=c(1,4))
 CountsPlot(duvSummary[grep("Spring",duvSummary$Status),4:9],spp=spp,sppCols = sppCols)
