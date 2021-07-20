@@ -57,11 +57,6 @@ truePWRegional <- trueDiv$rOver
 notPWTrue <- rbind(trueTurn, trueLocal, trueReg)
 PWTrue <- rbind(truePWTurn, truePWLocal, truePWRegional)
 
-### Create a giant list of results for plotting
-truVal <- list(notPWTrue = notPWTrue, turn=turn, 
-               biasLocal=biasLocal,biasRegion=biasRegion, 
-               PWTrue=PWTrue, pwTurn = pwTurn , 
-               pwLocal=pwLocal, pwRegion=pwRegion)
 
 ```
 
