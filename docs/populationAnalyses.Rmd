@@ -40,10 +40,11 @@ flounder<-cbind(cleandat[,c("Day","Season","towArea","seagrass_cover",
 ```
 
 ```{r}
-plot(flounder$Date,flounder$flounder_below10mm)
-plot(flounder$Date,flounder$flounder_10to20mm)
-plot(flounder$Date,flounder$flounder_20to50mm)
-plot(flounder$Date,flounder$flounder_above50mm)
+par(mfrow=c(2,2))
+plot(as.Date(flounder$Day),flounder$flounder_below10mm)
+plot(as.Date(flounder$Day),flounder$flounder_10to20mm)
+plot(as.Date(flounder$Day),flounder$flounder_20to50mm)
+plot(as.Date(flounder$Day),flounder$flounder_above50mm)
 
 ```
 
