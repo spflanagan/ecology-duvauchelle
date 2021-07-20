@@ -58,6 +58,10 @@ notPWTrue <- rbind(trueTurn, trueLocal, trueReg)
 PWTrue <- rbind(truePWTurn, truePWLocal, truePWRegional)
 
 
+saveRDS(trueDiv,"trueDiv.RDS")
+```
+```{r}
+trueDiv<-readRDS("trueDiv.RDS")
 ```
 
 
