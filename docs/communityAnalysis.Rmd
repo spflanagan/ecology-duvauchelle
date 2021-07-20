@@ -18,8 +18,10 @@ library(scales)
 library(knitr)
 library(vegan)
 library(indicspecies)
-library(HierDpart)
+library(dplyr)
+library(tidyr)
 library(leaflet)
+library(magick)
 source("../R/iDIP.R")
 ```
 
