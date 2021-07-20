@@ -253,7 +253,7 @@ rarecurve(t(divabunds))
 set.seed(8675309)
 rars<-lapply(1:999,function(i,dat=divdat){
   dat<-divdat[,6:ncol(divdat)]
-  ssz<-sum(dat[which.min(divdat$TowDist),])
+  ssz<-sum(dat[which.min(divdat$TowArea),])
   # rarify
   rar<-suppressWarnings(rrarefy(dat,ssz))
   rownames(rar)<-paste(divdat$Date,
