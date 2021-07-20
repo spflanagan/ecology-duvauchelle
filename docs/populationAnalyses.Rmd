@@ -10,8 +10,8 @@ editor_options:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE,out.extra='',fig.pos="H",
-                      fig.path = "./figs/",dpi = 300,fig.keep='last',dev='png')
-knitr::opts_knit$set(root.dir='../results/',fig_path="./figs/")
+                      fig.path = "../figs/",dpi = 300,fig.keep='last',dev='png')
+knitr::opts_knit$set(root.dir='../results/',fig_path="../figs/")
 ```
 
 ```{r loadLibs, include=FALSE, echo=FALSE}
