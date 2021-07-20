@@ -464,6 +464,9 @@ duvCounts<-duvCounts[,c("Status","Season","Leptonotus","Stigmatopora","Shrimp","
 CountsPlot<-function(summaryMatrix, spp, sppCols,x.lim=c(0,7),y.lim=c(0,300)){
   
   # adjust the ylimit if necessary
+  if(max(summaryMatrix[,spp])>max(y.lim)){
+    y.lim[2]<-max(summaryMatrix[,spp])+50
+  }
   # make an empty plot
   plot(as.numeric(summaryMatrix[order(as.numeric(summaryMatrix[,"Season"])),"Season"]),
        summaryMatrix[order(as.numeric(summaryMatrix[,"Season"])),spp[1]],
