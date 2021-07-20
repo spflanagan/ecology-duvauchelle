@@ -212,6 +212,14 @@ seagrassPlot<-function(flounderMeanCnts,flounderSEMCnts,cover){
 ```{r}
 library(lubridate)
 sni_num$date<-ymd(rownames(sni_num))
+size_cols<-c("#a6bddb","#74a9cf","#2b8cbe","#045a8d")
+par(mfrow=c(1,4))
+seagrassPlot(flounderMeanCnts,flounderSEMCnts,"bare")
+seagrassPlot(flounderMeanCnts,flounderSEMCnts,"sparse")
+seagrassPlot(flounderMeanCnts,flounderSEMCnts,"patchy")
+seagrassPlot(flounderMeanCnts,flounderSEMCnts,"dense")
+outer_legend("top",bty='n',pch=15:18,col=size_cols,levels(flounderMeanCnts$SizeClass),ncol=4,cex=1.5,lwd=2)
+```
 
 duv_traits$date<-ymd(gsub(" NZDT","",strptime(duv_traits$DateSampled,format="%d-%b-%Y")))
 
