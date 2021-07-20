@@ -395,77 +395,7 @@ axis(1,at=unique(cnts$date),labels=ymd(unique(cnts$date)),las=2)
 dev.off()
 ```
 
-### old abundance
 
-
-```{r}
-dat<-duv_dat
-dat$YYYYMMDD<-paste(dat$Year,sprintf("%02d",dat$Month),sprintf("%02d",dat$Date),sep="-")
-animals<-colnames(dat)[grep("leptonotus_below",colnames(dat)):(ncol(dat)-1)]
-# get the abundances
-abundance<-t(dat[,animals])
-# add column names
-colnames(abundance)<-dat$YYYYMMDD
-# replace NAs with 0s
-abundance[is.na(abundance)]<-0
-# remove tows with 0 observations
-keepCols<-which(colSums(abundance)>0)
-abundance<-abundance[,keepCols]
-
-# combine samples from the same days 
-# https://stackoverflow.com/questions/35626945/row-wise-sum-of-values-grouped-by-columns-with-same-name
-abund<-t(rowsum(t(abundance), group = colnames(abundance), na.rm = T))
-
-ntows<-table(colnames(abundance))
-totalN<-colSums(abund)
-NperTow<-totalN/ntows
-
-# Combine for richness
-spAbund<-abund
-rownames(spAbund)[grep("mud",rownames(spAbund))]<-gsub("_","",rownames(spAbund)[grep("mud",rownames(spAbund))])
-rownames(spAbund)[grep("_crab",rownames(spAbund))]<-gsub("_crab","Crab",rownames(spAbund)[grep("_crab",rownames(spAbund))])
-rownames(spAbund)[rownames(spAbund)=="venus"]<-"austrovenus"
-rownames(spAbund)[rownames(spAbund)=="green_centipede"]<-"isopod"
-rownames(spAbund)[rownames(spAbund)=="sea_squirt"]<-"seasquirt"
-rownames(spAbund)[rownames(spAbund)=="blue_cod"]<-"bluecod"
-rownames(spAbund)<-gsub("(_.*)$","",rownames(spAbund))
-
-rowsum(spAbund, group = rownames(spAbund), na.rm = T)
-richness<-apply(spAbund,2,function(x){ return(length(x[x!=0]))})
-```
-
-
-```{r}
-png("../figs/DuvAbundanceRichness.png",height=4.5,width=6,units="in",res=300)
-par(mfrow=c(2,1),oma=c(1,1,1,1),mar=c(5,4,1,1),xpd=TRUE)
-plot(NperTow,las=2,
-     xlab="",ylab="Avg. Abundance")
-
-plot(richness,bty='n',xlab="",ylab="Taxon. Richness",
-     las=2,pch=19,cex=1.5,xaxt='n',ylim=c(20,30))
-axis(1,at=1:10,labels = names(richness),las=2)
-lines(richness)
-dev.off()
-
-```
-
-```{r}
-png("../figs/DuvShrimpFlounder.png",height=6,width=6,units="in",res=300)
-par(mfrow=c(2,1),oma=c(1,1,1,1),mar=c(5,4,1,1),xpd=TRUE)
-plot(abund["flounder_below10mm",],bty='n',xaxt='n',
-     xlab="",ylab="# Flounder",las=1,ylim=c(0,200))
-points(abund["flounder_10to20mm",],cex=1.5)
-points(abund["flounder_20to50mm",],cex=2)
-points(abund["flounder_above50mm",],cex=2.5)
-axis(1,at=c(1:10),labels=colnames(abund),las=2)
-
-plot(colSums(abund[grep("shrimp",rownames(abund)),]),
-     xlab="",ylab="# Shrimp",bty='n',xaxt='n',las=1,
-     pch=22,cex=2,ylim=c(100,3000))
-lines(colSums(abund[grep("shrimp",rownames(abund)),]))
-axis(1,at=c(1:10),labels=colnames(abund),las=2)
-dev.off()
-```
 
 
 
