@@ -207,6 +207,89 @@ ordAbund<-write.csv(ordAbund,"cleanedCommunityOrders.csv",quote=FALSE,row.names 
  
 # Pipefish data
 
+Get the size data from the google doc
+
+```{r driveDownload,eval=FALSE}
+library("googledrive")
+drive_dat<-drive_download("NZsyngnathids_measurements", 
+                          path="../data/NZsyngnathids_measurements",
+                          type = "csv",
+                          overwrite=TRUE)
+```
+```{r readCSV}
+body_dat<-read.csv("../data/NZsyngnathids_measurements.csv")
+body_dat$ID<-gsub("(\\w{2})0(\\d{2})","\\1\\2",body_dat$ID)
+```
+
+```{r AvgVals}
+body_dat$TotalLength_Avg<-rowMeans(body_dat[,grep("TotalLength",colnames(body_dat))],na.rm = TRUE)
+body_dat$SVL_Avg<-rowMeans(body_dat[,grep("SVL",colnames(body_dat))],na.rm = TRUE)
+body_dat$BodyWidth_Avg<-rowMeans(body_dat[,grep("BodyWidth",colnames(body_dat))],na.rm = TRUE)
+body_dat$BodyDepth_Avg<-rowMeans(body_dat[,grep("BodyDepth",colnames(body_dat))],na.rm = TRUE)
+body_dat$SnoutLength_Avg<-rowMeans(body_dat[,grep("SnoutLength",colnames(body_dat))],na.rm = TRUE)
+body_dat$SnoutWidth_Avg<-rowMeans(body_dat[,c(grep("SnoutWidth",colnames(body_dat)),grep("SnoutDepth",colnames(body_dat)))],na.rm = TRUE)
+body_dat$HeadLength_Avg<-rowMeans(body_dat[,grep("HeadLength",colnames(body_dat))],na.rm = TRUE)
+
+# get only the ones from duvauchelle
+duv_traits<-body_dat[body_dat$LocationName=="Duvauchelle Bay",]
+```
+
+```{r TotalSNiCnts}
+cleandat<-read.csv("../data/cleanedCommunity.csv")
+sni_dat<-cleandat[,c("Day","towArea","Season","seagrass_cover",
+                   grep("nigra",colnames(cleandat),value = TRUE))]
+sni_dat$total_snigra<-rowSums(sni_dat[,5:6])
+
+sni_num<-as.data.frame(do.call(rbind,by(sni_dat,sni_dat$Day,function(dat){
+  return(sum(dat$total_snigra))
+},simplify = FALSE)))
+colnames(sni_num)<-"totalN"
+
+```
+
+Check to make sure that all of the data match up -- community ecology counts and measurements:
+```{r CheckMeasurementsVsCnts}
+library(lubridate)
+sni_num$date<-ymd(rownames(sni_num))
+
+duv_traits$date<-ymd(gsub(" NZDT","",strptime(duv_traits$DateSampled,format="%d-%b-%Y")))
+
+db_num<-data.frame(measuredN=tapply(duv_traits$ID,as.factor(duv_traits$date),length))
+db_num$date<-ymd(rownames(db_num))
+
+sni_num<-merge(sni_num,db_num,by="date",all.x=TRUE)
+sni_num[is.na(sni_num)]<-0
+sni_num$unmeasured<-sni_num$totalN-sni_num$measuredN
+```
+
+There are `r sum(sni_num$unmeasured,na.rm=TRUE)` observations that are also not in the measurements file -- this is good!
+
+```{r getCountsByAgeSex}
+cnts<-as.data.frame.matrix(table(duv_traits$date,duv_traits$Sex))
+colnames(cnts)[1]<-"juvenile"
+cnts$date<-ymd(rownames(cnts))
+
+cnts<-merge(sni_num,cnts,by="date",all.x=TRUE)
+cnts[is.na(cnts)]<-0
+
+```
+
+```{r}
+duv_sizes<-duv_traits[,c("date","Sex","TotalLength_Avg","SVL_Avg")]
+# fill in sizes of unmeasured juveniles
+duv_sizes$TotalLength_Avg[is.na(duv_sizes$TotalLength_Avg)]<-50
+duv_sizes$SVL_Avg[is.na(duv_sizes$SVL_Avg)]<-25
+
+duv_sizes$Sex[which(duv_sizes$Sex=="")]<-"juvenile"
+duv_sizes$Sex<-factor(duv_sizes$Sex,
+                      levels = c("juvenile","female","male"))
+
+
+```
+
+
+
+
 ```{r}
 lengths<-read.csv("../data/pipefish.lengths.csv")
 counts<-read.csv("../data/pipefish.counts.csv")
