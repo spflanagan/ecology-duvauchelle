@@ -408,38 +408,6 @@ qsPlot<-function(Qs,lab_col,qcols=c("#a1dab4","#41b6c4","#225ea8")){
 
 
 
-#### Compare diversity indices across seagrass cover 
-
-
-```{r reformatCover}
-
-divabunds<-as.matrix(divdat[rowSums(divdat[,6:ncol(divdat)])>0,6:ncol(divdat)])
-# flip the dataset
-divabunds<-t(divabunds)
-
-# add column names
-colnames(divabunds)<-paste(divdat$Date,divdat$Season,divdat$SeagrassCover,sep="_")
-
-
-# combine samples from the same days 
-# https://stackoverflow.com/questions/35626945/row-wise-sum-of-values-grouped-by-columns-with-same-name
-abund<-t(rowsum(t(divabunds), group = colnames(divabunds), na.rm = T))
-relabund<-sapply(1:ncol(abund),function(k)	abund[,k]/sum(abund[,k]))
-colnames(relabund)<-colnames(abund)
-
-```
-
-
-```{r calcQsCover}
-q0<-apply(relabund,2,calc_hill,q=0)
-q1<-apply(relabund,2,calc_hill,q=1)
-q2<-apply(relabund,2,calc_hill,q=2)
-
-Qs<-data.frame(q0=q0,q1=q1,q2=q2)
-Qs$date<-as.Date(gsub("(\\d+)_\\w+_\\w+","\\1",rownames(Qs)))
-
-Qs<-Qs[order(Qs$date),]
-```
 
 ```{r DuvQs_Cover,fig.width=8,fig.height=6,fig.keep='high',dpi=300, eval=FALSE}
 
