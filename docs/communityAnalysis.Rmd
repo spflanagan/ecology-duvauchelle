@@ -290,7 +290,7 @@ tmp<-sapply(list.files(path="../../spfTools/R/",full.names = TRUE),source)
 # hierDiversity takes the non-relativized abundances
 grps<-as.matrix(cbind(divdat[,c("SeagrassCover","Season")], # least inclusive to most inclusive L->R
             Site="Duvauchelle"))
-hierDiversity(divabunds, 
+divActual<-hierDiversity(divabunds, 
               grps, 
               replace = NULL, 
               reps = 99, 
