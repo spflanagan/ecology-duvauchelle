@@ -77,6 +77,8 @@ hierResults<-lapply(q.seq,
                     reps = 99, 
                     quant = c(0.025, 0.975), 
                     sims = FALSE)
+saveRDS(hierResults,"trueHier.RDS")
+```
 
 ```
 
