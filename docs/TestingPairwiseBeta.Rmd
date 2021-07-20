@@ -79,6 +79,12 @@ hierResults<-lapply(q.seq,
                     sims = FALSE)
 saveRDS(hierResults,"trueHier.RDS")
 ```
+```{r}
+hierResults<-readRDS("trueHier.RDS")
+hierResultsTab<-list(hierResults[[1]]$lev2$Site,
+                     hierResults[[2]]$lev2$Site,
+                     hierResults[[3]]$lev2$Site)
+```
 
 ```
 
