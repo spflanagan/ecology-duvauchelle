@@ -239,6 +239,12 @@ db_num$date<-ymd(rownames(db_num))
 
 sni_num<-merge(sni_num,db_num,by="date",all.x=TRUE)
 sni_num$unmeasured<-sni_num$totalN-sni_num$measuredN
+image_append(image_scale(c(
+  bare_png,
+  sparse_png,
+  patchy_png,
+  dense_png
+)))
 ```
 
 
