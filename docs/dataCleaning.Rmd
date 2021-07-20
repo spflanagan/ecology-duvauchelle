@@ -98,6 +98,10 @@ Remove commas from Comments column
 rawdat$Comments<-gsub(",","",rawdat$Comments)
 ```
 
+```{r}
+rawdat$TowNum<-rownames(rawdat)
+```
+
 
 ```{r}
 write.csv(rawdat,"../data/cleanedCommunity.csv",quote=FALSE, row.names = FALSE)
@@ -134,8 +138,8 @@ Create summary data frame
 combdat<-data.frame(cbind(
   Date=rawdat$Day,
   Season=rawdat$Season,
-  TowNum=rownames(rawdat),
   TowDist=rawdat$towDist,
+  TowNum=rawdat$TowNum,
   SeagrassCover=rawdat$seagrass_cover,
   totals,
   rawdat[,nonCombNames]
