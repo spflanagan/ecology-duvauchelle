@@ -359,6 +359,12 @@ m
 
 ```
 
+```{r }
+cleandat$flounder<-rowSums(cleandat[,grep("flounder",colnames(cleandat))])
+make_species_map(gpsdat,cleandat,"flounder",center,zoom,scale = 1)
+```
+
+
 
 # Pipefish
 
