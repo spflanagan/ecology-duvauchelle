@@ -100,16 +100,10 @@ for(i in 1:length(seasonCols)){
 
 ```
 
-GLMER Poisson counts by seasons 
-
 ```{r}
-library(lme4)
 
-flounderGLM<-glmer(flounder_long$count ~ flounder_long$Season*flounder_long$size + (1 | flounder_long$Date),
-                   family = poisson)
 ```
 
-While controlling for sampling dates, and accounting for size classes, flounder were most abundant in fall and least abundant in summer.  
 
 # Pipefish
 
@@ -164,11 +158,23 @@ sni_num$unmeasured<-sni_num$totalN-sni_num$measuredN
 
 
 ### S. nigra
+GLMER Poisson counts by seasons 
+
+What do I want to test?
+
+Do flounder of different sizes have different abundances throughout the year AND in different seagrass beds?
 
 ```{r}
 cnts<-as.data.frame.matrix(table(duv_traits$date,duv_traits$Sex))
 colnames(cnts)[1]<-"juvenile"
 cnts$date<-ymd(rownames(cnts))
+flounder_long$density<-flounder_long$count/flounder_long$towArea
+flounderGLM<-glmer.nb(flounder_long$density ~
+                     (flounder_long$Day | flounder_long$Season)*flounder_long$size)
+```
+
+While controlling for sampling dates, and accounting for size classes, flounder were most abundant in fall and least abundant in summer.  
+(what about seagrass cover?)
 
 cnts<-merge(sni_num,cnts,by="date",all.x=TRUE)
 cnts[is.na(cnts)]<-0
