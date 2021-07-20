@@ -248,8 +248,8 @@ divdensities<-divabunds/divdat$TowArea
 ```{r}
 rarecurve(t(divabunds))
 ```
-```{r}
 
+```{r, eval=FALSE}
 rars<-lapply(1:999,function(i,dat=divdat){
   dat<-divdat[,6:ncol(divdat)]
   ssz<-sum(dat[which.min(divdat$TowDist),])
