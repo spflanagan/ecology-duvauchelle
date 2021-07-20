@@ -101,7 +101,21 @@ kable(t(sumTab),"latex",booktabs=TRUE,
       caption="Results from modified hierDiversity vs the pairwise paper (PW) calculations for the BCI dataset, forq=0, q=1, and q=2")
 ```
 
+```{r,fig.cap="Figure comparing the four diversity provile plots for the hierDiversity calculations (black circles) vs the calculations used for the pairwise beta paper (green squares).",fig.height=6,fig.width=6}
+par(mfrow=c(2,2),mar=c(4,4,2,2))
 
+plot(0:2,sumTab$hierDiversity_alpha,pch=19,cex=2,xlim=c(0,2.5),xlab="q",ylab="Alpha")
+points(x=c(0.25,1.25,2.25),y=sumTab$PW_alpha,pch=15,col="forest green",cex=2)
+
+plot(0:2,sumTab$hierDiversity_beta,pch=19,cex=2,xlim=c(0,2.5),xlab="q",ylab="Beta")
+points(x=c(0.25,1.25,2.25),y=sumTab$PW_betaT,pch=15,col="forest green",cex=2)
+
+plot(0:2,sumTab$hierDiversity_pwTurnover,pch=19,cex=2,xlim=c(0,2.5),xlab="q",ylab="Pairwise turnover")
+points(x=c(0.25,1.25,2.25),y=sumTab$PW_pBeta,pch=15,col="forest green",cex=2)
+
+plot(0:2,sumTab$hierDiversity_gamma,pch=19,cex=2,xlim=c(0,2.5),xlab="q",ylab="Gamma")
+points(x=c(0.25,1.25,2.25),y=sumTab$PW_gamma,pch=15,col="forest green",cex=2)
+```
 
 
 
