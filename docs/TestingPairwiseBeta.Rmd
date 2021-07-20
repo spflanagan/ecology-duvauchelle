@@ -65,7 +65,7 @@ trueDiv<-readRDS("trueDiv.RDS")
 ```
 
 
-```{r hierDiversity}
+```{r hierDiversity, eval=FALSE}
 # least inclusive to most inclusive L->R
 grps<-as.matrix(cbind(rownames(bci),"Site"))
 
