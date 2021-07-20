@@ -298,6 +298,7 @@ divActual<-hierDiversity(divabunds,
               quant = c(0.025, 0.975),
               sims = FALSE)
 ```
+saveRDS(divAcutal,"divActual.RDS")
 
 divDensities<-hierDiversity(divdensities, 
               grps, 
@@ -306,6 +307,8 @@ divDensities<-hierDiversity(divdensities,
               q = 1,
               quant = c(0.025, 0.975),
               sims = FALSE)
+saveRDS(divDensities,"divDensities.RDS")
+```
 
 
 
