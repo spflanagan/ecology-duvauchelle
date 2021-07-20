@@ -39,6 +39,7 @@ seagrassPs<-c(bare=16, sparse=18, patchy=17, dense=15)
 
 ## Community analysis
 
+(add space as a covariate)
 
 ### dbrda
 
