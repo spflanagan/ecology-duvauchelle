@@ -39,6 +39,9 @@ function(abundances, lev = "beta", q = 1) {
    if (lev == "beta") {
       D.VALUE <- dz(abundances, lev = "gamma", q = q)/dz(abundances, lev = "alpha", q = q)
    }
+   if (lev == "pairwiseBeta") {
+      D.VALUE <- mean(pairwiseTurnover(abundances, q))
+   }
    if (lev == "gamma") {
       D.VALUE <- dz(t(as.matrix(colSums(p * 
          w))), lev = "alpha", q = q)
