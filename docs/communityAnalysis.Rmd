@@ -458,15 +458,6 @@ duvCounts<-duvCounts[,c("Status","Season","Leptonotus","Stigmatopora","Shrimp","
 
 
 
-
-
-```
-
-```{r}
-sppCols<-c('#8dd3c7','#ffffb3','#bebada','#fb8072','#80b1d3','#fdb462')
-spp<-colnames(duvSummary)[4:9]
-```
-
 ```{r}
 CountsPlot<-function(summaryMatrix, spp, sppCols,x.lim=c(0,7),y.lim=c(0,300)){
   
