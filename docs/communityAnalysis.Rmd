@@ -451,6 +451,9 @@ duvSummary<-data.frame(
 duvCounts<-as.data.frame(duvSummary %>%
   group_by(Status) %>%
   summarise_all( sum))
+duvCounts$Season<-factor(gsub("(\\w+)_\\w+","\\1",duvCounts$Status),
+                         levels=c("Winter","Spring","Summer","Fall"))
+duvCounts<-duvCounts[,c("Status","Season","Leptonotus","Stigmatopora","Shrimp","Flounder","Crabs","Molluscs","OtherFish","Other")]
 ```
 
 ```{r}
