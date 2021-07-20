@@ -530,7 +530,6 @@ duvRelSum<-data.frame(
 
 ```
 
-```{r seasonPlots}
 ```{r}
 duvCounts<-as.data.frame(duvRelSum %>%
   group_by(Status) %>%
@@ -540,13 +539,7 @@ duvCounts$Season<-factor(gsub("(\\w+)_\\w+","\\1",duvCounts$Status),
 duvCounts<-duvCounts[,c("Status","Season","Leptonotus","Stigmatopora","Shrimp","Flounder","Crabs","Molluscs","OtherFish","Other")]
 ```
 
-par(mfrow=c(1,4))
-CountsPlot(duvSummary[grep("Spring",duvSummary$Status),4:9],spp=spp,sppCols = sppCols)
-CountsPlot(duvSummary[grep("Summer",duvSummary$Status),4:9],spp=spp,sppCols = sppCols)
-CountsPlot(duvSummary[grep("Autumn",duvSummary$Status),4:9],spp=spp,sppCols = sppCols)
-CountsPlot(duvSummary[grep("Winter",duvSummary$Status),4:9],spp=spp,sppCols = sppCols)
 
-```
 
 
 ```{r getImages}
@@ -562,18 +555,39 @@ patchy_png <- image_convert(patchy, "png")
 dense <- image_read('../figs/seagrass_cover_images/Dense.PNG')
 dense_png <- image_convert(dense, "png")
 
-
-image_append(image_scale(c(
-  bare_png,
-  sparse_png,
-  patchy_png,
-  dense_png
-)))
+seagrassPhotos<-image_append(image_scale(c(bare_png,sparse_png,patchy_png,dense_png)))
 ```
 
 
 
 
+```{r}
+relfig<-image_graph(width = 1512, height = 500, res = 96,pointsize = 18)
+par(mfrow=c(1,4),mar=c(5,0,2,0),xpd=TRUE,oma=c(1,3,1,0))
+CountsPlot(duvCounts[grep("bare",duvCounts$Status),],spp=spp,sppCols = sppCols,y.lim = c(0,30))
+#rasterImage(bare_png,xleft = 0,xright = 5,ytop = -26,ybottom=-30,xpd=TRUE)
+
+CountsPlot(duvCounts[grep("sparse",duvCounts$Status),],spp=spp,sppCols = sppCols,y.lim = c(0,30))
+#rasterImage(sparse_png,xleft = 0,xright = 5,ytop = -26,ybottom=-30,xpd=TRUE)
+
+CountsPlot(duvCounts[grep("patchy",duvCounts$Status),],spp=spp,sppCols = sppCols,y.lim = c(0,30))
+#rasterImage(patchy_png,xleft = 0,xright = 5,ytop = -26,ybottom=-30,xpd=TRUE)
+
+CountsPlot(duvCounts[grep("dense",duvCounts$Status),],spp=spp,sppCols = sppCols,y.lim = c(0,30))
+#rasterImage(dense_png,xleft = 0,xright = 5,ytop = -26,ybottom=-30,xpd=TRUE)
+
+mtext("Relative abundance",side=2,outer=TRUE,line=1.9,cex=0.75)
+outer_legend("top",spp,col=sppCols,pch=21,pt.bg=sppCols,lty=1,bty='n',ncol=4,cex=1.2,lwd=2,pt.cex=1.3)
+dev.off()
+```
+
+
+
+
+
+```{r}
+image_append(c(relfig,seagrassPhotos), stack = TRUE)
+```
 
 
 
