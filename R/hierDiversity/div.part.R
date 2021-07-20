@@ -4,9 +4,9 @@ function(dat, group, q = 1) {
     dat <- matrix(dat, nrow = 1)
   }
   ass.level <- unique(as.vector(group))
-  res.table <- array(dim = c(length(ass.level), 5), 
+  res.table <- array(dim = c(length(ass.level), 6), 
     dimnames = list(NULL, c("alpha", "beta", "gamma", 
-      "turnover", "homogeneity")))
+      "turnover", "homogeneity", "pwTurnover")))
   for (i in 1:length(ass.level)) {
     if (is.matrix(group)) {
       x <- dat[apply(group == ass.level[i], 1, 
@@ -22,18 +22,21 @@ function(dat, group, q = 1) {
       turnover <- (beta - 1)/(dim(x)[1] - 1)
       homogeneity <- ((1/beta) - (1/dim(x)[1]))/(1 - 
         1/dim(x)[1])
+      pwTurnover <- dz(x, lev = "pairwiseBeta", q = q)
     }
     else if (is.vector(x) == TRUE) {
       beta <- 1
       gamma <- alpha
       turnover <- 0
       homogeneity <- 1
+      pwTurnover<-0
     }
     res.table[i, 1] <- round(alpha, digits = 3)
     res.table[i, 2] <- round(beta, digits = 3)
     res.table[i, 3] <- round(gamma, digits = 3)
     res.table[i, 4] <- round(turnover, digits = 3)
     res.table[i, 5] <- round(homogeneity, digits = 3)
+    res.table[i, 6] <- round(pwTurnover, digits = 3)
   }
   return(data.frame(ass.level, res.table))
 }
