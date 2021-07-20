@@ -344,10 +344,35 @@ saveRDS(rareQ2,"rarefied_Q2.RDS")
 ```
 
 
+```{r}
+extract_rarefied_estimates<-function(hdOutputRDS){
+  rareQ<-readRDS(hdOutputRDS)
+  estimatesQ<-dplyr::bind_rows(lapply(rareQ,function(hierare){
   
   Qs<-data.frame(q0=q0,q1=q1,q2=q2)  
   return(Qs)
+    dat<-dplyr::bind_rows(lapply(hierare,function(hiers){
+      estimates<-bind_rows(lapply(hiers,function(estimates){
+        return(estimates[1,])
+      }))
+      return(estimates)
+    }))
+    dat$level<-rownames(dat)
+    
+    longdat<-tidyr::pivot_longer(data=dat,colnames(dat)[1:5],names_to="diversity")
+    return(longdat)
+  }))
+  
+  meanQs<-tapply(estimatesQ$value,paste(estimatesQ$level,estimatesQ$diversity),mean)
+  meanQs<-data.frame(mu=meanQs,
+                     level=gsub("(\\w+) (\\w+)","\\1",rownames(meanQs)),
+                     diversity=gsub("(\\w+) (\\w+)","\\2",rownames(meanQs)),
+                     row.names = NULL)
+  meanQs$SEM<-tapply(estimatesQ$value,paste(estimatesQ$level,estimatesQ$diversity),sem)
+  meanQs$CIvalue<-tapply(estimatesQ$value,paste(estimatesQ$level,estimatesQ$diversity),cim,output="value")
+  return(meanQs)
 }
+```
 
 ```
 
