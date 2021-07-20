@@ -16,6 +16,7 @@ knitr::opts_knit$set(root.dir='../results/',fig_path="../figs/")
 ```{r loadLibs, include=FALSE, echo=FALSE}
 library(scales)
 library(knitr)
+library(kableExtra)
 library(vegan)
 library(dplyr)
 library(tidyr)
