@@ -186,7 +186,7 @@ orders<-combdat
 names<-names[match(colnames(orders[,4:ncol(orders)]),names$ID ),]
 colnames(orders)[4:ncol(orders)]<-as.character(names$order)
 
-ordAbund<-do.call(cbind,lapply( levels(names$order), function(name,dat){
+ordAbund<-do.call(cbind,lapply( levels(as.factor(names$order)), function(name,dat){
   
   if(length(which((colnames(dat) %in% name)==TRUE))>1){
     ordAbund<-rowSums(dat[,colnames(dat) %in% name])
@@ -195,7 +195,7 @@ ordAbund<-do.call(cbind,lapply( levels(names$order), function(name,dat){
     return(dat[,name])
   }
 }, dat=orders))
-colnames(ordAbund)<-levels(names$order)
+colnames(ordAbund)<-levels(as.factor(names$order))
 
 ordAbund<-cbind(combdat[,c("Season","SeagrassCover","TowArea")],ordAbund)
 ```
