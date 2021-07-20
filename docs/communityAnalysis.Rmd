@@ -196,32 +196,32 @@ make_species_map(gpsdat,arrowCrab,"arrowheadCrab",center,zoom)
 
 ```
 
-```{r whitebait}
+```{r blenny}
 blenny<-combdat[combdat$blenny>0,]
 make_species_map(gpsdat,blenny,"blenny",center,zoom,scale=2)
 
 ```
 
-```{r whitebait}
+```{r stigmatopora}
 stigmatopora<-combdat[combdat$s.nigra>0,]
 make_species_map(gpsdat,stigmatopora,"s.nigra",center,zoom)
 
 ```
 
-```{r whitebait}
+```{r whelk}
 mudWhelk<-combdat[combdat$mud_whelk>0,]
 make_species_map(gpsdat,mudWhelk,"mud_whelk",center,zoom)
 
 ```
 
-```{r whitebait}
+```{r spotty}
 #sparse: also kahawai
 spotty<-combdat[combdat$spotty>0,] 
 make_species_map(gpsdat,spotty,"spotty",center,zoom)
 
 ```
 
-```{r whitebait}
+```{r bristleworm}
 bristleworm<-combdat[combdat$bristleworm>0,] 
 make_species_map(gpsdat,bristleworm,"bristleworm",center,zoom)
 
