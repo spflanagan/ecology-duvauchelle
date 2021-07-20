@@ -24,18 +24,18 @@ library(lme4)
 ```
 
 ```{r}
-combdat<-read.csv("../data/cleanedCommunity.csv")
+cleandat<-read.csv("../data/cleanedCommunity.csv")
 seasonCols<-c(Spring="coral",Summer="olivedrab3",Fall="gold",Winter="dodgerblue")
 ```
 
 
 # Flounder
 
-```{r}
+```{r getFlounderDat}
 
-flounder<-combdat[,grep("flounder",colnames(combdat))]
-flounder[is.na(flounder)]<-0
-flounder$tow<-rownames(combdat)
+flounder<-cbind(cleandat[,c("Day","Season","towArea","seagrass_cover",
+                            "lat_start","long_start","lat_stop","long_stop")],
+                        cleandat[,grep("flounder",colnames(cleandat))])
 
 flounder$Date<-as.Date(
   paste0(
