@@ -2,8 +2,10 @@
 title: "Data processing"
 author: "Sarah Flanagan"
 date: "16/06/2021"
-output: html_document
-editor_options: 
+output:
+  pdf_document: default
+  html_document: default
+editor_options:
   chunk_output_type: console
 ---
 
