@@ -282,6 +282,8 @@ Should my abundances be densities? - try it
 ```{r}
 files.sources <- list.files(path = "../R/hierDiversity",full.names = TRUE)
 tmp<-sapply(files.sources, source)
+
+tmp<-sapply(list.files(path="../../spfTools/R/",full.names = TRUE),source)
 ```
 
 ```{r}
