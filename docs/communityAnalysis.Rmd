@@ -407,44 +407,6 @@ qsPlot<-function(Qs,lab_col,qcols=c("#a1dab4","#41b6c4","#225ea8")){
 ```
 
 
-```{r DuvauchelleQsbyDate}
-# add column names
-colnames(divabunds)<-divdat$Date
-
-# calculate relative abundance
-relabund<-calc_relabund(divabunds)
-
-Qs<-calcQs(relabund)
-Qs$date<-rownames(Qs)
-
-Qs<-Qs[order(Qs$date),]
-
-qsPlot(Qs,"date")
-
-```
-
-
-```{r}
-
-rareQ<-function(divdat,group="Date"){
-  # get minimum sample size
-  ssz<-sum(divdat[which.min(divdat$TowDist),])
-  # rarify
-  rar<-suppressWarnings(rrarefy(abunds,ssz))
-  # Add group labels
-  colnames(divabunds)<-paste(divdat$Date,
-                             divdat$Season,
-                             divdat$SeagrassCover,
-                             sep="_")
-  # relative abundances
-  relabund<-calc_relabund(divabunds)
-  # calculate Hill numbers
-  Qs<-calcQs(relabund)
-  
-  return(Qs)
-}
-
-```
 
 #### Compare diversity indices across seagrass cover 
 
