@@ -506,12 +506,11 @@ spp<-colnames(duvCounts)[3:ncol(duvCounts)]
 sppCols<-c('#8dd3c7','#ffffb3','#bebada','#fb8072','#80b1d3','#fdb462','#b3de69','#fccde5')
 names(sppCols)<-duvCounts[,3:ncol(duvCounts)]
 
-par(mfrow=c(1,4))
-CountsPlot(duvSummary[grep("Bare",duvSummary$Status),4:9],spp=spp,sppCols = sppCols)
-CountsPlot(duvSummary[grep("Sparse",duvSummary$Status),4:9],spp=spp,sppCols = sppCols)
-CountsPlot(duvSummary[grep("Patchy",duvSummary$Status),4:9],spp=spp,sppCols = sppCols)
-CountsPlot(duvSummary[grep("Dense",duvSummary$Status),4:9],spp=spp,sppCols = sppCols)
-
+par(mfrow=c(1,4),mar=c(5,3,2,0),xpd=TRUE,oma=c(0,0,0,0))
+CountsPlot(duvCounts[grep("bare",duvCounts$Status),],spp=spp,sppCols = sppCols,y.lim = c(0,3500))
+CountsPlot(duvCounts[grep("sparse",duvCounts$Status),],spp=spp,sppCols = sppCols,y.lim = c(0,3500))
+CountsPlot(duvCounts[grep("patchy",duvCounts$Status),],spp=spp,sppCols = sppCols,y.lim = c(0,3500))
+CountsPlot(duvCounts[grep("dense",duvCounts$Status),],spp=spp,sppCols = sppCols,y.lim = c(0,3500))
 ```
 
 
