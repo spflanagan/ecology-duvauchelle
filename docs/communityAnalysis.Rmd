@@ -299,6 +299,13 @@ divActual<-hierDiversity(divabunds,
               sims = FALSE)
 ```
 
+divDensities<-hierDiversity(divdensities, 
+              grps, 
+              replace = NULL, 
+              reps = 99, 
+              q = 1,
+              quant = c(0.025, 0.975),
+              sims = FALSE)
 
 
 
