@@ -143,40 +143,11 @@ flounderSEMCnts$SizeClass<-factor(flounderSEMCnts$SizeClass,
                                      "above50mm"
                                    ))
 
-# Pipefish
 
-```{r driveDownload,eval=FALSE}
-drive_dat<-drive_download("NZsyngnathids_measurements", 
-                          path="../data/NZsyngnathids_measurements",
-                          type = "csv",
-                          overwrite=TRUE)
-```
-```{r readCSV}
-body_dat<-read.csv("../data/NZsyngnathids_measurements.csv")
-body_dat$ID<-gsub("(\\w{2})0(\\d{2})","\\1\\2",body_dat$ID)
-```
 
-```{r AvgVals}
-body_dat$TotalLength_Avg<-rowMeans(body_dat[,grep("TotalLength",colnames(body_dat))],na.rm = TRUE)
-body_dat$SVL_Avg<-rowMeans(body_dat[,grep("SVL",colnames(body_dat))],na.rm = TRUE)
-body_dat$BodyWidth_Avg<-rowMeans(body_dat[,grep("BodyWidth",colnames(body_dat))],na.rm = TRUE)
-body_dat$BodyDepth_Avg<-rowMeans(body_dat[,grep("BodyDepth",colnames(body_dat))],na.rm = TRUE)
-body_dat$SnoutLength_Avg<-rowMeans(body_dat[,grep("SnoutLength",colnames(body_dat))],na.rm = TRUE)
-body_dat$SnoutWidth_Avg<-rowMeans(body_dat[,c(grep("SnoutWidth",colnames(body_dat)),grep("SnoutDepth",colnames(body_dat)))],na.rm = TRUE)
-body_dat$HeadLength_Avg<-rowMeans(body_dat[,grep("HeadLength",colnames(body_dat))],na.rm = TRUE)
 ```
 
 ```{r}
-duv_traits<-body_dat[body_dat$LocationName=="Duvauchelle Bay",]
-
-sni_dat<-combdat[,c("Day","towDist","Season","seagrass_cover",
-                   grep("nigra",colnames(combdat),value = TRUE))]
-sni_dat$total_snigra<-rowSums(sni_dat[,5:6])
-
-sni_num<-as.data.frame(do.call(rbind,by(sni_dat,sni_dat$Day,function(dat){
-  return(sum(dat$total_snigra))
-},simplify = FALSE)))
-colnames(sni_num)<-"totalN"
 seagrassPlot<-function(flounderMeanCnts,flounderSEMCnts,cover){
   plot(as.numeric(as.factor(flounderMeanCnts$Season[flounderMeanCnts$SeagrassCover %in% cover])),
      flounderMeanCnts$value[flounderMeanCnts$SeagrassCover %in% cover],
@@ -210,8 +181,6 @@ seagrassPlot<-function(flounderMeanCnts,flounderSEMCnts,cover){
 ```
 
 ```{r}
-library(lubridate)
-sni_num$date<-ymd(rownames(sni_num))
 size_cols<-c("#a6bddb","#74a9cf","#2b8cbe","#045a8d")
 par(mfrow=c(1,4))
 seagrassPlot(flounderMeanCnts,flounderSEMCnts,"bare")
@@ -230,15 +199,10 @@ sparse_png <- image_convert(sparse, "png")
 patchy <- image_read('../figs/seagrass_cover_images/Patchy.PNG')
 patchy_png <- image_convert(patchy, "png")
 
-duv_traits$date<-ymd(gsub(" NZDT","",strptime(duv_traits$DateSampled,format="%d-%b-%Y")))
 dense <- image_read('../figs/seagrass_cover_images/Dense.PNG')
 dense_png <- image_convert(dense, "png")
 
-db_num<-data.frame(measuredN=tapply(duv_traits$ID,as.factor(duv_traits$date),length))
-db_num$date<-ymd(rownames(db_num))
 
-sni_num<-merge(sni_num,db_num,by="date",all.x=TRUE)
-sni_num$unmeasured<-sni_num$totalN-sni_num$measuredN
 image_append(image_scale(c(
   bare_png,
   sparse_png,
@@ -249,7 +213,6 @@ image_append(image_scale(c(
 
 
 
-### S. nigra
 GLMER Poisson counts by seasons 
 
 What do I want to test?
@@ -257,9 +220,6 @@ What do I want to test?
 Do flounder of different sizes have different abundances throughout the year AND in different seagrass beds?
 
 ```{r}
-cnts<-as.data.frame.matrix(table(duv_traits$date,duv_traits$Sex))
-colnames(cnts)[1]<-"juvenile"
-cnts$date<-ymd(rownames(cnts))
 flounder_long$density<-flounder_long$count/flounder_long$towArea
 flounderGLM<-glmer.nb(flounder_long$density ~
                      (flounder_long$Day | flounder_long$Season)*flounder_long$size)
@@ -268,17 +228,12 @@ flounderGLM<-glmer.nb(flounder_long$density ~
 While controlling for sampling dates, and accounting for size classes, flounder were most abundant in fall and least abundant in summer.  
 (what about seagrass cover?)
 
-cnts<-merge(sni_num,cnts,by="date",all.x=TRUE)
-cnts[is.na(cnts)]<-0
 
 ```{r getGPS}
 gpsdat<-read.csv("../data/gpsdat.csv")
 ```
 
 ```{r}
-duv_sizes<-duv_traits[,c("date","Sex","TotalLength_Avg","SVL_Avg")]
-duv_sizes$TotalLength_Avg[is.na(duv_sizes$TotalLength_Avg)]<-50
-duv_sizes$SVL_Avg[is.na(duv_sizes$SVL_Avg)]<-25
 lat <- c(-43.794,-43.752) #define our map's ylim
 lon <- c(172.930,172.933) #define our map's xlim
 center <- c(mean(c(gpsdat$lat_start,gpsdat$lat_stop)), 
@@ -287,9 +242,6 @@ zoom <- 16  #zoom: 1 = furthest out (entire globe), larger numbers = closer in
 
 ```
 
-duv_sizes$Sex[which(duv_sizes$Sex=="")]<-"juvenile"
-duv_sizes$Sex<-factor(duv_sizes$Sex,
-                      levels = c("juvenile","female","male"))
 
 ```{r makeSpeciesMap}
 library(leaflet)
