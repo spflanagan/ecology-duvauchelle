@@ -86,6 +86,19 @@ hierResultsTab<-list(hierResults[[1]]$lev2$Site,
                      hierResults[[3]]$lev2$Site)
 ```
 
+```{r}
+sumTab<-cbind(rbind(
+  hierResultsTab[[1]][1,],
+  hierResultsTab[[2]][1,],
+  hierResultsTab[[3]][1,]
+),trueDiv)
+colnames(sumTab)[1:6]<-paste0("hierDiversity_",colnames(sumTab)[1:6])
+colnames(sumTab)[7:12]<-paste0("PW_",colnames(sumTab)[7:12])
+
+rownames(sumTab)<-0:2
+
+kable(t(sumTab),"latex",booktabs=TRUE,
+      caption="Results from modified hierDiversity vs the pairwise paper (PW) calculations for the BCI dataset, forq=0, q=1, and q=2")
 ```
 
 
