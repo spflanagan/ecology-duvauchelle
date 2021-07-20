@@ -360,6 +360,20 @@ m
 ```
 
 
+# Pipefish
+
+Questions:
+
+- Are pipefish associated with particular habitat types?
+- perhaps intertidal vs subtidal?
+- When are pipefish breeding during the year?
+- Do the two species differ in these patterns?
+
+
+
+### S. nigra
+
+
 ```{r}
 png("../figs/DuvauchelleTrends.png",height=6,width=6,units="in",res=300)
 par(mfrow=c(2,1),oma=c(1,1,1,1),mar=c(4,4,1,1))
