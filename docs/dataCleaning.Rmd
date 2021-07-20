@@ -64,17 +64,19 @@ rawdat$Season[rawdat$Season %in% c("06","07","08")]<-"Winter"
 Calculate the distance of the tows
 
 ```{r}
-towDist<-apply(rawdat,1,function(dat){
-  distm(c(as.numeric(dat["long_start"]),
+towArea<-apply(rawdat,1,function(dat){
+  towArea<-distm(c(as.numeric(dat["long_start"]),
           as.numeric(dat["lat_start"])),
         c(as.numeric(dat["long_stop"]),
           as.numeric(dat["lat_stop"])))
+  towArea<-towArea*1.2
+  return(towArea)
 })
 # turn zeroes into 1s
-towDist[which(towDist==0)]<-1
+towArea[which(towArea==0)]<-1
 
 # add to data sheet
-rawdat$towDist<-towDist
+rawdat$towArea<-towArea
 ```
 
 Finally remove any rows with missing seagrass covers
