@@ -238,6 +238,8 @@ divdat<-combdat[rowSums(combdat[,6:ncol(combdat)])>0,]
 divabunds<-as.matrix(divdat[rowSums(divdat[,6:ncol(divdat)])>0,6:ncol(divdat)])
 # relative
 relabunds<-decostand(divabunds,method="total",MARGIN = 1)
+# densities
+divdensities<-divabunds/divdat$TowArea
 ```
 
 
