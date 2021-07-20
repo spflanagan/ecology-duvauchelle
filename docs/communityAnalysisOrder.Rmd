@@ -1,0 +1,39 @@
+---
+title: "Community analysis with order-level IDs"
+author: "Sarah Flanagan"
+date: "18/06/2021"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,out.extra='',fig.pos="H",
+                      fig.path = "./figs/",dpi = 300,fig.keep='last',dev='png')
+knitr::opts_knit$set(root.dir='../results/',fig_path="./figs/")
+```
+```{r loadLibs, include=FALSE, echo=FALSE}
+library(scales)
+library(knitr)
+source("../R/iDIP.R")
+```
+
+```{r getData}
+ordAbund<-read.csv("cleanedCommunityOrders.csv")
+```
+
+
+## dbrda
+
+
+```{r}
+abunds<-as.matrix(ordAbund[rowSums(ordAbund[4:ncol(ordAbund)])>4,4:ncol(ordAbund)])
+ys<-ordAbund[rowSums(ordAbund[,4:ncol(ordAbund)])>4,c("SeagrassCover","Season","TowDist")]
+orderRDA<-capscale(abunds~SeagrassCover*Season + Condition(TowDist),
+                 ys,
+                 dist="bray")
+plot(orderRDA)
+anova(orderRDA, by="terms")
+```
+ 
