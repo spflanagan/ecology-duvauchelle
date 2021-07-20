@@ -459,11 +459,15 @@ duvCounts<-duvCounts[,c("Status","Season","Leptonotus","Stigmatopora","Shrimp","
 
 
 ```{r}
+# this plots each species over seasons
+#requires a column called "Season" that is a factor. 
 CountsPlot<-function(summaryMatrix, spp, sppCols,x.lim=c(0,7),y.lim=c(0,300)){
   
   
   plot(rep(1,nrow(summaryMatrix)),
        summaryMatrix[,1],
+  # adjust the ylimit if necessary
+  # make an empty plot
        xlim=x.lim,
        ylim=y.lim,
        xlab="",
@@ -477,6 +481,7 @@ CountsPlot<-function(summaryMatrix, spp, sppCols,x.lim=c(0,7),y.lim=c(0,300)){
   for(i in 1:length(spp)){
     points(rep(i,length(summaryMatrix[,spp[i]])),
        summaryMatrix[,spp[i]],
+    # add points for each species
        pch=21,
        bg=scales::alpha(sppCols[i],0.75),
        col="dark grey",
