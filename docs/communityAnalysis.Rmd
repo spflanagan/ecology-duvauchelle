@@ -349,8 +349,6 @@ extract_rarefied_estimates<-function(hdOutputRDS){
   rareQ<-readRDS(hdOutputRDS)
   estimatesQ<-dplyr::bind_rows(lapply(rareQ,function(hierare){
   
-  Qs<-data.frame(q0=q0,q1=q1,q2=q2)  
-  return(Qs)
     dat<-dplyr::bind_rows(lapply(hierare,function(hiers){
       estimates<-bind_rows(lapply(hiers,function(estimates){
         return(estimates[1,])
@@ -374,6 +372,9 @@ extract_rarefied_estimates<-function(hdOutputRDS){
 }
 ```
 
+```{r}
+rarefied_summaries<-lapply(list.files(pattern="rarefied_Q.*.RDS"),extract_rarefied_estimates)
+names(rarefied_summaries)<-list.files(pattern="rarefied_Q.*.RDS")
 ```
 
 ```{r qsPlot_function}
