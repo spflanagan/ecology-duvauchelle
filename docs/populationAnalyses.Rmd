@@ -51,12 +51,6 @@ plot(as.Date(flounder$Day),flounder$flounder_above50mm)
 
 
 ```{r}
-flounder$Season<-gsub("\\d+-(\\d+)-\\d+","\\1",flounder$Date)
-flounder$Season[flounder$Season %in% c("09","10","11")]<-"Spring"
-flounder$Season[flounder$Season %in% c("12","01","02")]<-"Summer"
-flounder$Season[flounder$Season %in% c("03","04","05")]<-"Fall"
-flounder$Season[flounder$Season %in% c("06","07","08")]<-"Winter"
-```
 
 ```{r}
 flounder_long <- gather(flounder, size, count, 1:4, factor_key=TRUE)
