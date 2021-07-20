@@ -377,6 +377,14 @@ rarefied_summaries<-lapply(list.files(pattern="rarefied_Q.*.RDS"),extract_rarefi
 names(rarefied_summaries)<-list.files(pattern="rarefied_Q.*.RDS")
 ```
 
+
+
+patchDiversity -- for a single level of groups (like seagrass)
+
+
+
+
+
 ```{r qsPlot_function}
 # assumes the columns are q0,q1,q2 and lab_col is the name of the row with the x-axis labels
 qsPlot<-function(Qs,lab_col,qcols=c("#a1dab4","#41b6c4","#225ea8")){
