@@ -56,11 +56,13 @@ seagrassPs<-c(bare=16, sparse=18, patchy=17, dense=15)
 
 
 ```{r}
-abunds<-as.matrix(combdat[rowSums(combdat[,6:ncol(combdat)])>4,6:ncol(combdat)])
-ys<-combdat[rowSums(combdat[,6:ncol(combdat)])>4,c("SeagrassCover","Season","towArea")]
+abunds<-as.matrix(combdat[rowSums(combdat[,6:ncol(combdat)])>4,
+                          6:ncol(combdat)])
+ys<-combdat[rowSums(combdat[,6:ncol(combdat)])>4,
+            c("SeagrassCover","Season","TowArea")]
 # change to area, but also maybe include nested date
 
-seasonRDA<-capscale(abunds~SeagrassCover*Season + Condition(towArea), 
+seasonRDA<-capscale(abunds~SeagrassCover*Season + Condition(TowArea), 
                  ys,
                  dist="bray")
 ```
