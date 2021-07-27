@@ -35,7 +35,10 @@ tmp<-sapply(list.files(path="../../spfTools/R/",full.names = TRUE),source)
 
 ```{r getData}
 combdat<-read.csv("cleanedCombinedCommunity.csv",stringsAsFactors = TRUE)
-levels(combdat$SeagrassCover)<-c("bare","sparse","patchy","dense")
+combdat$SeagrassCover<-factor(combdat$SeagrassCover,
+                              levels=c("bare","sparse","patchy","dense"))
+combdat$Season<-factor(combdat$Season,
+                       levels=c("Winter","Spring","Summer","Fall"))
 ```
 ```{r}
 seasonCols<-c(Spring="coral",Summer="olivedrab3",Fall="gold",Winter="dodgerblue")
