@@ -580,15 +580,11 @@ dev.off()
 ```
 
 
-
-
-
-
 ```{r}
-image_append(c(relfig,seagrassPhotos), stack = TRUE)
-```
-
-```{r}
+combinedSummary<-image_append(c(relfig,seagrassPhotos), stack = TRUE)
+image_write(combinedSummary,
+            path = "../figs/relativeAbundanceSeagrass.png",
+            format = "png")
 ```
 
 
