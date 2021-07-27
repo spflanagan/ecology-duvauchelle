@@ -221,8 +221,8 @@ What do I want to test?
 Do flounder of different sizes have different abundances throughout the year AND in different seagrass beds?
 
 ```{r}
-flounderGLM<-glmer.nb(flounder_long$density ~
-                     (flounder_long$Day | flounder_long$Season)*flounder_long$size)
+flounderGLM<-glm(flounder_long$count ~ flounder_long$Season*flounder_long$seagrass_cover * flounder_long$size * flounder_long$towArea,
+                   family="poisson")
 ```
 
 While controlling for sampling dates, and accounting for size classes, flounder were most abundant in fall and least abundant in summer.  
