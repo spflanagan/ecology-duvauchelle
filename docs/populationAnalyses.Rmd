@@ -54,6 +54,7 @@ plot(as.Date(flounder$Day),flounder$flounder_above50mm)
 flounder_long <- gather(flounder, size, count, 9:12, factor_key=TRUE)
 flounder_long$size<-as.factor(gsub("flounder_","",flounder_long$size))
 levels(flounder_long$size)<-c("below10mm","10to20mm","20to50mm","above50mm")
+flounder_long$density<-flounder_long$count/flounder_long$towArea
 
 ```
 
@@ -220,7 +221,6 @@ What do I want to test?
 Do flounder of different sizes have different abundances throughout the year AND in different seagrass beds?
 
 ```{r}
-flounder_long$density<-flounder_long$count/flounder_long$towArea
 flounderGLM<-glmer.nb(flounder_long$density ~
                      (flounder_long$Day | flounder_long$Season)*flounder_long$size)
 ```
