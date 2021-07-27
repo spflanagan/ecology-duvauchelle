@@ -25,6 +25,14 @@ library(magick)
 source("../R/iDIP.R")
 ```
 
+```{r}
+files.sources <- list.files(path = "../R/hierDiversity",full.names = TRUE)
+tmp<-sapply(files.sources, source)
+
+tmp<-sapply(list.files(path="../../spfTools/R/",full.names = TRUE),source)
+```
+
+
 ```{r getData}
 combdat<-read.csv("cleanedCombinedCommunity.csv",stringsAsFactors = TRUE)
 levels(combdat$SeagrassCover)<-c("bare","sparse","patchy","dense")
@@ -277,13 +285,6 @@ Within seagrass pairwise beta diversity
 then you'd use those to calculate the upper levels?
 
 Should my abundances be densities? - try it
-
-```{r}
-files.sources <- list.files(path = "../R/hierDiversity",full.names = TRUE)
-tmp<-sapply(files.sources, source)
-
-tmp<-sapply(list.files(path="../../spfTools/R/",full.names = TRUE),source)
-```
 
 ```{r}
 # hierDiversity takes the non-relativized abundances
