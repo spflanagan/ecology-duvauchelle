@@ -454,6 +454,15 @@ duvCounts$Season<-factor(gsub("(\\w+)_\\w+","\\1",duvCounts$Status),
 duvCounts<-duvCounts[,c("Status","Season","Leptonotus","Stigmatopora","Shrimp","Flounder","Crabs","Molluscs","OtherFish","Other")]
 ```
 
+```{r}
+outputCounts<- as.data.frame(dplyr::bind_rows(
+  lapply(colnames(duvCounts[,-c(1:2)]),function(column){
+    tapply(duvCounts[,column], duvCounts$Season,sum)
+  }))
+)
+rownames(outputCounts)<-colnames(duvCounts[,-c(1:2)])
+write.csv(outputCounts,"TotalCountsSummary.csv",quote=FALSE)
+```
 
 
 ```{r}
