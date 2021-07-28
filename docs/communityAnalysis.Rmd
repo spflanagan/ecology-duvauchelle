@@ -591,8 +591,8 @@ seagrassPhotos<-image_append(image_scale(c(bare_png,sparse_png,patchy_png,dense_
 
 
 ```{r}
-relfig<-image_graph(width = 1512, height = 500, res = 96,pointsize = 18)
-par(mfrow=c(1,4),mar=c(5,0,2,0),xpd=TRUE,oma=c(1,3,1,0))
+png("../figs/relativeAbundanceSummaries.png",width = 1512, height = 400, res = 96)
+par(mfrow=c(1,4), oma=c(4,0,2,0), mar=c(4,5.5,1,0),xpd=TRUE)
 CountsPlot(duvCounts[grep("bare",duvCounts$Status),],spp=spp,sppCols = sppCols,y.lim = c(0,30))
 #rasterImage(bare_png,xleft = 0,xright = 5,ytop = -26,ybottom=-30,xpd=TRUE)
 
