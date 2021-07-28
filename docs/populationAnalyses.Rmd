@@ -377,6 +377,43 @@ Questions:
 - Do the two species differ in these patterns?
 
 
+```{r makeSpeciesMap}
+make_2spp_map<-function(gpsdat,
+                        species1dat,
+                        species2dat,
+                        species1Name,
+                        species2Name,
+                        center,
+                        zoom,
+                        color=c("yellow","blue"),
+                        scale=5){
+  long1<-rowMeans(gpsdat[gpsdat$TowNum %in% species1dat$TowNum,
+                       c("long_start","long_stop")])
+  lat1<-rowMeans(gpsdat[gpsdat$TowNum %in% species1dat$TowNum,
+                       c("lat_start","lat_stop")])
+  radius1<-species1dat[,species1Name]
+  
+  long2<-rowMeans(gpsdat[gpsdat$TowNum %in% species2dat$TowNum,
+                       c("long_start","long_stop")])
+  lat2<-rowMeans(gpsdat[gpsdat$TowNum %in% species2dat$TowNum,
+                       c("lat_start","lat_stop")])
+  radius2<-species2dat[,species2Name]
+  
+  m <- leaflet() %>%
+    addTiles() %>%  # Add default OpenStreetMap map tiles
+    setView(lng=center[2], lat=center[1],zoom=zoom) %>% 
+     #addProviderTiles("NASAGIBS.ViirsEarthAtNight2012")
+    addProviderTiles("Esri.WorldImagery") %>%
+    addCircles(lng = long1, lat = lat1, weight = 1,
+      radius = radius1*scale,col=color[1])%>%
+    addCircles(lng = long2, lat = lat2, weight = 1,
+      radius = radius2*scale,col=color[2]) 
+  
+  m
+  return(m)
+}
+
+```
 
 ### S. nigra
 
