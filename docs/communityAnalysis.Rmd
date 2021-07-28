@@ -613,6 +613,7 @@ dev.off()
 
 
 ```{r}
+relfig<-image_convert(image_read('../figs/relativeAbundanceSummaries.png'),"png")
 combinedSummary<-image_append(c(relfig,seagrassPhotos), stack = TRUE)
 image_write(combinedSummary,
             path = "../figs/relativeAbundanceSeagrass.png",
