@@ -21,6 +21,8 @@ library(dplyr)
 library(magick)
 library(tidyr)
 library(lme4)
+library(leaflet)
+library(mapview)
 ```
 
 ```{r}
@@ -294,7 +296,6 @@ zoom <- 16  #zoom: 1 = furthest out (entire globe), larger numbers = closer in
 
 
 ```{r makeSpeciesMap}
-library(leaflet)
 long<-rowMeans(flounder[,c("long_start","long_stop")])
 lat<-rowMeans(flounder[,c("lat_start","lat_stop")])
 
