@@ -606,6 +606,8 @@ CountsPlot(duvCounts[grep("patchy",duvCounts$Status),],spp=spp,sppCols = sppCols
 CountsPlot(duvCounts[grep("dense",duvCounts$Status),],spp=spp,sppCols = sppCols,y.lim = c(0,30))
 #rasterImage(dense_png,xleft = 0,xright = 5,ytop = -26,ybottom=-30,xpd=TRUE)
 
+
+outer_legend("top",spp,col=sppCols,pch=21,pt.bg=sppCols,lty=1,bty='n',ncol=8,cex=2,lwd=2,pt.cex=2)
 dev.off()
 ```
 
