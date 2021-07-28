@@ -89,7 +89,7 @@ for(i in 1:length(seasonCols)){
 ```
 
 ```{r}
-multi_tapply<-function(dat,focalCol,factors,FUN){
+multi_tapply<-function(dat,focalCol,factors,FUN,...){
   
   fac<-NULL
   for(i in 1:length(factors)){
@@ -97,7 +97,7 @@ multi_tapply<-function(dat,focalCol,factors,FUN){
   }
   val<-tapply(dat[,focalCol],
                      fac,
-                     match.fun(FUN))
+                     match.fun(FUN),...)
   output<-data.frame(matrix(nrow=length(val),ncol=length(factors)+1))
   output[,1]<-val
   for(i in 1:length(factors)){
@@ -143,30 +143,37 @@ flounderSEMCnts$SizeClass<-factor(flounderSEMCnts$SizeClass,
                                      "20to50mm",
                                      "above50mm"
                                    ))
-
-
+flounderSEMCnts$Season<-factor(flounderSEMCnts$Season,
+                                levels=c(
+                                  "Winter",
+                                  "Spring",
+                                  "Summer",
+                                  "Fall"
+                                ))
 
 ```
 
 ```{r}
 seagrassPlot<-function(flounderMeanCnts,flounderSEMCnts,cover){
-  plot(as.numeric(as.factor(flounderMeanCnts$Season[flounderMeanCnts$SeagrassCover %in% cover])),
+  plot(as.numeric(flounderMeanCnts$Season[flounderMeanCnts$SeagrassCover %in% cover]),
      flounderMeanCnts$value[flounderMeanCnts$SeagrassCover %in% cover],
-     type='n',xlab="",ylab="Number of flounder",axes=FALSE,
-     ylim=c(0,100))
+     type='n',xlab="",ylab="",axes=FALSE,
+     ylim=c(0,100),
+     cex.lab=2
+     )
   axis(1,
-       labels = levels(as.factor(flounderMeanCnts$Season)),
-       at=unique(as.numeric(as.factor(flounderMeanCnts$Season))),
-       pos=0)
-  axis(2,las=1)
+       labels = levels(flounderMeanCnts$Season),
+       at=unique(as.numeric(flounderMeanCnts$Season)),
+       pos=0,
+       cex.axis=2, 
+       las=2)
+  axis(2,las=1,cex.axis=2)
   cnt=0
   for(size in levels(flounderMeanCnts$SizeClass)){
     
     subMean<-flounderMeanCnts[flounderMeanCnts$SeagrassCover %in% cover & 
                              flounderMeanCnts$SizeClass %in% size,]
-    xs<-as.numeric(as.factor(subMean$Season))
-    points(xs,
-           subMean$value,pch=cnt+15,col=size_cols[cnt+1],cex=2)
+    xs<-as.numeric(subMean$Season)
     
     subSEM<-flounderSEMCnts[flounderMeanCnts$SeagrassCover %in% cover & 
                              flounderMeanCnts$SizeClass %in% size,]
@@ -174,7 +181,24 @@ seagrassPlot<-function(flounderMeanCnts,flounderSEMCnts,cover){
            x1=xs,
            y0=subMean$value-subSEM$value,
            y1=subMean$value+subSEM$value,
-          col=size_cols[cnt+1],lwd=2,code=3,length=0)
+          col=scales::alpha(size_cols[cnt+1],0.5),
+          lwd=2,code=3,length=0,xpd=FALSE)
+    
+    
+    cnt<-cnt+1
+  }
+  cnt=0
+  for(size in levels(flounderMeanCnts$SizeClass)){
+    
+    subMean<-flounderMeanCnts[flounderMeanCnts$SeagrassCover %in% cover & 
+                             flounderMeanCnts$SizeClass %in% size,]
+    xs<-as.numeric(subMean$Season)
+    
+    points(xs,
+           subMean$value,pch=cnt+15,col=size_cols[cnt+1],cex=3)
+     points(xs,
+           subMean$value,type='l',col=size_cols[cnt+1],cex=3)
+    
     cnt<-cnt+1
   }
 }
@@ -182,13 +206,17 @@ seagrassPlot<-function(flounderMeanCnts,flounderSEMCnts,cover){
 ```
 
 ```{r}
+png("../figs/flounderPlots.png",width = 1512, height = 300, res = 96)
 size_cols<-c("#a6bddb","#74a9cf","#2b8cbe","#045a8d")
-par(mfrow=c(1,4))
+par(mfrow=c(1,4), oma=c(3,0,2,1), mar=c(6,5.5,1,1),xpd=TRUE)
 seagrassPlot(flounderMeanCnts,flounderSEMCnts,"bare")
+mtext("Number of flounder",2,outer=FALSE,cex = 1.5,line=3.75)
 seagrassPlot(flounderMeanCnts,flounderSEMCnts,"sparse")
 seagrassPlot(flounderMeanCnts,flounderSEMCnts,"patchy")
 seagrassPlot(flounderMeanCnts,flounderSEMCnts,"dense")
-outer_legend("top",bty='n',pch=15:18,col=size_cols,levels(flounderMeanCnts$SizeClass),ncol=4,cex=1.5,lwd=2)
+
+outer_legend("top",bty='n',pch=15:18,col=size_cols,levels(flounderMeanCnts$SizeClass),ncol=4,cex=2,lwd=2)
+dev.off()
 ```
 ```{r getImages}
 bare <- image_read('../figs/seagrass_cover_images/Bare.PNG')
@@ -204,12 +232,27 @@ dense <- image_read('../figs/seagrass_cover_images/Dense.PNG')
 dense_png <- image_convert(dense, "png")
 
 
-image_append(image_scale(c(
+seagrassPhotos<-image_append(image_scale(c(
   bare_png,
   sparse_png,
   patchy_png,
   dense_png
 )))
+```
+```{r}
+
+flounderfig <- image_convert(image_read('../figs/flounderPlots.png'), "png")
+
+flounderfig %>%
+  image_composite(seagrassPhotos,offset="+6-413")
+```
+```{r}
+flounderSeagrass<-image_append(c(flounderfig,
+                                 seagrassPhotos), 
+                               stack = TRUE)
+image_write(flounderSeagrass,
+            path = "../figs/FlounderSeagrass.png",
+            format = "png")
 ```
 
 
@@ -221,7 +264,7 @@ What do I want to test?
 Do flounder of different sizes have different abundances throughout the year AND in different seagrass beds?
 
 ```{r}
-flounderGLM<-glm(flounder_long$count ~ flounder_long$Season*flounder_long$seagrass_cover * flounder_long$size * flounder_long$towArea,
+flounderGLM<-glm(flounder_long$count ~ 1+ flounder_long$Season*flounder_long$seagrass_cover * flounder_long$size * flounder_long$towArea,
                    family="poisson")
 ```
 
