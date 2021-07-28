@@ -187,7 +187,7 @@ seagrassPlot<-function(flounderMeanCnts,flounderSEMCnts,cover){
      )
   axis(1,
        labels = levels(flounderMeanCnts$Season),
-       at=unique(as.numeric(flounderMeanCnts$Season)),
+       at=1:4,
        pos=0,
        cex.axis=2, 
        las=2)
@@ -197,6 +197,7 @@ seagrassPlot<-function(flounderMeanCnts,flounderSEMCnts,cover){
     
     subMean<-flounderMeanCnts[flounderMeanCnts$SeagrassCover %in% cover & 
                              flounderMeanCnts$SizeClass %in% size,]
+    subMean<-subMean[order(levels(subMean$Season)),]
     xs<-as.numeric(subMean$Season)
     
     subSEM<-flounderSEMCnts[flounderMeanCnts$SeagrassCover %in% cover & 
@@ -216,6 +217,7 @@ seagrassPlot<-function(flounderMeanCnts,flounderSEMCnts,cover){
     
     subMean<-flounderMeanCnts[flounderMeanCnts$SeagrassCover %in% cover & 
                              flounderMeanCnts$SizeClass %in% size,]
+    subMean<-subMean[order(levels(subMean$Season)),]
     xs<-as.numeric(subMean$Season)
     
     points(xs,
