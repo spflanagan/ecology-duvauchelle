@@ -134,6 +134,13 @@ flounderMeanCnts$SizeClass<-factor(flounderMeanCnts$SizeClass,
                                      "20to50mm",
                                      "above50mm"
                                    ))
+flounderMeanCnts$Season<-factor(flounderMeanCnts$Season,
+                                levels=c(
+                                  "Winter",
+                                  "Spring",
+                                  "Summer",
+                                  "Fall"
+                                ))
 
 flounderSEMCnts<-multi_tapply(flounderCnts,"count",c("SeagrassCover","Season","SizeClass"),sem)
 flounderSEMCnts$SizeClass<-factor(flounderSEMCnts$SizeClass,
