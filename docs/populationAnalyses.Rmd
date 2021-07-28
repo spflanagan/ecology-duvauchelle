@@ -265,13 +265,7 @@ seagrassPhotos<-image_append(image_scale(c(
   dense_png
 )))
 ```
-```{r}
 
-flounderfig <- image_convert(image_read('../figs/flounderPlots.png'), "png")
-
-flounderfig %>%
-  image_composite(seagrassPhotos,offset="+6-413")
-```
 ```{r}
 flounderSeagrass<-image_append(c(flounderfig,
                                  seagrassPhotos), 
