@@ -234,7 +234,7 @@ seagrassPlot<-function(flounderMeanCnts,flounderSEMCnts,cover){
 ```{r}
 png("../figs/flounderPlots.png",width = 1512, height = 300, res = 96)
 size_cols<-c("#a6bddb","#74a9cf","#2b8cbe","#045a8d")
-par(mfrow=c(1,4), oma=c(3,0,2,1), mar=c(6,5.5,1,1),xpd=TRUE)
+par(mfrow=c(1,4), oma=c(1,0,2,1), mar=c(2,5.5,1,1),xpd=TRUE)
 seagrassPlot(flounderMeanCnts,flounderSEMCnts,"bare")
 mtext("Number of flounder",2,outer=FALSE,cex = 1.5,line=3.75)
 seagrassPlot(flounderMeanCnts,flounderSEMCnts,"sparse")
