@@ -498,13 +498,14 @@ CountsPlot<-function(summaryMatrix, spp, sppCols,x.lim=c(0,7),y.lim=c(0,300)){
        ylim=y.lim,
        xlab="",
        ylab="",
+       cex.lab=2,
        axes=F,
        type='n',
        xpd=TRUE)
   axis(1,at=as.numeric(summaryMatrix[order(as.numeric(summaryMatrix[,"Season"])),"Season"]),
        labels=levels(summaryMatrix[order(as.numeric(summaryMatrix[,"Season"])),"Season"]),
-       lty = 0,las=2,cex=1)
-  axis(2,las=1,cex=1)
+       lty = 0,las=2,cex.axis=2)
+  axis(2,las=1,cex.axis=2)
   
   
   for(i in 1:length(spp)){
@@ -519,7 +520,7 @@ CountsPlot<-function(summaryMatrix, spp, sppCols,x.lim=c(0,7),y.lim=c(0,300)){
        pch=21,
        bg=scales::alpha(sppCols[i],0.75),
        col="dark grey",
-       cex=2.5)
+       cex=3)
   }
 }
 ```
