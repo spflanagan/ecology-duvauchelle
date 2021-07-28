@@ -293,6 +293,7 @@ While controlling for sampling dates, and accounting for size classes, flounder 
 
 
 ```{r makeSpeciesMap}
+
 long<-rowMeans(flounder[,c("long_start","long_stop")])
 lat<-rowMeans(flounder[,c("lat_start","lat_stop")])
 
