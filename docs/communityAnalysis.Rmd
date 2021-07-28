@@ -528,7 +528,7 @@ CountsPlot<-function(summaryMatrix, spp, sppCols,x.lim=c(0,7),y.lim=c(0,300)){
 
 ```{r seagrassPlots}
 spp<-colnames(duvCounts)[3:ncol(duvCounts)]
-sppCols<-c('#8dd3c7','#ffffb3','#bebada','#fb8072','#80b1d3','#fdb462','#b3de69','#fccde5')
+sppCols<-c('#8dd3c7','#ffffb3','#b3de69','#80b1d3','#fb8072','#fdb462','#bebada','#fccde5')
 names(sppCols)<-duvCounts[,3:ncol(duvCounts)]
 
 par(mfrow=c(1,4),mar=c(5,3,2,0),xpd=TRUE,oma=c(0,0,0,0))
