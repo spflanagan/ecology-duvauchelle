@@ -415,10 +415,34 @@ make_2spp_map<-function(gpsdat,
 
 ```
 
+```{r stigmatopora}
+stigmatopora<-cleandat[cleandat$s.nigra_above50mm>0,]
+leptonotus<-cleandat[cleandat$leptonotus_above50mm>0,]
+m<-make_2spp_map(gpsdat,
+                 stigmatopora,
+                 leptonotus,
+                 "s.nigra_above50mm",
+                 "leptonotus_above50mm",
+                 center,
+                 15,
+                 c("#ffffb3","#8dd3c7"),
+              scale=10)
+m %>%
+    addLegend("bottomright", 
+            colors = c("#ffffb3","#8dd3c7"), 
+            labels = c("Stigmatopora nigra","Leptonotus elevatus"),
+    title = "Species",
+    opacity = 1
+  )
+mapshot(m, file = "../figs/pipefishMap.png")
+
+```
+
+
 ### S. nigra
 
 
-```{r}
+```{r, eval=FALSE}
 png("../figs/DuvauchelleTrends.png",height=6,width=6,units="in",res=300)
 par(mfrow=c(2,1),oma=c(1,1,1,1),mar=c(4,4,1,1))
 # counts
