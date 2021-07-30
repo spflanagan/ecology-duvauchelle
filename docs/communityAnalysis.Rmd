@@ -22,6 +22,7 @@ library(dplyr)
 library(tidyr)
 library(leaflet)
 library(magick)
+library(adespatial)
 source("../R/iDIP.R")
 ```
 
@@ -64,8 +65,198 @@ zoom <- 16  #zoom: 1 = furthest out (entire globe), larger numbers = closer in
 
 ## Community analysis
 
-(add space as a covariate)
-dbmem in vegan
+
+```{r}
+abunds<-as.matrix(combdat[rowSums(combdat[,6:ncol(combdat)])>4,
+                          6:ncol(combdat)])
+ys<-combdat[rowSums(combdat[,6:ncol(combdat)])>4,
+            c("SeagrassCover","Season","TowArea")]
+densities<-abunds/combdat[rowSums(combdat[,6:ncol(combdat)])>4,"TowArea"]
+# densities
+reldensities<-decostand(densities,method="total",MARGIN = 1)
+```
+
+
+add space as a covariate using dbMEM -- this basically maxes it into a case of multiplying the sites/species matrix by the environment matrix and the matrix of locations. 
+
+
+```{r spatialPackages}
+library(ade4)
+library(adespatial)
+library(adegraphics)
+library(spdep)
+library(maptools)
+```
+
+
+
+
+First, I need to convert the lat/long coordinates to Cartesian X/Y coordinates
+```{r convertXY}
+# convert to XY coordinates to distances in meters
+duvXY<-SoDA::geoXY(rowMeans(gpsdat[,grep("lat",colnames(gpsdat))]),
+                   rowMeans(gpsdat[,grep("long",colnames(gpsdat))]), 
+                   unit=1)
+s.label(duvXY)
+```
+
+Then, I need to test for linear trends and detrend the data if the trend surface is significant. This means to regress all variables on the X – Y coordinates and retain the residuals. This can most easily be done using the function lm() (Borcard et al. 2011).
+
+```{r}
+duvXY<-duvXY[which(rowSums(combdat[,6:ncol(combdat)])>4),]
+anova(rda(reldensities,duvXY))
+# if significant, detrend
+duvDetrend<-resid(lm(as.matrix(reldensities)~ ., data=as.data.frame(duvXY)))
+```
+
+
+### Zach's way:
+
+```{r}
+xydbmem<-as.data.frame(dbmem(duvXY,silent=FALSE,thresh=50))
+# Create null model for forward selection, IF we have a significant result.
+MEMrdaNULL <- capscale(duvDetrend ~ 1, data=xydbmem)
+# Now run analysis on saturated dbMEM model
+(MEMrda <- capscale(duvDetrend ~ ., data=xydbmem))
+
+anova(MEMrda) # suggests spatial relationship 
+```
+
+forward selection
+```{r}
+forwardSpace <- ordiR2step(MEMrdaNULL, MEMrda, trace=FALSE)
+forwardSpace$call
+```
+
+combine this with the space axes 
+
+```{r}
+spaceAxes <- cbind(duvXY, xydbmem[, attr(forwardSpace$terms, "term.labels")])
+```
+
+Use both environmental variables (separately) in the variance partitioning
+
+```{r}
+vp2<-varpart(duvDetrend,ys$SeagrassCover,ys$Season,spaceAxes)
+
+plot(vp2, digits=2, bg=c("green", "red", "blue"), Xnames = c("seagrass", "season","spatial"))
+```
+
+
+### Borcard 
+
+In the Borcard et al. (2011) book, they find the truncation threshold as the maximum value of the minimum spanning tree of the Euclidean distance matrix -- using `vegan::spantree`. But they also show a distance-based MEM model approach that I think is more appropriate/useful for what I'm trying to do. 
+
+
+```{r dists, eval=FALSE}
+xydist<-dist(duvXY)
+spanning<-spantree(xydist)
+dmin<-max(spanning$dist)
+
+```
+```{r}
+
+duvVario<-variogmultiv(duvDetrend, duvXY, nclass=20)
+
+plot(duvVario$d,duvVario$var,ty='b',pch=20,xlab="Distance",ylab="C(distance)")
+
+```
+
+Based on our dmin from the spanning tree, the shortest distance to keep all sites connected is `r dmin`, which is the point at which there are the most connections. However, this is driven by the fact that there are a few samples from way off on one side of the bay; therefore, I'll use smaller distance values.
+
+### Using PCNM approach:
+
+```{r}
+# create pcoa of coordinates
+xypcoa<-cmdscale(xydist,eig=TRUE,k=nrow(duvXY)-1)
+
+# get positive eigenvalues
+nbev<-length(which(xypcoa$eig> 0.0000001))
+
+# create data.frame with PCNM variables
+duvPCNM<-as.data.frame(xypcoa$points[1:nrow(duvXY),1:nbev])
+par(mfrow=c(1,3))
+somePCNM <-1:3
+for(i in 1:length(somePCNM)) {
+plot(duvPCNM[,somePCNM[i]],type="l",ylab=c("PCNM",somePCNM[i]))
+}
+```
+```{r}
+# global PCNM on detrended data
+duvPCNMrda<-rda(duvDetrend,duvPCNM)
+anova.cca(duvPCNMrda) # not significant
+```
+
+```{r}
+# recode environmental variables into dummy binary variables
+seagrass<-model.matrix(~ys$SeagrassCover)
+colnames(seagrass)<-levels(ys$SeagrassCover)
+
+season<-model.matrix(~ys$Season)
+colnames(season)<-levels(ys$Season)
+
+duvEnv<-cbind(seagrass,season)
+
+# forward select environmental variables
+duvEnvRda<-rda(abunds, duvEnv)
+envR2a<-RsquareAdj(duvEnvRda)$adj.r.squared
+fwd<-forward.sel(abunds,duvEnv,adjR2thresh = envR2a,nperm=9999)
+```
+
+
+### Using the adespatial approach:
+
+
+```{r}
+thresh<-seq(50,100,10)
+
+# convert neighborhoods to listw objects
+listW<-listw.candidates(duvXY,nb='dnear',d2=thresh)
+
+# apply the candidate neighborhood networks to the detrended data
+duvThreshRes<-listw.select(x=duvDetrend,
+                           candidates = listW)
+duvThreshRes$best.id
+lwBest <- listW[[duvThreshRes$best.id]]
+```
+
+
+
+And then partition variance based on environment and space
+
+```{r}
+pca.hell<-capscale(abunds~Condition(TowArea), scale = FALSE,data = ys)
+vp1 <- varpart(pca.hell$Ybar, 
+               ys$SeagrassCover,
+               ys$Season,
+               duvThreshRes$best$MEM.select)
+plot(vp1,Xnames=c("seagrass","season","space"))
+```
+
+
+
+### Capscale with pcnm?
+
+```{r}
+xypcnm<-pcnm(xydist,
+             threshold = 50 #from listw.select above
+             ) 
+
+capscale(reldensities~ys$SeagrassCover*ys$Season + duvThreshRes$best$MEM.select)
+```
+
+
+### mso approach?
+
+```{r}
+seasonRDA<-capscale(abunds~SeagrassCover*Season + Condition(TowArea), 
+                 ys,
+                 dist="bray")
+
+duvMSO<-mso(seasonRDA,duvXY,permutations=999)
+msoplot(duvMSO)
+```
+
 
 ### dbrda
 
