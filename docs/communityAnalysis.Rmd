@@ -267,7 +267,7 @@ set.seed(8675309)
 rars<-lapply(1:999,function(i,dat=divdat){
   dat<-divdat[,6:ncol(divdat)]
   ssz<-sum(dat[which.min(divdat$TowArea),])
-  # rarify
+  # rarefy
   rar<-suppressWarnings(rrarefy(dat,ssz))
   rownames(rar)<-paste(divdat$Date,
                        divdat$Season,
