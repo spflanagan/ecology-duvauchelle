@@ -110,7 +110,7 @@ duvDetrend<-resid(lm(as.matrix(reldensities)~ ., data=as.data.frame(duvXY)))
 ```
 
 
-### Zach's way:
+### dbMEM
 
 ```{r}
 xydbmem<-as.data.frame(dbmem(duvXY,silent=FALSE,thresh=50))
