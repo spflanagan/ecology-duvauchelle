@@ -158,9 +158,6 @@ And combine the selected forward-selected axes with the space axes.
 spaceAxes <- cbind(duvXY, xydbmem[, attr(forwardSpace$terms, "term.labels")])
 ```
 
-
-### Using the adespatial approach:
-
 Finally, use both environmental variables (separately) in the variance partitioning, along with space. 
 
 ```{r}
@@ -170,23 +167,13 @@ showvarparts(3,col=c("green", "red", "blue"))
 plot(vp, digits=2, bg=c("green", "red", "blue"), Xnames = c("seagrass", "season","spatial"))
 ```
 
-
-
-And then partition variance based on environment and space
 Because there are more spatial variables than either of the other explanatory variables, I need to only interpret the adjusted $R^2$ values. 
 
 ```{r}
-pca.hell<-capscale(abunds~Condition(TowArea), scale = FALSE,data = ys)
-vp1 <- varpart(pca.hell$Ybar, 
-               ys$SeagrassCover,
-               ys$Season,
-               duvThreshRes$best$MEM.select)
-plot(vp1,Xnames=c("seagrass","season","space"))
 kable(dplyr::bind_rows(vp$part$fract,vp$part$indfract),
       row.names = TRUE,
       caption="Results of variance partitioning using spatial variables as covariates.")
 ```
-
 
 
 ### Capscale with pcnm?
