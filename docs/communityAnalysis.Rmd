@@ -663,12 +663,6 @@ extract_rarefied_estimates<-function(hdOutputRDS){
 ```{r}
 rarefied_summaries<-lapply(list.files(pattern="rarefied_Q.*.RDS"),extract_rarefied_estimates)
 names(rarefied_summaries)<-list.files(pattern="rarefied_Q.*.RDS")
-```
-
-
-
-patchDiversity -- for a single level of groups (like seagrass)
-
 
 
 
