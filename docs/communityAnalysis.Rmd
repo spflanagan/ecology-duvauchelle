@@ -134,17 +134,7 @@ lwBest <- listW[[duvThreshRes$best.id]]
 
 Then use `dbmem` with that best threshold (`r duvThresRes$best.id`).
 
-### Borcard 
 
-In the Borcard et al. (2011) book, they find the truncation threshold as the maximum value of the minimum spanning tree of the Euclidean distance matrix -- using `vegan::spantree`. But they also show a distance-based MEM model approach that I think is more appropriate/useful for what I'm trying to do. 
-
-
-```{r dists, eval=FALSE}
-xydist<-dist(duvXY)
-spanning<-spantree(xydist)
-dmin<-max(spanning$dist)
-
-```
 ```{r}
 xydbmem<-as.data.frame(dbmem(duvXY,silent=FALSE,thresh=70))
 # Create null model for forward selection, IF we have a significant result.
@@ -152,14 +142,8 @@ MEMrdaNULL <- capscale(duvDetrend ~ 1, data=xydbmem)
 # Now run analysis on saturated dbMEM model
 (MEMrda <- capscale(duvDetrend ~ ., data=xydbmem))
 
-duvVario<-variogmultiv(duvDetrend, duvXY, nclass=20)
-
-plot(duvVario$d,duvVario$var,ty='b',pch=20,xlab="Distance",ylab="C(distance)")
-
 anova(MEMrda) # suggests spatial relationship 
 ```
-
-Based on our dmin from the spanning tree, the shortest distance to keep all sites connected is `r dmin`, which is the point at which there are the most connections. However, this is driven by the fact that there are a few samples from way off on one side of the bay; therefore, I'll use smaller distance values.
 
 ### Using PCNM approach:
 Perform forward selection of the dbmem models. 
