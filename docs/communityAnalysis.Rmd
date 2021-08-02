@@ -237,34 +237,19 @@ anova(seagrassCond)
 anova(seasonCond)
 ```
 
-### dbrda
-
 All of these are significant at `P < 0.001`, suggesting that we can consider both the marginal and conditional components are relevant/significant.
 
 ```{r}
-abunds<-as.matrix(combdat[rowSums(combdat[,6:ncol(combdat)])>4,
-                          6:ncol(combdat)])
-ys<-combdat[rowSums(combdat[,6:ncol(combdat)])>4,
-            c("SeagrassCover","Season","TowArea")]
-# change to area, but also maybe include nested date
-
-seasonRDA<-capscale(abunds~SeagrassCover*Season + Condition(TowArea), 
-                 ys,
-                 dist="bray")
 globalInt<-capscale(duvDetrend~as.matrix(spaceAxes)*ys$SeagrassCover*ys$Season)
 globalSum<-summary(globalInt)
 ```
 
 ```{r}
-plot(seasonRDA)
-anova(seasonRDA,by="terms")
-seasonSum<-summary(seasonRDA)
 scrs <- scores(globalInt, display = c("sites", "species"), scaling = 3)
 sppScrs<-scrs$species
 plotSpp<-as.data.frame(sppScrs[which(abs(sppScrs[,1])>=1 | abs(sppScrs[,2])>=1),])
 ```
 
-These results suggest that season and seagrass cover -- and their interaction -- are important in determining the community in seagrass beds. 
 
 ```{r globalRDAplot}
 par(mfrow=c(1,2),xpd=FALSE)
