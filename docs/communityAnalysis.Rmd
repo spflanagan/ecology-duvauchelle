@@ -176,14 +176,7 @@ kable(dplyr::bind_rows(vp$part$fract,vp$part$indfract),
 ```
 
 
-### Capscale with pcnm?
-
 ```{r}
-xypcnm<-pcnm(xydist,
-             threshold = 50 #from listw.select above
-             ) 
-
-capscale(reldensities~ys$SeagrassCover*ys$Season + duvThreshRes$best$MEM.select)
 ```
 ```{r}
 ```
