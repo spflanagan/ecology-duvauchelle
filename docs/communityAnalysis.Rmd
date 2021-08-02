@@ -664,7 +664,12 @@ extract_rarefied_estimates<-function(hdOutputRDS){
 rarefied_summaries<-lapply(list.files(pattern="rarefied_Q.*.RDS"),extract_rarefied_estimates)
 names(rarefied_summaries)<-list.files(pattern="rarefied_Q.*.RDS")
 
+for(q in 1:length(rarefied_summaries)){
+  rarefied_summaries[[q]]$q<-q-1
+}
 
+rarefied_summaries<-dplyr::bind_rows(rarefied_summaries)
+```
 
 
 ```{r qsPlot_function}
