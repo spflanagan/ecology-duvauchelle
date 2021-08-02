@@ -672,24 +672,56 @@ rarefied_summaries<-dplyr::bind_rows(rarefied_summaries)
 ```
 
 
-```{r qsPlot_function}
-# assumes the columns are q0,q1,q2 and lab_col is the name of the row with the x-axis labels
-qsPlot<-function(Qs,lab_col,qcols=c("#a1dab4","#41b6c4","#225ea8")){
+```{r}
+plotQs<-function(qdat,levs,cols,pchs,makeLeg=TRUE,ylims=NULL,SEM=TRUE){
+  if(is.null(ylims)){
+    ylims<-c(0,max(qdat$mu+0.2))
+  }
+  plot(0:2,seq(0,max(qdat$mu),length.out = 3),
+       type="n",
+     xlab="Order (q)",
+     ylab="",
+     xlim=c(-0.01,2.01),
+     ylim=ylims,
+     axes=FALSE,
+     cex.lab=2)
+  axis(1, pos=0,at=-1:2,cex.axis=2)
 
-  plot(Qs$q0,type="l",xlab=lab_col,ylab="Species diversity",
-     ylim=c(0,max(Qs$q0)+2),cex=2,lwd=2,axes=FALSE,col=qcols[1])
-  axis(1,labels=c("",as.character(Qs[,lab_col])),at=0:nrow(Qs))
-  axis(2,las=2,seq(-10,max(Qs$q0)+5,5))
-  points(Qs$q0,pch=19,cex=2,lwd=2,col=qcols[1])
-  text(1,Qs$q0[1]-1,"q=0",font = 3,col=qcols[1])
-  
-  points(Qs$q1,pch=16,col=qcols[2],cex=2,lwd=2)
-  points(Qs$q1,lty=2,col=qcols[2],type='l',lwd=2)
-  text(1,Qs$q1[1]+1,"q=1",col=qcols[2],font = 3)
-  
-  points(Qs$q2,pch=17,col=qcols[3],cex=2,lwd=2)
-  points(Qs$q2,lty=3,col=qcols[3],type='l',lwd=2)
-  text(1,Qs$q2[1]-1,"q=2",col=qcols[3],font = 3)
+  axis(2, las=1,cex.axis=2)
+  for(grp in levs){
+    subdat<-qdat[qdat$level %in% grp,]
+    # background polygon
+    if(isTRUE(SEM)){
+      polygon(x = c(subdat$q,rev(subdat$q)),
+            y=c(subdat$mu-subdat$SEM,
+                rev(subdat$mu+subdat$SEM)),
+            col=scales::alpha(cols[grp],0.5), 
+            border=scales::alpha(cols[grp],0.5))
+    } else{
+      polygon(x = c(subdat$q,rev(subdat$q)),
+            y=c(subdat$`q0.025`,
+                rev(subdat$`q0.975`)),
+            col=scales::alpha(cols[grp],0.5), 
+            border=scales::alpha(cols[grp],0.5))
+    }
+    
+    # add points
+    points(subdat$q,subdat$mu,
+           pch=pchs[grp],
+           cex=2.5,
+           col=cols[grp])
+    
+  }
+  if(isTRUE(makeLeg)){
+    legend("top",
+             levs,
+             col=cols[levs],
+             pch=pchs[levs],
+             ncol=length(levs)/2,
+             bty='n',
+             cex=2)
+  }
+
 }
 ```
 
