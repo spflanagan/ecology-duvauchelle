@@ -246,19 +246,8 @@ xypcnm<-pcnm(xydist,
 
 capscale(reldensities~ys$SeagrassCover*ys$Season + duvThreshRes$best$MEM.select)
 ```
-
-
-### mso approach?
-
 ```{r}
-seasonRDA<-capscale(abunds~SeagrassCover*Season + Condition(TowArea), 
-                 ys,
-                 dist="bray")
-
-duvMSO<-mso(seasonRDA,duvXY,permutations=999)
-msoplot(duvMSO)
 ```
-
 
 ### dbrda
 
