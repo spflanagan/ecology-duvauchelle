@@ -254,16 +254,142 @@ seasonRDA<-capscale(abunds~SeagrassCover*Season + Condition(TowArea),
 globalInt<-capscale(duvDetrend~as.matrix(spaceAxes)*ys$SeagrassCover*ys$Season)
 globalSum<-summary(globalInt)
 ```
+
 ```{r}
 plot(seasonRDA)
 anova(seasonRDA,by="terms")
 seasonSum<-summary(seasonRDA)
+scrs <- scores(globalInt, display = c("sites", "species"), scaling = 3)
+sppScrs<-scrs$species
+plotSpp<-as.data.frame(sppScrs[which(abs(sppScrs[,1])>=1 | abs(sppScrs[,2])>=1),])
 ```
 
 These results suggest that season and seagrass cover -- and their interaction -- are important in determining the community in seagrass beds. 
 
+```{r globalRDAplot}
+par(mfrow=c(1,2),xpd=FALSE)
+plot(globalInt,
+     display="sites",
+     scaling=3,
+     type='none',
+     xlab=paste0(
+       "CAP1 (",
+       round(globalSum$cont$importance[2,1]*100,2),
+       "% of total; ", 
+       round(globalSum$concont$importance[2,1]*100,2),
+       "% of constrained)"),
+     ylab=paste0(
+       "CAP2 (",
+       round(globalSum$cont$importance[2,2]*100,2),
+       "% of total; ",
+       round(globalSum$concont$importance[2,2]*100,2),
+       "% of constrained)"),
+     xlim=c(-1.5,2),
+     ylim=c(-2,2)
+     )
+points(globalInt,
+       cex=1.5,
+       col=scales::alpha(
+         "light gray",0.5
+       ),
+       bg=scales::alpha(
+         "light gray",0.5
+       ),
+       pch=19,
+       display="sites",
+       scaling=3)
+
+ordiellipse(globalInt,ys$Season,col=seasonCols[levels(ys$Season)],lwd=5)
+
+arrows(x0=rep(0,nrow(plotSpp)),
+       y0=rep(0,nrow(plotSpp)),
+       x1=plotSpp[,1]*0.1,
+       y1=plotSpp[,2]*0.1,
+       length = 0.1,
+       lwd=2)
+text(x=plotSpp[c("shrimp","flounder"),1]*0.1+0.2,
+     y=plotSpp[c("shrimp","flounder"),2]*0.1+0.2,
+     labels = c("shrimp","flounder"))
+text(x=plotSpp["Diloma",1]*0.12,
+     y=plotSpp["Diloma",2]*0.12,
+     labels="Diloma")
+text(x=plotSpp["mud_snail",1]*0.11+0.52,
+     y=plotSpp["mud_snail",2]*0.11,
+     labels = "mud_snail")
+text(x=plotSpp["austrovenus",1]*0.11+0.7,
+     y=plotSpp["austrovenus",2]*0.11-0.1,
+     labels = "austrovenus")
 
 
+legend("topleft",c("Winter","Spring","Summer","Fall"),
+       ncol=2,bty='n',
+       col=c(seasonCols[c("Winter","Spring","Summer","Fall")]),
+       bg=c(seasonCols[c("Winter","Spring","Summer","Fall")]),
+       lwd=4,
+       lty=1)
+
+# 2nd plot
+
+plot(globalInt,
+     display="sites",
+     scaling=3,
+     type='none',
+     xlab=paste0(
+       "CAP1 (",
+       round(globalSum$cont$importance[2,1]*100,2),
+       "% of total; ", 
+       round(globalSum$concont$importance[2,1]*100,2),
+       "% of constrained)"),
+     ylab=paste0(
+       "CAP2 (",
+       round(globalSum$cont$importance[2,2]*100,2),
+       "% of total; ",
+       round(globalSum$concont$importance[2,2]*100,2),
+       "% of constrained)"),
+     xlim=c(-1.5,2),
+     ylim=c(-2,2)
+     )
+points(globalInt,
+       cex=1.5,
+       col=scales::alpha(
+         "light gray",0.5
+       ),
+       bg=scales::alpha(
+         "light gray",0.5
+       ),
+       pch=19,
+       display="sites",
+       scaling=3)
+
+ordiellipse(globalInt,ys$SeagrassCover,col=seagrassCs[levels(ys$SeagrassCover)],lwd=5)
+arrows(x0=rep(0,nrow(plotSpp)),
+       y0=rep(0,nrow(plotSpp)),
+       x1=plotSpp[,1]*0.1,
+       y1=plotSpp[,2]*0.1,
+       length = 0.1,
+       lwd=2)
+text(x=plotSpp[c("shrimp","flounder"),1]*0.1+0.2,
+     y=plotSpp[c("shrimp","flounder"),2]*0.1+0.2,
+     labels = c("shrimp","flounder"))
+text(x=plotSpp["Diloma",1]*0.12,
+     y=plotSpp["Diloma",2]*0.12,
+     labels="Diloma")
+text(x=plotSpp["mud_snail",1]*0.11+0.52,
+     y=plotSpp["mud_snail",2]*0.11,
+     labels = "mud_snail")
+text(x=plotSpp["austrovenus",1]*0.11+0.7,
+     y=plotSpp["austrovenus",2]*0.11-0.1,
+     labels = "austrovenus")
+
+
+legend("topright",c("bare","sparse","patchy","dense"),
+       ncol=2,
+       lwd=4,
+       lty=1,
+       bty='n',
+       col=seagrassCs[c("bare","sparse","patchy","dense")],
+       bg=seagrassCs[c("bare","sparse","patchy","dense")])
+```
 
 
      type='none',
