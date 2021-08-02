@@ -112,48 +112,27 @@ duvDetrend<-resid(lm(as.matrix(reldensities)~ ., data=as.data.frame(duvXY)))
 
 ### dbMEM
 
-```{r}
-xydbmem<-as.data.frame(dbmem(duvXY,silent=FALSE,thresh=50))
-# Create null model for forward selection, IF we have a significant result.
-MEMrdaNULL <- capscale(duvDetrend ~ 1, data=xydbmem)
-# Now run analysis on saturated dbMEM model
-(MEMrda <- capscale(duvDetrend ~ ., data=xydbmem))
 Use adespatial to identify the best threshold level
 
-anova(MEMrda) # suggests spatial relationship 
-```
-
-forward selection
-```{r}
-forwardSpace <- ordiR2step(MEMrdaNULL, MEMrda, trace=FALSE)
-forwardSpace$call
-```
 ```{r, eval=FALSE}
 thresh<-seq(50,100,10)
 
-combine this with the space axes 
 # convert neighborhoods to listw objects
 listW<-listw.candidates(duvXY,nb='dnear',d2=thresh)
 
-```{r}
-spaceAxes <- cbind(duvXY, xydbmem[, attr(forwardSpace$terms, "term.labels")])
 # apply the candidate neighborhood networks to the detrended data
 duvThreshRes<-listw.select(x=duvDetrend,
                            candidates = listW)
 saveRDS(duvThreshRes,"duvThreshRes.RDS")
 ```
 
-Use both environmental variables (separately) in the variance partitioning
-
 ```{r}
-vp2<-varpart(duvDetrend,ys$SeagrassCover,ys$Season,spaceAxes)
-
-plot(vp2, digits=2, bg=c("green", "red", "blue"), Xnames = c("seagrass", "season","spatial"))
 duvThreshRes<-readRDS("duvThreshRes.RDS")
 duvThreshRes$best.id
 lwBest <- listW[[duvThreshRes$best.id]]
 ```
 
+Then use `dbmem` with that best threshold (`r duvThresRes$best.id`).
 
 ### Borcard 
 
@@ -167,16 +146,23 @@ dmin<-max(spanning$dist)
 
 ```
 ```{r}
+xydbmem<-as.data.frame(dbmem(duvXY,silent=FALSE,thresh=70))
+# Create null model for forward selection, IF we have a significant result.
+MEMrdaNULL <- capscale(duvDetrend ~ 1, data=xydbmem)
+# Now run analysis on saturated dbMEM model
+(MEMrda <- capscale(duvDetrend ~ ., data=xydbmem))
 
 duvVario<-variogmultiv(duvDetrend, duvXY, nclass=20)
 
 plot(duvVario$d,duvVario$var,ty='b',pch=20,xlab="Distance",ylab="C(distance)")
 
+anova(MEMrda) # suggests spatial relationship 
 ```
 
 Based on our dmin from the spanning tree, the shortest distance to keep all sites connected is `r dmin`, which is the point at which there are the most connections. However, this is driven by the fact that there are a few samples from way off on one side of the bay; therefore, I'll use smaller distance values.
 
 ### Using PCNM approach:
+Perform forward selection of the dbmem models. 
 
 ```{r}
 # create pcoa of coordinates
@@ -197,6 +183,8 @@ plot(duvPCNM[,somePCNM[i]],type="l",ylab=c("PCNM",somePCNM[i]))
 # global PCNM on detrended data
 duvPCNMrda<-rda(duvDetrend,duvPCNM)
 anova.cca(duvPCNMrda) # not significant
+forwardSpace <- ordiR2step(MEMrdaNULL, MEMrda, trace=FALSE)
+forwardSpace$call
 ```
 
 ```{r}
@@ -206,6 +194,7 @@ colnames(seagrass)<-levels(ys$SeagrassCover)
 
 season<-model.matrix(~ys$Season)
 colnames(season)<-levels(ys$Season)
+And combine the selected forward-selected axes with the space axes. 
 
 duvEnv<-cbind(seagrass,season)
 
@@ -213,18 +202,26 @@ duvEnv<-cbind(seagrass,season)
 duvEnvRda<-rda(abunds, duvEnv)
 envR2a<-RsquareAdj(duvEnvRda)$adj.r.squared
 fwd<-forward.sel(abunds,duvEnv,adjR2thresh = envR2a,nperm=9999)
+```{r}
+spaceAxes <- cbind(duvXY, xydbmem[, attr(forwardSpace$terms, "term.labels")])
 ```
 
 
 ### Using the adespatial approach:
 
+Finally, use both environmental variables (separately) in the variance partitioning, along with space. 
 
 ```{r}
+vp<-varpart(duvDetrend,ys$SeagrassCover,ys$Season,spaceAxes)
+par(mfrow=c(1,2))
+showvarparts(3,col=c("green", "red", "blue"))
+plot(vp, digits=2, bg=c("green", "red", "blue"), Xnames = c("seagrass", "season","spatial"))
 ```
 
 
 
 And then partition variance based on environment and space
+Because there are more spatial variables than either of the other explanatory variables, I need to only interpret the adjusted $R^2$ values. 
 
 ```{r}
 pca.hell<-capscale(abunds~Condition(TowArea), scale = FALSE,data = ys)
@@ -233,6 +230,9 @@ vp1 <- varpart(pca.hell$Ybar,
                ys$Season,
                duvThreshRes$best$MEM.select)
 plot(vp1,Xnames=c("seagrass","season","space"))
+kable(dplyr::bind_rows(vp$part$fract,vp$part$indfract),
+      row.names = TRUE,
+      caption="Results of variance partitioning using spatial variables as covariates.")
 ```
 
 
