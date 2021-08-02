@@ -251,6 +251,8 @@ ys<-combdat[rowSums(combdat[,6:ncol(combdat)])>4,
 seasonRDA<-capscale(abunds~SeagrassCover*Season + Condition(TowArea), 
                  ys,
                  dist="bray")
+globalInt<-capscale(duvDetrend~as.matrix(spaceAxes)*ys$SeagrassCover*ys$Season)
+globalSum<-summary(globalInt)
 ```
 ```{r}
 plot(seasonRDA)
