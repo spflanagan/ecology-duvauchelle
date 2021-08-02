@@ -559,23 +559,10 @@ Should my abundances be densities? - try it
 # hierDiversity takes the non-relativized abundances
 grps<-as.matrix(cbind(divdat[,c("SeagrassCover","Season")], # least inclusive to most inclusive L->R
             Site="Duvauchelle"))
-divActual<-hierDiversity(divabunds, 
-              grps, 
-              replace = NULL, 
-              reps = 99, 
-              q = 1,
-              quant = c(0.025, 0.975),
-              sims = FALSE)
-saveRDS(divAcutal,"divActual.RDS")
 
-divDensities<-hierDiversity(divdensities, 
-              grps, 
-              replace = NULL, 
-              reps = 99, 
-              q = 1,
-              quant = c(0.025, 0.975),
-              sims = FALSE)
-saveRDS(divDensities,"divDensities.RDS")
+divDensitiesQs<-lapply(list.files(pattern="divDensitiesQ.*RDS"),readRDS)
+
+```
 ```
 
 
