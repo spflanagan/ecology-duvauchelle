@@ -778,23 +778,52 @@ legend("top","Overall",col="#36454f",pch=19,bty='n',cex=2)
 ```
 
 
-```{r DuvQs_Cover,fig.width=8,fig.height=6,fig.keep='high',dpi=300, eval=FALSE}
+```{r plotPWturnover}
 
-par(mfrow=c(1,4),oma=c(2.5,2.5,2.5,1.5),mar=c(3,3,3,2))
-qsPlot(Qs[grep("bare",rownames(Qs)),],"date")
-legend("topleft","Bare",bty='n')
+seasonsQ<-actualQdat[actualQdat$level %in% levels(combdat$Season) &
+                               actualQdat$diversity == "pwTurnover",]
+seagrassQ<-actualQdat[actualQdat$level %in% levels(combdat$SeagrassCover) &
+                               actualQdat$diversity == "pwTurnover",]
+par(mfrow=c(2,3),oma=c(1,1.5,1,0),mar=c(4,4,2,2),xpd=TRUE)
+plotQs(seagrassQ,levels(combdat$SeagrassCover),seagrassCs,seagrassPs,FALSE,ylims=c(0,0.8))
+legend("bottom",
+       levels(combdat$SeagrassCover),
+       col=seagrassCs,
+       pch=seagrassPs,
+       ncol=1,
+             bty='n',
+             cex=2)
+mtext("observed pairwise turnover",2,outer=FALSE,cex=1.5,line=3.5)
+plotQs(seasonsQ,levels(combdat$Season),seasonCols,seasonPchs,FALSE,ylims=c(0,0.8))
+legend("topright",
+       levels(combdat$Season),
+       col=seasonCols,
+       pch=seasonPchs,
+       ncol=1,
+             bty='n',
+             cex=2)
+plotQs(rarefied_summaries[rarefied_summaries$level %in% "Duvauchelle" &
+                               rarefied_summaries$diversity == "pwTurnover",],
+       "Duvauchelle",c(Duvauchelle="#36454f"),c(Duvauchelle=19),FALSE,ylims=c(0,0.8))
+legend("top","Overall",col="#36454f",pch=19,bty='n',cex=2)
 
-qsPlot(Qs[grep("sparse",rownames(Qs)),],"date")
-legend("topleft","Sparse",bty='n')
 
-qsPlot(Qs[grep("patchy",rownames(Qs)),],"date")
-legend("topleft","Patchy",bty='n')
+# Rarefied ones
+seasonsQ<-rarefied_summaries[rarefied_summaries$level %in% levels(combdat$Season) &
+                               rarefied_summaries$diversity == "pwTurnover",]
+seagrassQ<-rarefied_summaries[rarefied_summaries$level %in% levels(combdat$SeagrassCover) &
+                               rarefied_summaries$diversity == "pwTurnover",]
 
-qsPlot(Qs[grep("dense",rownames(Qs)),],"date")
-legend("topleft","Dense Seagrass",bty='n')
+plotQs(seagrassQ,levels(combdat$SeagrassCover),seagrassCs,seagrassPs,FALSE,ylims=c(0,0.8))
+mtext("rarefied pairwise turnover",2,outer=FALSE,cex=1.5,line=3.5)
+plotQs(seasonsQ,levels(combdat$Season),seasonCols,seasonPchs,FALSE,ylims=c(0,0.8))
 
-mtext("Species Diversity",2,outer=TRUE)
+plotQs(rarefied_summaries[rarefied_summaries$level %in% "Duvauchelle" &
+                               rarefied_summaries$diversity == "pwTurnover",],
+       "Duvauchelle",c(Duvauchelle="#36454f"),c(Duvauchelle=19),FALSE,ylims=c(0,0.8))
+
 ```
+
 
 
 ## Summaries
