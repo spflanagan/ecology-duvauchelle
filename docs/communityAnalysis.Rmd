@@ -563,6 +563,39 @@ grps<-as.matrix(cbind(divdat[,c("SeagrassCover","Season")], # least inclusive to
 divDensitiesQs<-lapply(list.files(pattern="divDensitiesQ.*RDS"),readRDS)
 
 ```
+
+```{r getDivValues}
+# the value is which row you want to extract, default is 1 (the mean)
+getDivValues<-function(hierare){
+
+  dat<-dplyr::bind_rows(lapply(hierare,function(hiers){
+      estimates<-bind_rows(lapply(hiers,function(estimates){
+        estimates$estimate<-rownames(estimates)
+        estimates$level<-estimates$estimate[1]
+        estimates<-pivot_longer(estimates,1:6,names_to = "diversity")
+        return(estimates)
+      }))
+      return(estimates)
+    }))
+
+  return(dat)
+
+}
+```
+
+```{r}
+qdat<-lapply(divDensitiesQs,getDivValues)
+
+
+for(q in 1:length(qdat)){
+  qdat[[q]]$q<-q-1
+}
+
+qdat<-dplyr::bind_rows(qdat)
+qdat$estimate[!qdat$estimate %in% c("SE","q0.025","q0.975")]<-"mu"
+qdat$estimate[qdat$estimate=="SE"]<-"SEM"
+actualQdat<-spread(qdat,estimate,value)
+
 ```
 
 
