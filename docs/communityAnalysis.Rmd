@@ -118,6 +118,7 @@ xydbmem<-as.data.frame(dbmem(duvXY,silent=FALSE,thresh=50))
 MEMrdaNULL <- capscale(duvDetrend ~ 1, data=xydbmem)
 # Now run analysis on saturated dbMEM model
 (MEMrda <- capscale(duvDetrend ~ ., data=xydbmem))
+Use adespatial to identify the best threshold level
 
 anova(MEMrda) # suggests spatial relationship 
 ```
@@ -127,11 +128,19 @@ forward selection
 forwardSpace <- ordiR2step(MEMrdaNULL, MEMrda, trace=FALSE)
 forwardSpace$call
 ```
+```{r, eval=FALSE}
+thresh<-seq(50,100,10)
 
 combine this with the space axes 
+# convert neighborhoods to listw objects
+listW<-listw.candidates(duvXY,nb='dnear',d2=thresh)
 
 ```{r}
 spaceAxes <- cbind(duvXY, xydbmem[, attr(forwardSpace$terms, "term.labels")])
+# apply the candidate neighborhood networks to the detrended data
+duvThreshRes<-listw.select(x=duvDetrend,
+                           candidates = listW)
+saveRDS(duvThreshRes,"duvThreshRes.RDS")
 ```
 
 Use both environmental variables (separately) in the variance partitioning
@@ -140,6 +149,9 @@ Use both environmental variables (separately) in the variance partitioning
 vp2<-varpart(duvDetrend,ys$SeagrassCover,ys$Season,spaceAxes)
 
 plot(vp2, digits=2, bg=c("green", "red", "blue"), Xnames = c("seagrass", "season","spatial"))
+duvThreshRes<-readRDS("duvThreshRes.RDS")
+duvThreshRes$best.id
+lwBest <- listW[[duvThreshRes$best.id]]
 ```
 
 
@@ -208,16 +220,6 @@ fwd<-forward.sel(abunds,duvEnv,adjR2thresh = envR2a,nperm=9999)
 
 
 ```{r}
-thresh<-seq(50,100,10)
-
-# convert neighborhoods to listw objects
-listW<-listw.candidates(duvXY,nb='dnear',d2=thresh)
-
-# apply the candidate neighborhood networks to the detrended data
-duvThreshRes<-listw.select(x=duvDetrend,
-                           candidates = listW)
-duvThreshRes$best.id
-lwBest <- listW[[duvThreshRes$best.id]]
 ```
 
 
