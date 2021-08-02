@@ -100,7 +100,7 @@ duvXY<-SoDA::geoXY(rowMeans(gpsdat[,grep("lat",colnames(gpsdat))]),
 s.label(duvXY)
 ```
 
-Then, I need to test for linear trends and detrend the data if the trend surface is significant. This means to regress all variables on the X – Y coordinates and retain the residuals. This can most easily be done using the function lm() (Borcard et al. 2011).
+Then, I need to test for linear trends and detrend the data if the trend surface is significant. This means to regress all variables on the X – Y coordinates and retain the residuals. This can most easily be done using the function `lm()` (Borcard et al. 2011).
 
 ```{r}
 duvXY<-duvXY[which(rowSums(combdat[,6:ncol(combdat)])>4),]
