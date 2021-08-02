@@ -145,47 +145,15 @@ MEMrdaNULL <- capscale(duvDetrend ~ 1, data=xydbmem)
 anova(MEMrda) # suggests spatial relationship 
 ```
 
-### Using PCNM approach:
 Perform forward selection of the dbmem models. 
 
 ```{r}
-# create pcoa of coordinates
-xypcoa<-cmdscale(xydist,eig=TRUE,k=nrow(duvXY)-1)
-
-# get positive eigenvalues
-nbev<-length(which(xypcoa$eig> 0.0000001))
-
-# create data.frame with PCNM variables
-duvPCNM<-as.data.frame(xypcoa$points[1:nrow(duvXY),1:nbev])
-par(mfrow=c(1,3))
-somePCNM <-1:3
-for(i in 1:length(somePCNM)) {
-plot(duvPCNM[,somePCNM[i]],type="l",ylab=c("PCNM",somePCNM[i]))
-}
-```
-```{r}
-# global PCNM on detrended data
-duvPCNMrda<-rda(duvDetrend,duvPCNM)
-anova.cca(duvPCNMrda) # not significant
 forwardSpace <- ordiR2step(MEMrdaNULL, MEMrda, trace=FALSE)
 forwardSpace$call
 ```
 
-```{r}
-# recode environmental variables into dummy binary variables
-seagrass<-model.matrix(~ys$SeagrassCover)
-colnames(seagrass)<-levels(ys$SeagrassCover)
-
-season<-model.matrix(~ys$Season)
-colnames(season)<-levels(ys$Season)
 And combine the selected forward-selected axes with the space axes. 
 
-duvEnv<-cbind(seagrass,season)
-
-# forward select environmental variables
-duvEnvRda<-rda(abunds, duvEnv)
-envR2a<-RsquareAdj(duvEnvRda)$adj.r.squared
-fwd<-forward.sel(abunds,duvEnv,adjR2thresh = envR2a,nperm=9999)
 ```{r}
 spaceAxes <- cbind(duvXY, xydbmem[, attr(forwardSpace$terms, "term.labels")])
 ```
