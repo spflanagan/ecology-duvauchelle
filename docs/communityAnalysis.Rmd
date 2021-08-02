@@ -175,14 +175,71 @@ kable(dplyr::bind_rows(vp$part$fract,vp$part$indfract),
       caption="Results of variance partitioning using spatial variables as covariates.")
 ```
 
+Those that are marked as `testable=TRUE` [can be tested in an rda framework](https://www.davidzeleny.net/anadat-r/doku.php/en:varpart_examples), so we need rdas for the overall model, for each variable independently, and for each variable with conditioning effects of the others.
 
 ```{r}
+global<-capscale(duvDetrend~.,data=bind_cols(spaceAxes,SeagrassCover=ys$SeagrassCover,Season=ys$Season))
+space<-capscale(duvDetrend~.,data=spaceAxes)
+seagrass<-capscale(duvDetrend~ys$SeagrassCover)
+season<-capscale(duvDetrend~ys$Season)
+
+spaceCond<-capscale(duvDetrend~. + Condition(ys$SeagrassCover) + Condition(ys$Season),data=spaceAxes)
+seagrassCond<-capscale(duvDetrend~ys$SeagrassCover + Condition(ys$Season) +
+                         Condition(X) + 
+                         Condition(Y) +
+                         Condition(MEM6) +
+                         Condition(MEM3) +
+                         Condition(MEM31) +
+                         Condition(MEM4) +
+                         Condition(MEM19) +
+                         Condition(MEM27) +
+                         Condition(MEM44) +
+                         Condition(MEM7) +
+                         Condition(MEM32) +
+                         Condition(MEM42) +
+                         Condition(MEM20) +
+                         Condition(MEM41) + 
+                         Condition(MEM17) + 
+                         Condition(MEM29) + 
+                         Condition(MEM38) + 
+                         Condition(MEM45) +
+                         Condition(MEM16) +
+                         Condition(MEM28),data=spaceAxes)
+seasonCond<-capscale(duvDetrend~ys$Season + Condition(ys$SeagrassCover) + 
+                       Condition(X) + 
+                         Condition(Y) +
+                         Condition(MEM6) +
+                         Condition(MEM3) +
+                         Condition(MEM31) +
+                         Condition(MEM4) +
+                         Condition(MEM19) +
+                         Condition(MEM27) +
+                         Condition(MEM44) +
+                         Condition(MEM7) +
+                         Condition(MEM32) +
+                         Condition(MEM42) +
+                         Condition(MEM20) +
+                         Condition(MEM41) + 
+                         Condition(MEM17) + 
+                         Condition(MEM29) + 
+                         Condition(MEM38) + 
+                         Condition(MEM45) +
+                         Condition(MEM16) +
+                         Condition(MEM28),data=spaceAxes)
 ```
 ```{r}
+anova(global)
+anova(space)
+anova(seagrass)
+anova(season)
+anova(spaceCond)
+anova(seagrassCond)
+anova(seasonCond)
 ```
 
 ### dbrda
 
+All of these are significant at `P < 0.001`, suggesting that we can consider both the marginal and conditional components are relevant/significant.
 
 ```{r}
 abunds<-as.matrix(combdat[rowSums(combdat[,6:ncol(combdat)])>4,
