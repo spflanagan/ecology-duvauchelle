@@ -395,6 +395,31 @@ plot(flounder_long$towArea,flounderGLM8$residuals)
 
 Unfortunately there are some really large deviations from the assumptions of the homogeneity of variances in the residuals. What if I transform the data and use a linear model instead?
 
+```{r}
+
+flounderLM<-lm(density ~ 1+ Season * seagrass_cover * size * towArea, data=flounder_long)
+plot(flounderLM)
+```
+
+this is slightly better, but the scale-location plot is a bit troubling, and there are some clear outliers...
+
+
+```{r}
+outliers<-car::outlierTest(flounderLM)
+outRows<-as.numeric(names(outliers$rstudent))
+flounderLMoutrem<-lm(density ~ 1+ Season * seagrass_cover * size * towArea,
+                     data=flounder_long[-outRows,])
+plot(flounderLMoutrem)
+```
+
+nope, that's still not great. 
+
+```{r}
+flounderLMsqrt<-lm(sqrt(density) ~ 1+ Season * seagrass_cover * size * towArea, data=flounder_long)
+plot(flounderLMsqrt)
+```
+
+
 # Pipefish
 
 Questions:
