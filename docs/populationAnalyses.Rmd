@@ -763,12 +763,33 @@ for(i in 1:length(seasonCols)){
 
 
 ```
+```{r shrimpGLMs}
+shrimpGLM1<-glm(shrimp_long$count ~ 1, family="poisson")
+# additive effects
+shrimpGLM2<-glm(shrimp_long$count ~ 1+ shrimp_long$Season,family="poisson")
+shrimpGLM3<-glm(shrimp_long$count ~ 1+ shrimp_long$Season + shrimp_long$seagrass_cover,family="poisson")
+shrimpGLM4<-glm(shrimp_long$count ~ 1+ shrimp_long$Season + shrimp_long$seagrass_cover + shrimp_long$size,family="poisson")
+shrimpGLM5<-glm(shrimp_long$count ~ 1+ shrimp_long$Season + shrimp_long$seagrass_cover + shrimp_long$size + shrimp_long$towArea,family="poisson")
+# interactions
+shrimpGLM6<-glm(shrimp_long$count ~ 1+ shrimp_long$Season * shrimp_long$seagrass_cover + shrimp_long$size,family="poisson")
+shrimpGLM7<-glm(shrimp_long$count ~ 1+ shrimp_long$Season * shrimp_long$seagrass_cover * shrimp_long$size + shrimp_long$towArea,family="poisson")
+shrimpGLM8<-glm(shrimp_long$count ~ 1+ as.factor(shrimp_long$Season) * as.factor(shrimp_long$seagrass_cover) * shrimp_long$size * shrimp_long$towArea,family="poisson")
 
+anova(shrimpGLM1,shrimpGLM2,shrimpGLM3,shrimpGLM4,shrimpGLM5,shrimpGLM6,shrimpGLM7,shrimpGLM8,test="Chisq")
+```
 
+```{r shrimpAICs}
+shrimpAICs<-AIC(shrimpGLM1,shrimpGLM2,shrimpGLM3,shrimpGLM4,shrimpGLM5,shrimpGLM6,shrimpGLM7,shrimpGLM8)
 
+shrimpAICs<-shrimpAICs[order(shrimpAICs$AIC),]
+kable(shrimpAICs,"latex",booktab=TRUE,caption="Comparison of AICc values for model selection of Poisson GLMs describing shrimp abundances. The best-fitting model is the most complex one, with interactions between season, seagrass cover, shrimp size, and tow area.")
+```
 
 ```{r}
+shrimpGLM8<-glm(shrimp_long$count ~ 1+ as.factor(shrimp_long$Season) * as.factor(shrimp_long$seagrass_cover) * shrimp_long$size * shrimp_long$towArea,family="quasipoisson")
 
+shrimpGLM8<-glm(shrimp_long$count ~ 1+ as.factor(shrimp_long$Season) * as.factor(shrimp_long$seagrass_cover) * shrimp_long$size * shrimp_long$towArea,family="quasipoisson")
+```
 
 ```
 
