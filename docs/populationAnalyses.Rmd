@@ -279,22 +279,6 @@ image_write(flounderSeagrass,
 ```
 
 
-
-GLMER Poisson counts by seasons 
-
-What do I want to test?
-
-Do flounder of different sizes have different abundances throughout the year AND in different seagrass beds?
-
-```{r}
-flounderGLM<-glm(flounder_long$count ~ 1+ flounder_long$Season*flounder_long$seagrass_cover * flounder_long$size * flounder_long$towArea,
-                   family="poisson")
-```
-
-While controlling for sampling dates, and accounting for size classes, flounder were most abundant in fall and least abundant in summer.  
-(what about seagrass cover?)
-
-
 ```{r makeSpeciesMap}
 
 long<-rowMeans(flounder[,c("long_start","long_stop")])
