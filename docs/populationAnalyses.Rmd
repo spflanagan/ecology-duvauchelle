@@ -385,6 +385,20 @@ plot(flounder_long$count~flounder_long$towArea,
 ```
 
 
+Challenges with this dataset:
+
+- We are modelling count data, which is not well modeled by OLS
+- Log-transforming the data did not change the distribution sufficiently (\@ref(fig:flounderDistributions))
+- The variance is `r var(flounder_long$count)` and the mean is `r mean(flounder_long$count)`
+- The data has many zeroes
+
+
+
+All of this together points to the need to at a minimum use a negative binomial distribution, and possibly (probably) we will need to use a zero-inflated negative binomial. 
+
+
+
+
 
 ```{r}
 fglm<-glm(flounder_long$count ~ 1+ flounder_long$Day * flounder_long$seagrass_cover * flounder_long$size, offset=log(flounder_long$towArea), family="quasipoisson")
