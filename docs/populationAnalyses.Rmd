@@ -353,6 +353,13 @@ make_species_map(gpsdat,cleandat,"flounder",center,zoom,scale = 1)
 ```
 
 
+## Flounder GLM
+
+
+Do flounder of different sizes have different abundances throughout the year AND in different seagrass beds?
+
+Looking at patterns of counts (Fig. \@ref(fig:ExploreFlounderPlots)), we can see that the flounder counts do seem to vary with the variables. 
+
 
 
 ```{r}
