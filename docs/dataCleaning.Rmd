@@ -216,11 +216,26 @@ drive_dat<-drive_download("NZsyngnathids_measurements",
                           type = "xlsx",
                           overwrite=TRUE)
 ```
-```{r readCSV}
-body_dat<-read.csv("../data/NZsyngnathids_measurements.csv")
-body_dat$ID<-gsub("(\\w{2})0(\\d{2})","\\1\\2",body_dat$ID)
-```
+```{r GetXLSXData}
+library(openxlsx)
+sTraits<-read.xlsx("../data/NZsyngnathids_measurements.xlsx",sheet = "S.nigra",
+                                       skipEmptyRows = TRUE,detectDates = TRUE)
+lTraits<-read.xlsx("../data/NZsyngnathids_measurements.xlsx",sheet = "L.elevatus",
+                                       skipEmptyRows = TRUE,detectDates = TRUE)
 
+
+infoCols<-1:11
+datCols<-c(grep("TotalLength",colnames(sTraits)),
+           grep("SVL",colnames(sTraits)),
+           grep("BodyWidth",colnames(sTraits)),
+           grep("BodyDepth",colnames(sTraits)),
+           grep("SnoutLength",colnames(sTraits)),
+          grep("SnoutWidth",colnames(sTraits)),
+          grep("SnoutDepth",colnames(sTraits)),
+          grep("HeadLength",colnames(sTraits)))
+pipeTraits<-dplyr::bind_rows(sTraits[,c(infoCols,datCols)],lTraits[,c(datCols,infoCols)])
+pipeTraits<-pipeTraits[pipeTraits$LocationName=="Duvauchelle Bay",]
+```
 ```{r AvgVals}
 body_dat$TotalLength_Avg<-rowMeans(body_dat[,grep("TotalLength",colnames(body_dat))],na.rm = TRUE)
 body_dat$SVL_Avg<-rowMeans(body_dat[,grep("SVL",colnames(body_dat))],na.rm = TRUE)
