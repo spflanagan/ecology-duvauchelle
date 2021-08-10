@@ -739,6 +739,30 @@ shrimp_long$density<-shrimp_long$count/shrimp_long$towArea
 
 ```
 
+```{r}
+par(mfrow=c(2,2),mar=c(3,4,3.5,2),oma=c(3,2,1,2))
+for(i in 1:length(seasonCols)){
+  sdat<-shrimp_long[shrimp_long$Season %in% names(seasonCols)[i],]
+  stripchart(sdat$count~sdat$size,
+           vertical=TRUE,
+           method="jitter",
+           jitter=0.05,
+           ylab="Number of shrimp",
+           pch=1,
+           frame.plot=FALSE,
+           axes=FALSE,
+           col=seasonCols[i],
+           main= names(seasonCols)[i],
+           cex.lab=1.2,
+           ylim=c(0,300),
+           cex=1.5)
+
+  axis(1,at=c(1,2),labels=levels(sdat$size),cex=1.2)
+  axis(2,las=2,cex=1.5)
+}
+
+
+```
 
 
 
