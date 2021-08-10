@@ -537,6 +537,20 @@ pipedat<-cleandat[,keep_cols]
 pipeTraits<-read.csv("../data/pipefishTraits.csv",stringsAsFactors = TRUE)
 ```
 
+
+```{r}
+pipefishGLM1<-glm(pipefishCnts$count ~ 1+ as.factor(pipefishCnts$seagrass_cover)/as.factor(pipefishCnts$Season)  * pipefishCnts$size * pipefishCnts$towArea,family="poisson")
+pipefishGLM2<-glm(pipefishCnts$count ~ 1+ as.factor(pipefishCnts$seagrass_cover)/as.factor(pipefishCnts$Season)  * pipefishCnts$size + pipefishCnts$towArea,family="poisson")
+pipefishGLM3<-glm(pipefishCnts$count ~ 1+ as.factor(pipefishCnts$seagrass_cover)+as.factor(pipefishCnts$Season)  + pipefishCnts$size + pipefishCnts$species + pipefishCnts$towArea,family="poisson")
+
+anova(pipefishGLM1,pipefishGLM2,pipefishGLM3,test="Chisq")
+AIC(pipefishGLM1,pipefishGLM2,pipefishGLM3)
+```
+```{r}
+par(mfrow=c(2,2))
+plot(pipefishGLM3)
+```
+
 ```{r makeSpeciesMap}
 make_2spp_map<-function(gpsdat,
                         species1dat,
