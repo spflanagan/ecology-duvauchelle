@@ -768,13 +768,7 @@ for(i in 1:length(seasonCols)){
 
 
 ```{r}
-shrimp<-cleandat[cleandat$shrimp>0,] 
 
-plot(colSums(abund[grep("shrimp",rownames(abund)),]),
-     xlab="",ylab="# Shrimp",bty='n',xaxt='n',las=1,
-     pch=22,cex=2,ylim=c(100,3000))
-lines(colSums(abund[grep("shrimp",rownames(abund)),]))
-axis(1,at=c(1:10),labels=colnames(abund),las=2)
 
 ```
 
