@@ -354,6 +354,22 @@ make_species_map(gpsdat,cleandat,"flounder",center,zoom,scale = 1)
 
 
 
+
+```{r}
+fglm<-glm(flounder_long$count ~ 1+ flounder_long$Day * flounder_long$seagrass_cover * flounder_long$size, offset=log(flounder_long$towArea), family="quasipoisson")
+
+par(mfrow=c(2,2))
+plot(fglm)
+
+par(mfrow=c(1,5))
+plot(flounder_long$count,fglm$residuals)
+plot(as.numeric(as.factor(flounder_long$Season)),fglm$residuals)
+plot(as.numeric(as.factor(flounder_long$seagrass_cover)),fglm$residuals)
+plot(as.numeric(as.factor(flounder_long$size)),fglm$residuals)
+plot(flounder_long$towArea,fglm$residuals)
+```
+
+
 # Pipefish
 
 Questions:
