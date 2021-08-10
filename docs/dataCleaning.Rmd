@@ -266,16 +266,93 @@ write.csv(pipeTraits,"../data/pipefishTraits.csv",row.names = FALSE,quote=FALSE)
 ```
 
 
+Combine counts and trait data -- it is not perfect. 
 
+I was hoping to correct the pipefish data to be adult/juvenile, if possible.
 
+```{r pipeLong}
+pipe_long<-tidyr::gather(pipedat, size, count, 10:13, factor_key=TRUE)
+pipe_long$species<-gsub("(.*)_.*$","\\1",pipe_long$size)
+pipe_long$species[pipe_long$species=="s.nigra"]<-"stigmatopora"
+
+pipe_long$size<-factor(gsub("(.*)_","",pipe_long$size),
+                           levels = c("below50mm","above50mm"))
+pipe_long$density<-pipe_long$count/pipe_long$towArea
 ```
 
+```{r pipefishCnts}
+set.seed(51435)
+pipefishCnts<-pipe_long
+pipefishCnts$size<-as.character(pipefishCnts$size)
 
 
 
 ```{r}
 lengths<-read.csv("../data/pipefish.lengths.csv")
 counts<-read.csv("../data/pipefish.counts.csv")
+for( date in unique(pipedat$Day)){
+  trt<-pipeTraits[pipeTraits$DateSampled == date,]
+  cnt<-pipe_long[pipe_long$Day == date,]
+  
+  st<-trt[trt$Species=="Stigmatopora nigra" ,]
+  sc<-cnt[cnt$species=="stigmatopora" & cnt$count>0,]
+  
+  if(length(sc$size[sc$size %in% "above50mm"]) == length(st$Sex[st$Sex %in% c("male","female")])){
+    pipefishCnts$size[pipefishCnts$Day==date &
+                        pipefishCnts$species=="stigmatopora" &
+                        pipefishCnts$count>0 &
+                        pipefishCnts$size=="above50mm"]<-"adult"
+  }else if(length(sc$size[sc$size %in% "above50mm"]) > length(st$Sex[st$Sex %in% c("male","female")])){
+    
+    # if there are more 'above' ones than adults, randomly choose one to be the adult
+    # and make the others juveniles
+    abv<-row.names(pipefishCnts[which(pipefishCnts$Day==date &
+                 pipefishCnts$species=="stigmatopora" &
+                 pipefishCnts$count>0 &
+                 pipefishCnts$size=="above50mm"),])
+    adt<-sample(abv,length(st$Sex[st$Sex %in% c("male","female")]))
+    juv<-abv[! abv %in% adt]
+    pipefishCnts[adt,"size"]<-"adult"
+    pipefishCnts[juv,"size"]<-"juvenile"
+  } 
+  if(length(pipefishCnts$size[pipefishCnts$Day==date &
+                        pipefishCnts$species=="stigmatopora" &
+                        pipefishCnts$count>0 &
+                        pipefishCnts$size=="above50mm"]) > 0){
+    browser()
+  }
+  
+  st<-trt[trt$Species=="Leptonotus elevatus" ,]
+  sc<-cnt[cnt$species=="leptonotus" & cnt$count>0,]
+  
+  if(length(sc$size[sc$size %in% "above50mm"]) == length(st$Sex[st$Sex %in% c("male","female")])){
+    pipefishCnts$size[pipefishCnts$Day==date &
+                        pipefishCnts$species=="leptonotus" &
+                        pipefishCnts$count>0 &
+                        pipefishCnts$size=="above50mm"]<-"adult"
+  }else if(length(sc$size[sc$size %in% "above50mm"]) > length(st$Sex[st$Sex %in% c("male","female")])){
+    
+    # if there are more 'above' ones than adults, randomly choose one to be the adult
+    # and make the others juveniles
+    abv<-which(pipefishCnts$Day==date &
+                 pipefishCnts$species=="leptonotus" &
+                 pipefishCnts$count>0 &
+                 pipefishCnts$size=="above50mm")
+    adt<-sample(abv,length(st$Sex[st$Sex %in% c("male","female")]))
+    juv<-abv[! abv %in% adt]
+    pipefishCnts$size[adt]<-"adult"
+    pipefishCnts$size[adt]<-"juvenile"
+  } else{
+    browser()
+  }
+  
+}
+
+pipefishCnts$size[pipefishCnts$size=="below50mm"]<-"juvenile"
+pipefishCnts$size[pipefishCnts$count==0]<-NA
+```
+```{r savePipefishCnts, eval=FALSE}
+write.csv("../data/pipefishCnts.csv",row.names = FALSE,quote=FALSE)
 ```
 
 
