@@ -723,12 +723,25 @@ dev.off()
 
 
 
+
+# Shrimp
+
+```{r}
+shrimp<-cbind(cleandat[,c("Day","Season","towArea","seagrass_cover",
+                            "lat_start","long_start","lat_stop","long_stop")],
+                        cleandat[,grep("shrimp",colnames(cleandat))])
+
+shrimp_long <- gather(shrimp, size, count, 9:10, factor_key=TRUE)
+shrimp_long$size<-factor(gsub("shrimp_","",shrimp_long$size),
+                         levels=c("below20mm","above20mm"))
+shrimp_long$density<-shrimp_long$count/shrimp_long$towArea
+
+
 ```
 
 
 
 
-# Shrimp
 
 ```{r}
 shrimp<-cleandat[cleandat$shrimp>0,] 
