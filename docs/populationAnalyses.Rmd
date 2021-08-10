@@ -655,6 +655,13 @@ make_2spp_map<-function(gpsdat,
 ```{r stigmatopora}
 stigmatopora<-cleandat[cleandat$s.nigra_above50mm>0,]
 leptonotus<-cleandat[cleandat$leptonotus_above50mm>0,]
+```{r pipefishMap}
+stigmatopora<-cleandat[cleandat$s.nigra_above50mm>0 | cleandat$s.nigra_below50mm > 0,]
+stigmatopora$species<-"Stigmatopora"
+leptonotus<-cleandat[cleandat$leptonotus_above50mm>0 |cleandat$leptonotus_below50mm > 0,]
+leptonotus$species<-"Leptonotus"
+pipedat<-bind_rows(stigmatopora,leptonotus)
+
 m<-make_2spp_map(gpsdat,
                  stigmatopora,
                  leptonotus,
