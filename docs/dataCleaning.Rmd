@@ -237,16 +237,13 @@ pipeTraits<-dplyr::bind_rows(sTraits[,c(infoCols,datCols)],lTraits[,c(datCols,in
 pipeTraits<-pipeTraits[pipeTraits$LocationName=="Duvauchelle Bay",]
 ```
 ```{r AvgVals}
-body_dat$TotalLength_Avg<-rowMeans(body_dat[,grep("TotalLength",colnames(body_dat))],na.rm = TRUE)
-body_dat$SVL_Avg<-rowMeans(body_dat[,grep("SVL",colnames(body_dat))],na.rm = TRUE)
-body_dat$BodyWidth_Avg<-rowMeans(body_dat[,grep("BodyWidth",colnames(body_dat))],na.rm = TRUE)
-body_dat$BodyDepth_Avg<-rowMeans(body_dat[,grep("BodyDepth",colnames(body_dat))],na.rm = TRUE)
-body_dat$SnoutLength_Avg<-rowMeans(body_dat[,grep("SnoutLength",colnames(body_dat))],na.rm = TRUE)
-body_dat$SnoutWidth_Avg<-rowMeans(body_dat[,c(grep("SnoutWidth",colnames(body_dat)),grep("SnoutDepth",colnames(body_dat)))],na.rm = TRUE)
-body_dat$HeadLength_Avg<-rowMeans(body_dat[,grep("HeadLength",colnames(body_dat))],na.rm = TRUE)
-
-# get only the ones from duvauchelle
-duv_traits<-body_dat[body_dat$LocationName=="Duvauchelle Bay",]
+pipeTraits$TotalLength_Avg<-rowMeans(pipeTraits[,grep("TotalLength",colnames(pipeTraits))],na.rm = TRUE)
+pipeTraits$SVL_Avg<-rowMeans(pipeTraits[,grep("SVL",colnames(pipeTraits))],na.rm = TRUE)
+pipeTraits$BodyWidth_Avg<-rowMeans(pipeTraits[,grep("BodyWidth",colnames(pipeTraits))],na.rm = TRUE)
+pipeTraits$BodyDepth_Avg<-rowMeans(pipeTraits[,grep("BodyDepth",colnames(pipeTraits))],na.rm = TRUE)
+pipeTraits$SnoutLength_Avg<-rowMeans(pipeTraits[,grep("SnoutLength",colnames(pipeTraits))],na.rm = TRUE)
+pipeTraits$SnoutWidth_Avg<-rowMeans(pipeTraits[,c(grep("SnoutWidth",colnames(pipeTraits)),grep("SnoutDepth",colnames(pipeTraits)))],na.rm = TRUE)
+pipeTraits$HeadLength_Avg<-rowMeans(pipeTraits[,grep("HeadLength",colnames(pipeTraits))],na.rm = TRUE)
 ```
 
 ```{r TotalSNiCnts}
@@ -260,6 +257,8 @@ sni_num<-as.data.frame(do.call(rbind,by(sni_dat,sni_dat$Day,function(dat){
 },simplify = FALSE)))
 colnames(sni_num)<-"totalN"
 
+```{r pipeTraitsKeepCols}
+pipeTraits<-pipeTraits[!is.na(pipeTraits$Species),c(colnames(pipeTraits)[1:10],grep("Avg",colnames(pipeTraits),value=TRUE))]
 ```
 
 Check to make sure that all of the data match up -- community ecology counts and measurements:
@@ -273,8 +272,18 @@ db_num<-data.frame(measuredN=tapply(duv_traits$ID,as.factor(duv_traits$date),len
 db_num$date<-ymd(rownames(db_num))
 
 sni_num<-merge(sni_num,db_num,by="date",all.x=TRUE)
-sni_num[is.na(sni_num)]<-0
-sni_num$unmeasured<-sni_num$totalN-sni_num$measuredN
+```{r pipeTraitsFactors}
+pipeTraits$Season<-gsub("(\\d{4})\\-(\\d{2})\\-(\\d{2})","\\2",pipeTraits$DateSampled)
+pipeTraits$Season[pipeTraits$Season %in% c("09","10","11")]<-"Spring"
+pipeTraits$Season[pipeTraits$Season %in% c("12","01","02")]<-"Summer"
+pipeTraits$Season[pipeTraits$Season %in% c("03","04","05")]<-"Fall"
+pipeTraits$Season[pipeTraits$Season %in% c("06","07","08")]<-"Winter"
+pipeTraits$Season<-factor(pipeTraits$Season,levels=c("Winter","Spring","Summer","Fall"))
+# fill in the missing measurements
+pipeTraits$TotalLength_Avg[is.na(pipeTraits$TotalLength_Avg)]<-pipeTraits$Length_field[is.na(pipeTraits$TotalLength_Avg)]
+# fill in status
+pipeTraits$Status[pipeTraits$Sex=="female"]<-"female"
+pipeTraits$Status<-as.factor(pipeTraits$Status)
 ```
 
 There are `r sum(sni_num$unmeasured,na.rm=TRUE)` observations that are also not in the measurements file -- this is good!
@@ -287,6 +296,8 @@ cnts$date<-ymd(rownames(cnts))
 cnts<-merge(sni_num,cnts,by="date",all.x=TRUE)
 cnts[is.na(cnts)]<-0
 
+```{r savePipeTraits, eval=FALSE}
+write.csv(pipeTraits,"../data/pipefishTraits.csv",row.names = FALSE,quote=FALSE)
 ```
 
 ```{r}
