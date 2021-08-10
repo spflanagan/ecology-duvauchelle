@@ -580,6 +580,36 @@ Let's get predicted probabilities:
 pp <- fitted(traitGLM)
 ```
 
+## violin plots
+
+```{r}
+sppCols<-c('#8dd3c7','#ffffb3','#b3de69','#80b1d3','#fb8072','#fdb462','#bebada','#fccde5')
+names(sppCols)<-c("Leptonotus","Stigmatopora","Shrimp","Flounder","Crabs","Molluscs","OtherFish","Other")
+
+with(pipeTraits[pipeTraits$Species=="Stigmatopora nigra",] , violin_plot( 
+  TotalLength_Avg[Status=="juvenile"] , 
+  TotalLength_Avg[Status=="female"], 
+  TotalLength_Avg[Status=="nonpregnant"],
+  TotalLength_Avg[Status=="pregnant"],  
+  col=sppCols["Stigmatopora"] ,
+  names=c("juvenile","female","nonpregnant","pregnant"),
+  colMed = "black",
+  rectCol = "grey",
+  ylim=c(0,200)
+))
+
+
+with(pipeTraits[pipeTraits$Species=="Leptonotus elevatus",] , violin_plot( 
+  TotalLength_Avg[Status=="juvenile"] , 
+  TotalLength_Avg[Status=="female"], 
+  col=sppCols["Leptonotus"] ,
+  names=c("juvenile","female") ,
+  colMed = "black",
+  rectCol="grey",
+  ylim=c(0,200)
+))
+
+```
 ```{r makeSpeciesMap}
 make_2spp_map<-function(gpsdat,
                         species1dat,
