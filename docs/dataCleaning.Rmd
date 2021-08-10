@@ -287,9 +287,6 @@ pipefishCnts$size<-as.character(pipefishCnts$size)
 
 
 
-```{r}
-lengths<-read.csv("../data/pipefish.lengths.csv")
-counts<-read.csv("../data/pipefish.counts.csv")
 for( date in unique(pipedat$Day)){
   trt<-pipeTraits[pipeTraits$DateSampled == date,]
   cnt<-pipe_long[pipe_long$Day == date,]
