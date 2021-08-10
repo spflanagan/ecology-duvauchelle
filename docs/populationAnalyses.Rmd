@@ -566,6 +566,20 @@ plot(traitLM)
 ```
 
 Is status (juvenile, pregnant male, nonpregnant male, female) predicted by season and species? 
+```{r}
+library(nnet)
+
+traitGLM<-multinom(pipeTraits$Status~pipeTraits$Season*as.factor(pipeTraits$Species))
+z <- summary(traitGLM)$coefficients/summary(traitGLM)$standard.errors
+p <- (1 - pnorm(abs(z), 0, 1)) * 2
+exp(coef(traitGLM))
+```
+
+Let's get predicted probabilities:
+```{r}
+pp <- fitted(traitGLM)
+```
+
 ```{r makeSpeciesMap}
 make_2spp_map<-function(gpsdat,
                         species1dat,
