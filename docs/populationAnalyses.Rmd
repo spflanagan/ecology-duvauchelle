@@ -53,6 +53,8 @@ multi_tapply<-function(dat,focalCol,factors,FUN,...){
 ```{r}
 cleandat<-read.csv("../data/cleanedCommunity.csv")
 seasonCols<-c(Spring="coral",Summer="olivedrab3",Fall="gold",Winter="dodgerblue")
+seagrassCs<-c(bare="#d9f0a3",sparse="#78c679",patchy="#41ab5d",dense="#005a32")
+size_cols<-c("#a6bddb","#74a9cf","#2b8cbe","#045a8d")
 ```
 
 
@@ -233,9 +235,8 @@ seagrassPlot<-function(flounderMeanCnts,flounderSEMCnts,cover){
 
 ```
 
-```{r}
+```{r makeFlounderPlots,eval=FALSE}
 png("../figs/flounderPlots.png",width = 1512, height = 300, res = 96)
-size_cols<-c("#a6bddb","#74a9cf","#2b8cbe","#045a8d")
 par(mfrow=c(1,4), oma=c(5,0,2,1), mar=c(2,5.5,1,1),xpd=TRUE)
 seagrassPlot(flounderMeanCnts,flounderSEMCnts,"bare")
 mtext("Number of flounder",2,outer=FALSE,cex = 1.5,line=3.75)
