@@ -559,6 +559,13 @@ par(mfrow=c(1,2))
 plot(pipeTraits$TotalLength_Avg~pipeTraits$Season*as.factor(pipeTraits$Species))
 
 ```
+```{r}
+traitLM<-lm(pipeTraits$TotalLength_Avg~pipeTraits$Season*pipeTraits$Species)
+par(mfrow=c(2,2))
+plot(traitLM)
+```
+
+Is status (juvenile, pregnant male, nonpregnant male, female) predicted by season and species? 
 ```{r makeSpeciesMap}
 make_2spp_map<-function(gpsdat,
                         species1dat,
