@@ -269,6 +269,7 @@ seagrassPhotos<-image_append(image_scale(c(
 ```
 
 ```{r}
+flounderfig<-image_convert(image_read("../figs/flounderPlots.png"), "png")
 flounderSeagrass<-image_append(c(flounderfig,
                                  seagrassPhotos), 
                                stack = TRUE)
