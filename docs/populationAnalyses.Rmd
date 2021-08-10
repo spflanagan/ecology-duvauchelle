@@ -551,6 +551,14 @@ par(mfrow=c(2,2))
 plot(pipefishGLM3)
 ```
 
+
+
+```{r}
+
+par(mfrow=c(1,2))
+plot(pipeTraits$TotalLength_Avg~pipeTraits$Season*as.factor(pipeTraits$Species))
+
+```
 ```{r makeSpeciesMap}
 make_2spp_map<-function(gpsdat,
                         species1dat,
