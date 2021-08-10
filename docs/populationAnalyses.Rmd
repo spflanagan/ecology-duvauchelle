@@ -610,6 +610,10 @@ with(pipeTraits[pipeTraits$Species=="Leptonotus elevatus",] , violin_plot(
 ))
 
 ```
+
+
+### plot pipefish
+
 ```{r makeSpeciesMap}
 make_2spp_map<-function(gpsdat,
                         species1dat,
