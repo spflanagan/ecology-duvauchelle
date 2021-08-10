@@ -392,6 +392,13 @@ Challenges with this dataset:
 - The variance is `r var(flounder_long$count)` and the mean is `r mean(flounder_long$count)`
 - The data has many zeroes
 
+```{r flounderDistributions}
+par(mfrow=c(2,2))
+hist(flounder_long$count,xlab="Counts", ylab="Number of observations", main="Distribution of raw counts")
+hist(flounder_long$count,xlab="ln(Counts)", ylab="Number of observations", main="Distribution of raw counts")
+hist(flounder_long$count,xlab="Density (counts/m^2)", ylab="Number of observations", main="Distribution of raw densities")
+hist(flounder_long$density,xlab="ln(Density)", ylab="Number of observations", main="Distribution of log-transformed densities")
+```
 
 
 All of this together points to the need to at a minimum use a negative binomial distribution, and possibly (probably) we will need to use a zero-inflated negative binomial. 
