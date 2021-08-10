@@ -360,6 +360,30 @@ Do flounder of different sizes have different abundances throughout the year AND
 
 Looking at patterns of counts (Fig. \@ref(fig:ExploreFlounderPlots)), we can see that the flounder counts do seem to vary with the variables. 
 
+```{r reorderCols}
+seasonCols<-seasonCols[levels(flounder_long$Season)]
+seagrassCs<-seagrassCs[levels(flounder_long$seagrass_cover)]
+```
+
+```{r ExploreFlounderPlots, fig.cap="Plots of the relationship between raw counts and each of the variables of interest.",fig.height=4,fig.width=8.5}
+par(mfrow=c(1,4), las=1)
+plot(flounder_long$count~jitter(as.integer(flounder_long$Season)),
+     xlab="Season", ylab="Raw counts",col=alpha(seasonCols[flounder_long$Season],0.5),
+     pch=19,cex=2,bty='L',cex.lab=1.5,xaxt='n',cex.axis=1.5)
+axis(1,labels=levels(flounder_long$Season),at=1:length(levels(flounder_long$Season)), cex.axis=1.5)
+plot(flounder_long$count~jitter(as.numeric(flounder_long$seagrass_cover)),
+     xlab="Seagrass cover", ylab="", col=alpha(seagrassCs[flounder_long$seagrass_cover],0.5),
+     pch=19,cex=2,bty='L',cex.lab=1.5,xaxt='n',cex.axis=1.5)
+axis(1,labels=levels(flounder_long$seagrass_cover),at=1:length(levels(flounder_long$seagrass_cover)),cex.axis=1.5)
+plot(flounder_long$count~jitter(as.numeric(flounder_long$size)),
+     xlab="Size class",ylab="",col=alpha(size_cols[flounder_long$size],0.5),
+     pch=19,cex=2,bty='L',cex.lab=1.5,cex.axis=1.5,xaxt='n',cex.axis=1.5)
+axis(1,labels=levels(flounder_long$size),at=1:length(levels(flounder_long$size)),cex.axis=1.5)
+plot(flounder_long$count~flounder_long$towArea,
+     xlab="Tow Area", ylab="",col=alpha('#242424',0.5),
+     pch=19,cex=2,bty='L',cex.lab=1.5,cex.axis=1.5)
+```
+
 
 
 ```{r}
