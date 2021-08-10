@@ -209,11 +209,11 @@ ordAbund<-write.csv(ordAbund,"cleanedCommunityOrders.csv",quote=FALSE,row.names 
 
 Get the size data from the google doc
 
-```{r driveDownload,eval=FALSE}
+```{r googleDrive, eval=FALSE}
 library("googledrive")
 drive_dat<-drive_download("NZsyngnathids_measurements", 
                           path="../data/NZsyngnathids_measurements",
-                          type = "csv",
+                          type = "xlsx",
                           overwrite=TRUE)
 ```
 ```{r readCSV}
