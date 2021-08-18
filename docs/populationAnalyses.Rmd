@@ -680,9 +680,22 @@ chisq.test(pipefishCnts$size,predict(ageGLM4))
 
 Well, crap, all of the predictions are for an absence.
 
-Let's get predicted probabilities:
 ```{r}
-pp <- fitted(traitGLM)
+combos <- data.frame(seagrass_cover = rep(c("bare","sparse", "patchy", "dense"), each=8), 
+                      Season = rep(c("Winter","Spring","Summer","Fall"),4),
+                     species = rep(c("stigmatopora","leptonotus"),each=4),
+                     stringsAsFactors = TRUE)
+combos$seagrass_cover<-factor(combos$seagrass_cover,
+                              levels=c("bare","sparse", "patchy", "dense"))
+combos$Season<-factor(combos$Season,
+                              levels=c("Winter","Spring","Summer","Fall"))
+
+## store the predicted probabilities for each value of ses and write
+pp.combos <- cbind(combos, predict(ageGLM4, newdata = combos, type = "probs", se = TRUE))
+
+comboMelt <- reshape2::melt(pp.combos, id.vars = c("seagrass_cover", "Season","species"), value.name = "probability")
+```
+
 ```
 
 ## violin plots
