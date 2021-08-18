@@ -733,7 +733,6 @@ PlotPipefishProbs<-function(predictedProbs, spp,stt,
        cex.axis=1.5,lty=0)
   axis(2,las=1,cex.axis=1.5)
   
-  lapply(2:length(levels(dat$seagrass_cover)),function(i){
   # add confidence intervals
   lapply(1:length(levels(dat$seagrass_cover)),function(i){
     cvr<-levels(dat$seagrass_cover)[i]
@@ -747,6 +746,8 @@ PlotPipefishProbs<-function(predictedProbs, spp,stt,
            lwd=2,
            xpd=FALSE)
   })
+   # add points
+  lapply(1:length(levels(dat$seagrass_cover)),function(i){
     cvr<-levels(dat$seagrass_cover)[i]
     points(probability~as.numeric(Season),
        data=dat[which(dat$seagrass_cover==cvr),],
