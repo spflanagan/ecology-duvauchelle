@@ -739,10 +739,12 @@ PlotPipefishProbs<-function(predictedProbs, spp,stt,
        col=seagrassCs[i],
        cex=2)
   })
+  # add connecting lines
   lapply(1:length(levels(dat$seagrass_cover)),function(i){
     cvr<-levels(dat$seagrass_cover)[i]
+    d<-dat[which(dat$seagrass_cover==cvr),]
     points(probability~as.numeric(Season),
-       data=dat[which(dat$seagrass_cover==cvr),],
+       data=d[order(as.numeric(d$Season)),],
        type='l',
        lty=i,
        col=seagrassCs[i],
