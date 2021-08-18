@@ -410,7 +410,7 @@ hist(flounder_long$density,xlab="ln(Density)", ylab="Number of observations", ma
 All of this together points to the need to at a minimum use a negative binomial distribution, and possibly (probably) we will need to use a zero-inflated negative binomial. 
 
 
-
+My initial attempts using a negative binomial resulted in some models that don't fit that well, because they have some really large deviations from the assumptions of the homogeneity of variances in the residuals.
 
 ```{r}
 flounderGLM8<-MASS::glm.nb(flounder_long$count ~ 1+ flounder_long$seagrass_cover/flounder_long$Season  * flounder_long$size *flounder_long$towArea)
