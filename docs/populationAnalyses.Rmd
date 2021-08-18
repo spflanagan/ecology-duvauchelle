@@ -436,11 +436,102 @@ plot(as.factor(flounder_long$size),flounderGLM8$residuals)
 plot(flounder_long$towArea,flounderGLM8$residuals)
 ```
 
+So now I'm going to try a zero-inflated negative binomial:
+
+```{r}
+library(pscl)
+m0<-zeroinfl(flounder_long$count ~ 1,
+             dist="negbin")
+m1<-zeroinfl(flounder_long$count ~ 1+ flounder_long$seagrass_cover/flounder_long$Season  + flounder_long$size +flounder_long$towArea,
+             dist="negbin")
+m2<-zeroinfl(flounder_long$count ~ 1+ flounder_long$seagrass_cover+flounder_long$Season  + flounder_long$size +flounder_long$towArea,
+             dist="negbin")
+
+aic<-AIC(m0,m1,m2)
+aic<-aic[order(aic[,2]),]
+```
+```{r}
+plot(m1$fitted.values,m1$residuals,xlab="Fitted",ylab="Residuals")
+```
 
 
 ```{r}
+par(mfrow=c(1,5))
+plot(flounder_long$count,m1$residuals)
+plot(as.factor(flounder_long$Season),m1$residuals)
+plot(as.factor(flounder_long$seagrass_cover),m1$residuals)
+plot(as.factor(flounder_long$size),m1$residuals)
+plot(flounder_long$towArea,m1$residuals)
+
+```
+```{r}
+# Dispersion Statistic
+E2 <- resid(m1, type = "pearson")
+N  <- nrow(flounder_long)
+p  <- length(coef(m1)) + 1 # '+1' is due to theta
+disp<-sum(E2^2) / (N - p)
 ```
 
+The dispersion statistic is `r disp`, which seems reasonably small (and reasonably close to mean counts, which is `r mean(flounder_long$count)`).
+
+I'm checking the model fit based on the recommendations from [Stack Overflow](https://stackoverflow.com/questions/30103001/assessing-performance-of-a-zero-inflated-negative-binomial-model).
+
+```{r}
+# store observed values, and determine how many are nonzero
+obs <- flounder_long$count
+obs.nonzero <- obs > 0
+table(obs)
+nonzeroTab<-table(obs.nonzero)
+```
+
+There are `r nonzeroTab[[1]]` observations that are zero, and the remaining `r nonzeroTab[[2]]` are non-zero.
+
+
+```{r flounderPredsCount, fig.cap="Predicted counts from the zero-inflated negative binomial model."}
+# calculate predicted counts, and check their distribution
+preds.count <- predict(m1, type="response")
+plot(density(preds.count))
+```
+```{r flounderPredsProb, fig.cap="Predicted probability that each item iz non-zero."}
+# also the predicted probability that each item is nonzero
+preds <- 1-predict(m1, type = "prob")[,1]
+preds.nonzero <- preds > 0.5
+plot(density(preds))
+nonzeroPreds<-table(preds.nonzero)
+```
+
+The model predicts that there would be `r nonzeroPreds[[1]]` zero observations and `r nonzeroPreds[[2]]` non-zero observations.
+
+```{r}
+# the confusion matrix is obtained by tabulating the dichotomized observations and predictions
+confusion.matrix <- table(preds.nonzero, obs.nonzero)
+FNR <- confusion.matrix[2,1] / sum(confusion.matrix[,1])
+```
+
+Using the confusion matrix (tabulating the zero and non-zero observations and predictions), we can calculate the false negative rate to be `r FNR`.
+
+
+```{r, fig.cap="Predicted counts compared to observed counts. The model does well for the smaller counts but performs poorly for large count observations."}
+ # let's look at how well the counts are being predicted
+library(ggplot2)
+output <- as.data.frame(list(preds.count=preds.count, obs=obs))
+ggplot(aes(x=obs, y=preds.count), data=output) + geom_point(alpha=0.3) + geom_smooth(col="blue")
+```
+```{r, fig.cap="Log-transformed observed counts compared to predicted counts, only showing non-zero counts."}
+output$log.obs <- log(output$obs)
+output$log.preds.count <- log(output$preds.count)
+ggplot(aes(x=log.obs, y=log.preds.count), data=output[!is.na(output$log.obs) & !is.na(output$log.preds.count),]) + geom_jitter(alpha=0.3, width=.15, size=2) + geom_smooth(col="blue") + labs(x="Observed count (non-zero, natural logarithm)", y="Predicted count (non-zero, natural logarithm)")
+
+```
+
+We can use a regression of observed counts on predicted counts to evaluate the relationship between non-zero predicted and actual counts.
+```{r}
+calibrate <- lm(log(preds.count) ~ log(obs), data=output[output$obs!=0 & output$preds.count!=0,])
+summary(calibrate)
+sigma <- summary(calibrate)$sigma
+```
+
+The relationship is significant (p = `r summary(calibrate)$coefficients[2,4]`), with an estimated slope of `r calibrate$coefficients[[2]]`. The residual standared error is `r sigma`.
 
 ```{r, eval=FALSE}
 covariates <- names(Solea)[!( names(Solea) %in% c("Sample", "Area", "Solea_solea"))]
