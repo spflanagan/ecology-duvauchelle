@@ -352,7 +352,7 @@ pipefishCnts$size[pipefishCnts$size=="below50mm"]<-"juvenile"
 pipefishCnts$size[pipefishCnts$count==0]<-"absent"
 ```
 ```{r savePipefishCnts, eval=FALSE}
-write.csv("../data/pipefishCnts.csv",row.names = FALSE,quote=FALSE)
+write.csv(pipefishCnts,"../data/pipefishCnts.csv",row.names = FALSE,quote=FALSE)
 ```
 
 
