@@ -628,10 +628,14 @@ Is status (juvenile, adult, absent) predicted by season and species?
 ```{r}
 library(nnet)
 
-traitGLM<-multinom(pipeTraits$Status~pipeTraits$Season*as.factor(pipeTraits$Species))
-z <- summary(traitGLM)$coefficients/summary(traitGLM)$standard.errors
-p <- (1 - pnorm(abs(z), 0, 1)) * 2
-exp(coef(traitGLM))
+ageGLM0<-multinom(size~1, data=pipefishCnts) 
+ageGLM1<-multinom(size~1+Season*seagrass_cover*species, data=pipefishCnts) # does not converge
+ageGLM2<-multinom(size~1+seagrass_cover/Season*species, data=pipefishCnts)
+ageGLM3<-multinom(size~1+seagrass_cover/Season+species, data=pipefishCnts)
+ageGLM4<-multinom(size~1+seagrass_cover*Season+species, data=pipefishCnts)
+
+AIC(ageGLM0,ageGLM1,ageGLM2,ageGLM3,ageGLM4)
+```
 ```
 
 Let's get predicted probabilities:
