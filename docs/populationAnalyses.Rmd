@@ -623,7 +623,8 @@ par(mfrow=c(2,2))
 plot(traitLM)
 ```
 
-Is status (juvenile, pregnant male, nonpregnant male, female) predicted by season and species? 
+Is status (juvenile, adult, absent) predicted by season and species? 
+
 ```{r}
 library(nnet)
 
