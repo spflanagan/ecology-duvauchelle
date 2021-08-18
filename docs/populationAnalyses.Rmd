@@ -710,11 +710,11 @@ pipePivot$variable<-as.factor(pipePivot$variable)
 ```
 
 ```{r}
-PlotPipefishProbs<-function(comboMelt, spp,stt,
+PlotPipefishProbs<-function(predictedProbs, spp,stt,
                             seagrassCs, seagrassPs){
-  dat<-comboMelt[which(comboMelt$species==spp &
-                       comboMelt$variable==stt),]
-  ymin<-min(dat$probability)-0.05
+  
+  dat<-predictedProbs[which(predictedProbs$species==spp &
+                       predictedProbs$variable==stt),]
   if(ymin<0) ymin<-0
   ymax<-max(dat$probability)+0.05
   if(ymax>1) ymax<-1
@@ -727,7 +727,7 @@ PlotPipefishProbs<-function(comboMelt, spp,stt,
        xlab="Season",
        col=seagrassCs[1],
        ylim=c(ymin,ymax))
-  axis(1,at=1:4,labels=levels(comboMelt$Season),pos=ymin,
+  axis(1,at=1:4,labels=levels(dat$Season),pos=ymin,
        cex.axis=1.5,lty=0)
   axis(2,las=1,cex.axis=1.5)
   
