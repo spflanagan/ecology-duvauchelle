@@ -660,9 +660,6 @@ We can test the goodness of fit by examining the predicted values. We'll use the
 ```{r}
 summary(predict(ageGLM4))
 ```
-```{r}
-chisq.test(pipefishCnts$size,predict(ageGLM4))
-```
 
 All of the predictions, when categorized as a count, are for an absence.
 
