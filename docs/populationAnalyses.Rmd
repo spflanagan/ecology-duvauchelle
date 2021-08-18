@@ -679,7 +679,35 @@ pp.combos <- cbind(combos, predict(ageGLM4, newdata = combos, type = "probs", se
 comboMelt <- reshape2::melt(pp.combos, id.vars = c("seagrass_cover", "Season","species"), value.name = "probability")
 ```
 
+What if we want to add confidence intervals?
+```{r}
 
+library(effects)
+fit.eff<-Effect(c("seagrass_cover","Season","species"), ageGLM4)
+
+
+pipefishProbs<-data.frame(fit.eff$x, 
+                          fit.eff$prob, 
+                          fit.eff$lower.prob, 
+                          fit.eff$upper.prob,
+                          stringsAsFactors = TRUE)
+
+pipePivot<-pivot_longer(pipefishProbs,
+                        4:12,
+                        names_to="estimate",
+                        values_to="value")
+pipePivot$variable<-gsub("(\\w)?\\.?prob\\.(\\w+)","\\2",pipePivot$estimate)
+pipePivot$estimate<-gsub("(\\w)?\\.?prob\\.(\\w+)","\\1",pipePivot$estimate)
+pipePivot$estimate[pipePivot$estimate==""]<-"probability"
+
+pipePivot<-pivot_wider(pipePivot, names_from="estimate",values_from = "value")
+pipePivot<-data.frame(pipePivot,stringsAsFactors = TRUE)
+pipePivot$seagrass_cover<-factor(pipePivot$seagrass_cover,
+                              levels=c("bare","sparse", "patchy", "dense"))
+pipePivot$Season<-factor(pipePivot$Season,
+                              levels=c("Winter","Spring","Summer","Fall"))
+pipePivot$variable<-as.factor(pipePivot$variable)
+```
 
 ```{r}
 PlotPipefishProbs<-function(comboMelt, spp,stt,
