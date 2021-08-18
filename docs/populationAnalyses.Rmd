@@ -795,9 +795,9 @@ l<-outer_legend("bottom",
              cex=1.5)
 mtext("Probability",2,outer=TRUE,line=1.75)
 
-mtext("absent",4,outer=TRUE,line=-5,las=1,padj=-14.5)
-mtext("adults",4,outer=TRUE,line=-5,las=1,padj=-4)
-mtext("juveniles",4,outer=TRUE,line=-5,las=1,padj=6.5)
+mtext("absent",4,outer=TRUE,line=-5,las=1,padj=-14.5,font=2)
+mtext("adults",4,outer=TRUE,line=-5,las=1,padj=-4,font=2)
+mtext("juveniles",4,outer=TRUE,line=-5,las=1,padj=6.5,font=2)
 
 mtext("Stigmatopora nigra",3,outer=TRUE,font=3,adj=0.1)
 mtext("Leptonotus elevatus",3,outer=TRUE,font=3,adj=0.8)
