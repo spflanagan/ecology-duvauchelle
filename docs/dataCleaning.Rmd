@@ -309,6 +309,7 @@ for( date in unique(pipedat$Day)){
                  pipefishCnts$size=="above50mm"),])
     adt<-sample(abv,length(st$Sex[st$Sex %in% c("male","female")]))
     juv<-abv[! abv %in% adt]
+    print(paste(length(juv),">50mm Stigmatopora reassigned as juveniles;", length(adt), ">50mm inds retained as adults"))
     pipefishCnts[adt,"size"]<-"adult"
     pipefishCnts[juv,"size"]<-"juvenile"
   } 
@@ -335,8 +336,10 @@ for( date in unique(pipedat$Day)){
                  pipefishCnts$species=="leptonotus" &
                  pipefishCnts$count>0 &
                  pipefishCnts$size=="above50mm")
+    
     adt<-sample(abv,length(st$Sex[st$Sex %in% c("male","female")]))
     juv<-abv[! abv %in% adt]
+    print(paste(length(juv),">50mm Leptonotus reassigned as juveniles;", length(adt), ">50mm inds retained as adults"))
     pipefishCnts$size[adt]<-"adult"
     pipefishCnts$size[adt]<-"juvenile"
   } else{
