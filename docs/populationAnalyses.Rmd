@@ -636,7 +636,49 @@ ageGLM4<-multinom(size~1+seagrass_cover*Season+species, data=pipefishCnts)
 
 AIC(ageGLM0,ageGLM1,ageGLM2,ageGLM3,ageGLM4)
 ```
+
+```{r}
+z0 <- summary(ageGLM0)$coefficients/summary(ageGLM0)$standard.errors
+z3 <- summary(ageGLM3)$coefficients/summary(ageGLM3)$standard.errors
+z4 <- summary(ageGLM4)$coefficients/summary(ageGLM4)$standard.errors
+
+p0 <- (1 - pnorm(abs(z0), 0, 1)) * 2
+p3 <- (1 - pnorm(abs(z3), 0, 1)) * 2
+p4 <- (1 - pnorm(abs(z4), 0, 1)) * 2
 ```
+
+```{r}
+anova(ageGLM0,ageGLM3,ageGLM4)
+```
+
+The log-likelihood difference indicates new variance explained by the model. Both of our parameterized models fit better than the null model with no parameters, but the / vs * models are the same (no difference).
+
+Checking the model assumptions:
+
+no outliers, high leverage values, or highly influential points for the scale/continuous variables.
+
+```{r}
+
+par(mfrow=c(1,4))
+plot(pipefishCnts$size,ageGLM4$residuals)
+plot(pipefishCnts$Season,ageGLM4$residuals)
+plot(pipefishCnts$seagrass_cover,ageGLM4$residuals)
+plot(pipefishCnts$species,ageGLM4$residuals)
+```
+
+The residuals seem to be reasonably centred around zero? 
+
+
+We can test the goodness of fit by examining the predicted values. We'll use the * model for now, as I'm more confident that it is specified correctly.
+
+```{r}
+summary(predict(ageGLM4))
+```
+```{r}
+chisq.test(pipefishCnts$size,predict(ageGLM4))
+```
+
+Well, crap, all of the predictions are for an absence.
 
 Let's get predicted probabilities:
 ```{r}
