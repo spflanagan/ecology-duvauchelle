@@ -590,6 +590,10 @@ pipedat<-cleandat[,keep_cols]
 pipeTraits<-read.csv("../data/pipefishTraits.csv",stringsAsFactors = TRUE)
 pipefishCnts<-read.csv("../data/pipefishCnts.csv",stringsAsFactors=TRUE)
 ```
+```{r}
+pipecols<-c(Leptonotus='#8dd3c7',Stigmatopora='#ffffb3')
+```
+
 
 
 ```{r}
