@@ -54,6 +54,7 @@ multi_tapply<-function(dat,focalCol,factors,FUN,...){
 cleandat<-read.csv("../data/cleanedCommunity.csv")
 seasonCols<-c(Spring="coral",Summer="olivedrab3",Fall="gold",Winter="dodgerblue")
 seagrassCs<-c(bare="#d9f0a3",sparse="#78c679",patchy="#41ab5d",dense="#005a32")
+seagrassPs<-c(bare=16, sparse=18, patchy=17, dense=15)
 size_cols<-c("#a6bddb","#74a9cf","#2b8cbe","#045a8d")
 ```
 
