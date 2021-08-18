@@ -588,6 +588,7 @@ pipedat<-cleandat[,keep_cols]
 
 ```{r}
 pipeTraits<-read.csv("../data/pipefishTraits.csv",stringsAsFactors = TRUE)
+pipefishCnts<-read.csv("../data/pipefishCnts.csv",stringsAsFactors=TRUE)
 ```
 
 
