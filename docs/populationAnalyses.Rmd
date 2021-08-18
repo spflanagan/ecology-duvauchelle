@@ -437,13 +437,10 @@ plot(flounder_long$towArea,flounderGLM8$residuals)
 ```
 
 
-Check if covariates are highly correlated:
 
 ```{r}
-plot(flounder_long[,c("Season","seagrass_cover","size","towArea")])
 ```
 
-(they're not).
 
 ```{r, eval=FALSE}
 covariates <- names(Solea)[!( names(Solea) %in% c("Sample", "Area", "Solea_solea"))]
