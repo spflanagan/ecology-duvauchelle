@@ -385,6 +385,11 @@ plot(flounder_long$count~flounder_long$towArea,
      pch=19,cex=2,bty='L',cex.lab=1.5,cex.axis=1.5)
 ```
 
+Before going forward, we should also check if covariates are highly correlated (they don't seem to be, and are categorical):
+
+```{r}
+plot(flounder_long[,c("Season","seagrass_cover","size","towArea")])
+```
 
 Challenges with this dataset:
 
