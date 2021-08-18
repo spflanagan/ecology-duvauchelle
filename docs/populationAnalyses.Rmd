@@ -715,8 +715,10 @@ PlotPipefishProbs<-function(predictedProbs, spp,stt,
   
   dat<-predictedProbs[which(predictedProbs$species==spp &
                        predictedProbs$variable==stt),]
+  
+  ymin<-min(dat$probability,na.rm=TRUE)-0.1
   if(ymin<0) ymin<-0
-  ymax<-max(dat$probability)+0.05
+  ymax<-max(dat$probability,na.rm=TRUE)+0.1
   if(ymax>1) ymax<-1
   plot(probability~as.numeric(Season),
        data=dat[which(dat$seagrass_cover=="bare"),],
