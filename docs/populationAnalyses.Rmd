@@ -739,7 +739,41 @@ PlotPipefishProbs<-function(comboMelt, spp,stt,
   })
 }
 ```
+
+```{r,fig.width=639,fig.height=478}
+
+par(mfcol=c(3,2),xpd=TRUE,mar=c(2,2,2,2),oma=c(3,4,3,2))
+sp<-lapply(levels(comboMelt$variable),
+           PlotPipefishProbs,
+           comboMelt=comboMelt,
+           spp="stigmatopora",
+           seagrassCs=seagrassCs,
+           seagrassPs=seagrassPs)
+sl<-lapply(levels(comboMelt$variable),
+           PlotPipefishProbs,
+           comboMelt=comboMelt,
+           spp="leptonotus",
+           seagrassCs=seagrassCs,
+           seagrassPs=seagrassPs)
+l<-outer_legend("bottom",
+             levels(comboMelt$seagrass_cover),
+             col=seagrassCs,
+             pch=seagrassPs,
+             lty=1:4,
+             lwd=2,
+             bty='n',
+             ncol=4,
+             cex=1.5)
+mtext("Probability",2,outer=TRUE,line=1.75)
+
+mtext("absent",4,outer=TRUE,line=-5,las=1,padj=-19)
+mtext("adults",4,outer=TRUE,line=-5,las=1,padj=-4.5)
+mtext("juveniles",4,outer=TRUE,line=-5,las=1,padj=8.5)
+
+mtext("Stigmatopora nigra",3,outer=TRUE,font=3,adj=0.1)
+mtext("Leptonotus elevatus",3,outer=TRUE,font=3,adj=0.8)
 ```
+
 
 ## violin plots
 
