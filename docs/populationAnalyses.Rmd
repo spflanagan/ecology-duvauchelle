@@ -442,8 +442,8 @@ So now I'm going to try a zero-inflated negative binomial:
 library(pscl)
 m0<-zeroinfl(flounder_long$count ~ 1,
              dist="negbin")
-m1<-zeroinfl(flounder_long$count ~ 1+ flounder_long$seagrass_cover/flounder_long$Season  + flounder_long$size +flounder_long$towArea,
-             dist="negbin")
+m1<-zeroinfl(count ~ 1+ seagrass_cover*Season  + size +towArea,
+             dist="negbin", data=flounder_long)
 m2<-zeroinfl(flounder_long$count ~ 1+ flounder_long$seagrass_cover+flounder_long$Season  + flounder_long$size +flounder_long$towArea,
              dist="negbin")
 
