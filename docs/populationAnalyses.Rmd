@@ -536,33 +536,10 @@ sigma <- summary(calibrate)$sigma
 
 The relationship is significant (p = `r summary(calibrate)$coefficients[2,4]`), with an estimated slope of `r calibrate$coefficients[[2]]`. The residual standared error is `r sigma`.
 
-```{r, eval=FALSE}
-covariates <- names(Solea)[!( names(Solea) %in% c("Sample", "Area", "Solea_solea"))]
 
-getBetaAndSe <- function(covar)
-    coef(summary(glm(Solea_solea ~ Solea[[covar]], data = Solea, family = "binomial")))[2,1:2]
 
-# a Loop:
-beta.table <- data.frame(variable = covariates, estimate = NA, se = NA)
-for(i in 1:length(covariates))
-    beta.table[i,2:3] <- getBetaAndSe(covariates[i])
 
-# plyr and magrittr piping one-liner 
-## (Less code, but also less tansparent)
-  require(magrittr)
-    beta.table2 <- adply(t(covariates), 2, getBetaAndSe) %>% mutate(X1 = covariates)
 ```
-```{r, eval=FALSE}
-par(mar = c(3,10,2,2))
-beta.table <- mutate(beta.table, low = estimate - 2 * se, high = estimate + 2*se)
-n <- nrow(beta.table)
-with(beta.table, {
-    plot(estimate, 1:n, pch = 19, xlim = c(min(low), max(high)), 
-         yaxt = "n", ylab="")
-    segments(low, 1:n, high, 1:length(high))
-    axis(2, at = 1:n, label = variable, las = 2, cex =0.8)
-    abline(v = 0, lwd = 2, lty = 3, col="darkgrey")
-})
 
 ```
 
