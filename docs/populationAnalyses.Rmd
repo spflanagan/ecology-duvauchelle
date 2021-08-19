@@ -749,7 +749,7 @@ PlotPipefishProbs<-function(predictedProbs, spp,stt,
 }
 ```
 
-```{r,fig.width=639,fig.height=478}
+```{r pipefishProbabilities,fig.width=639,fig.height=478}
 
 par(mfcol=c(3,2),xpd=TRUE,mar=c(2,2,2,2),oma=c(3,4,3,2))
 sp<-lapply(levels(pipePivot$variable),
