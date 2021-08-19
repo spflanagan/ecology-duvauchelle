@@ -165,8 +165,7 @@ plot(as.Date(flounder$Day),flounder$flounder_above50mm)
 ```
 
 
-
-```{r}
+```{r flounderSummaryNotFancy,fig.cap="Overview of flounder counts, not formatted to be particularly fancy, split up by season."}
 par(mfrow=c(2,2),mar=c(3,4,3.5,2),oma=c(3,2,1,2))
 for(i in 1:length(seasonCols)){
   sdat<-flounder_long[flounder_long$Season %in% names(seasonCols)[i],]
@@ -194,6 +193,280 @@ for(i in 1:length(seasonCols)){
 
 
 ```
+
+
+
+## Flounder GLM
+
+
+Do flounder of different sizes have different abundances throughout the year AND in different seagrass beds?
+
+Looking at patterns of counts (Fig. \@ref(fig:ExploreFlounderPlots)), we can see that the flounder counts do seem to vary with the variables. 
+
+```{r reorderCols}
+seasonCols<-seasonCols[levels(flounder_long$Season)]
+seagrassCs<-seagrassCs[levels(flounder_long$seagrass_cover)]
+```
+
+```{r ExploreFlounderPlots, fig.cap="Plots of the relationship between raw counts and each of the variables of interest.",fig.height=4,fig.width=8.5}
+par(mfrow=c(1,4), las=1)
+plot(flounder_long$count~jitter(as.integer(flounder_long$Season)),
+     xlab="Season", ylab="Raw counts",col=alpha(seasonCols[flounder_long$Season],0.5),
+     pch=19,cex=2,bty='L',cex.lab=1.5,xaxt='n',cex.axis=1.5)
+axis(1,labels=levels(flounder_long$Season),at=1:length(levels(flounder_long$Season)), cex.axis=1.5)
+plot(flounder_long$count~jitter(as.numeric(flounder_long$seagrass_cover)),
+     xlab="Seagrass cover", ylab="", col=alpha(seagrassCs[flounder_long$seagrass_cover],0.5),
+     pch=19,cex=2,bty='L',cex.lab=1.5,xaxt='n',cex.axis=1.5)
+axis(1,labels=levels(flounder_long$seagrass_cover),at=1:length(levels(flounder_long$seagrass_cover)),cex.axis=1.5)
+plot(flounder_long$count~jitter(as.numeric(flounder_long$size)),
+     xlab="Size class",ylab="",col=alpha(size_cols[flounder_long$size],0.5),
+     pch=19,cex=2,bty='L',cex.lab=1.5,cex.axis=1.5,xaxt='n',cex.axis=1.5)
+axis(1,labels=levels(flounder_long$size),at=1:length(levels(flounder_long$size)),cex.axis=1.5)
+plot(flounder_long$count~flounder_long$towArea,
+     xlab="Tow Area", ylab="",col=alpha('#242424',0.5),
+     pch=19,cex=2,bty='L',cex.lab=1.5,cex.axis=1.5)
+```
+
+Before going forward, we should also check if covariates are highly correlated (they don't seem to be, and are categorical):
+
+```{r}
+plot(flounder_long[,c("Season","seagrass_cover","size","towArea")])
+```
+
+Challenges with this dataset:
+
+- We are modelling count data, which is not well modeled by OLS
+- Log-transforming the data did not change the distribution sufficiently (\@ref(fig:flounderDistributions))
+- The variance is `r var(flounder_long$count)` and the mean is `r mean(flounder_long$count)`
+- The data has many zeroes
+
+```{r flounderDistributions}
+par(mfrow=c(2,2))
+hist(flounder_long$count,xlab="Counts", ylab="Number of observations", main="Distribution of raw counts")
+hist(log(flounder_long$count+1),xlab="ln(Counts+1)", ylab="Number of observations", main="Distribution of raw counts")
+hist(flounder_long$count,xlab="Density (counts/m^2)", ylab="Number of observations", main="Distribution of raw densities")
+hist(log(flounder_long$density+1),xlab="ln(Density+1)", ylab="Number of observations", main="Distribution of log-transformed densities")
+```
+
+
+All of this together points to the need to at a minimum use a negative binomial distribution, and possibly (probably) we will need to use a zero-inflated negative binomial. 
+
+
+My initial attempts using a negative binomial resulted in some models that don't fit that well, because they have some really large deviations from the assumptions of the homogeneity of variances in the residuals.
+
+```{r}
+flounderGLM8<-MASS::glm.nb(flounder_long$count ~ 1+ flounder_long$seagrass_cover/flounder_long$Season  * flounder_long$size *flounder_long$towArea)
+
+
+par(mfrow=c(1,5))
+plot(flounder_long$count,flounderGLM8$residuals)
+plot(as.factor(flounder_long$Season),flounderGLM8$residuals)
+plot(as.factor(flounder_long$seagrass_cover),flounderGLM8$residuals)
+plot(as.factor(flounder_long$size),flounderGLM8$residuals)
+plot(flounder_long$towArea,flounderGLM8$residuals)
+```
+
+```{r}
+flounderGLM8<-MASS::glm.nb(flounder_long$density ~ 1+ flounder_long$Season * flounder_long$seagrass_cover * flounder_long$size + flounder_long$towArea)
+
+
+par(mfrow=c(1,5))
+plot(flounder_long$count,flounderGLM8$residuals)
+plot(as.factor(flounder_long$Season),flounderGLM8$residuals)
+plot(as.factor(flounder_long$seagrass_cover),flounderGLM8$residuals)
+plot(as.factor(flounder_long$size),flounderGLM8$residuals)
+plot(flounder_long$towArea,flounderGLM8$residuals)
+```
+
+So now I'm going to try a zero-inflated negative binomial:
+
+```{r}
+library(pscl)
+m0<-zeroinfl(flounder_long$count ~ 1,
+             dist="negbin")
+m1<-zeroinfl(count ~ 1+ seagrass_cover*Season  + size +towArea,
+             dist="negbin", data=flounder_long)
+m2<-zeroinfl(flounder_long$count ~ 1+ flounder_long$seagrass_cover+flounder_long$Season  + flounder_long$size +flounder_long$towArea,
+             dist="negbin")
+
+
+
+aic<-AIC(m0,m1,m2)
+aic<-aic[order(aic[,2]),]
+kable(aic,"latex",booktab=TRUE)
+```
+```{r}
+plot(m1$fitted.values,m1$residuals,xlab="Fitted",ylab="Residuals")
+```
+
+
+```{r}
+par(mfrow=c(1,5))
+plot(flounder_long$count,m1$residuals)
+plot(as.factor(flounder_long$Season),m1$residuals)
+plot(as.factor(flounder_long$seagrass_cover),m1$residuals)
+plot(as.factor(flounder_long$size),m1$residuals)
+plot(flounder_long$towArea,m1$residuals)
+
+```
+```{r}
+# Dispersion Statistic
+E2 <- resid(m1, type = "pearson")
+N  <- nrow(flounder_long)
+p  <- length(coef(m1)) + 1 # '+1' is due to theta
+disp<-sum(E2^2) / (N - p)
+```
+
+The dispersion statistic is `r disp`, which seems reasonably small (and reasonably close to mean counts, which is `r mean(flounder_long$count)`).
+
+I'm checking the model fit based on the recommendations from [Stack Overflow](https://stackoverflow.com/questions/30103001/assessing-performance-of-a-zero-inflated-negative-binomial-model).
+
+```{r}
+# store observed values, and determine how many are nonzero
+obs <- flounder_long$count
+obs.nonzero <- obs > 0
+table(obs)
+nonzeroTab<-table(obs.nonzero)
+```
+
+There are `r nonzeroTab[[1]]` observations that are zero, and the remaining `r nonzeroTab[[2]]` are non-zero.
+
+
+```{r flounderPredsCount, fig.cap="Predicted counts from the zero-inflated negative binomial model."}
+# calculate predicted counts, and check their distribution
+preds.count <- predict(m1, type="response")
+plot(density(preds.count))
+```
+```{r flounderPredsProb, fig.cap="Predicted probability that each item iz non-zero."}
+# also the predicted probability that each item is nonzero
+preds <- 1-predict(m1, type = "prob")[,1]
+preds.nonzero <- preds > 0.5
+plot(density(preds))
+nonzeroPreds<-table(preds.nonzero)
+```
+
+The model predicts that there would be `r nonzeroPreds[[1]]` zero observations and `r nonzeroPreds[[2]]` non-zero observations.
+
+```{r}
+# the confusion matrix is obtained by tabulating the dichotomized observations and predictions
+confusion.matrix <- table(preds.nonzero, obs.nonzero)
+FNR <- confusion.matrix[2,1] / sum(confusion.matrix[,1])
+```
+
+Using the confusion matrix (tabulating the zero and non-zero observations and predictions), we can calculate the false negative rate to be `r FNR`.
+
+
+```{r, fig.cap="Predicted counts compared to observed counts. The model does well for the smaller counts but performs poorly for large count observations."}
+ # let's look at how well the counts are being predicted
+library(ggplot2)
+output <- as.data.frame(list(preds.count=preds.count, obs=obs))
+ggplot(aes(x=obs, y=preds.count), data=output) + geom_point(alpha=0.3) + geom_smooth(col="blue")
+```
+```{r, fig.cap="Log-transformed observed counts compared to predicted counts, only showing non-zero counts."}
+output$log.obs <- log(output$obs)
+output$log.preds.count <- log(output$preds.count)
+ggplot(aes(x=log.obs, y=log.preds.count), data=output[!is.na(output$log.obs) & !is.na(output$log.preds.count),]) + geom_jitter(alpha=0.3, width=.15, size=2) + geom_smooth(col="blue") + labs(x="Observed count (non-zero, natural logarithm)", y="Predicted count (non-zero, natural logarithm)")
+
+```
+
+We can use a regression of observed counts on predicted counts to evaluate the relationship between non-zero predicted and actual counts.
+```{r}
+calibrate <- lm(log(preds.count) ~ log(obs), data=output[output$obs!=0 & output$preds.count!=0,])
+summary(calibrate)
+sigma <- summary(calibrate)$sigma
+```
+
+The relationship is significant (p = `r summary(calibrate)$coefficients[2,4]`), with an estimated slope of `r calibrate$coefficients[[2]]`. The residual standared error is `r sigma`.
+
+I'm content with this level of fit, so we'll move forward with actually interpreting the analysis.
+
+[This tutorial](https://stats.idre.ucla.edu/r/dae/zinb/) has an example of how to get confidence intervals for parameters using bootstrapping. 
+
+```{r, eval=FALSE}
+library(boot)
+
+cnts<-dput(round(coef(m1, "count"), 4))
+zros<-dput(round(coef(m1, "zero"), 4))
+
+f <- function(data, i) {
+  require(pscl)
+  m <- zeroinfl(count ~ 1+ seagrass_cover*Season  + size +towArea,
+    data = data[i, ], dist = "negbin",
+    start = list(count = cnts, 
+                 zero = zros))
+  as.vector(t(do.call(rbind, coef(summary(m)))[, 1:2]))
+}
+
+
+set.seed(10)
+(res <- boot(flounder_long, f, R = 1200, parallel = "no", ncpus = 1))
+```
+```{r, eval=FALSE}
+parms<-t(sapply(c(1, 3, 5, 9, 11), function(i) {
+  out <- boot.ci(res, index = c(i, i + 1), type = c("perc", "bca"))
+  with(out, c(Est = t0, pLL = percent[4], pUL = percent[5],
+    bcaLL = bca[4], bcaUL = bca[5]))
+}))
+row.names(parms) <- names(coef(m1))
+```
+```{r}
+kable(parms,"latex",booktabs=TRUE)
+```
+
+Can get the incident risk ratio and odds ratio for the zero inflation model
+
+
+
+Get the predicteds:
+
+```{r}
+combos <- data.frame(seagrass_cover = rep(c("bare","sparse", "patchy", "dense"), each=16), 
+                      Season = rep(c("Winter","Spring","Summer","Fall"),4),
+                     size = rep(levels(flounder_long$size),each=4),
+                     towArea = mean(flounder_long$towArea),
+                     stringsAsFactors = TRUE)
+combos$seagrass_cover<-factor(combos$seagrass_cover,
+                              levels=c("bare","sparse", "patchy", "dense"))
+combos$Season<-factor(combos$Season,
+                              levels=c("Winter","Spring","Summer","Fall"))
+combos$size<-factor(combos$size,levels=levels(flounder_long$size))
+
+## store the predicted number of flounder caught for each set
+pp.combos <- cbind(combos, predict(m1, combos))
+
+flounderPredicteds <- reshape2::melt(pp.combos, id.vars = c("seagrass_cover", "Season","size","towArea"), value.name = "counts")
+flounderPredicteds<-flounderPredicteds[,!colnames(flounderPredicteds) %in% "variable"]
+```
+
+
+
+To get confidence intervals, we'll use bootstrapping, as suggested [on StackOverflow](https://stackoverflow.com/questions/58002334/how-to-add-confidence-intervals-for-a-zero-inflated-negative-binomial-function-i).
+
+```{r}
+stat <- function(df, inds) {
+    model <- formula(count ~ 1+ seagrass_cover*Season  + size +towArea)
+    predict(
+        zeroinfl(model, dist = "negbin", data = df[inds, ]),
+        newdata = combos)
+}
+```
+```{r flounderPredicteds, eval=FALSE}
+set.seed(2018)
+library(boot)
+res <- boot(flounder_long, stat, R = 100)
+CI <- setNames(as.data.frame(t(sapply(1:nrow(combos), function(row)
+    boot.ci(res, conf = 0.95, type = "basic", index = row)$basic[, 4:5]))),
+    c("lower", "upper"))
+flounderPredicteds<-dplyr::bind_cols(flounderPredicteds,CI)
+# can't have negative counts, so truncate those CIs:
+flounderPredicteds$lower[flounderPredicteds$lower<0]<-0
+write.csv(flounderPredicteds,"flounderPredicteds.csv",row.names = FALSE,quote=FALSE)
+```
+```{r}
+flounderPredicteds<-read.csv("flounderPredicteds.csv")
+```
+
+## Flounder plots
 
 
 
@@ -342,6 +615,7 @@ image_write(flounderSeagrass,
             format = "png")
 ```
 
+## flounder map
 
 ```{r makeSpeciesMap}
 
@@ -417,205 +691,8 @@ make_species_map(gpsdat,cleandat,"flounder",center,zoom,scale = 1)
 ```
 
 
-## Flounder GLM
-
-
-Do flounder of different sizes have different abundances throughout the year AND in different seagrass beds?
-
-Looking at patterns of counts (Fig. \@ref(fig:ExploreFlounderPlots)), we can see that the flounder counts do seem to vary with the variables. 
-
-```{r reorderCols}
-seasonCols<-seasonCols[levels(flounder_long$Season)]
-seagrassCs<-seagrassCs[levels(flounder_long$seagrass_cover)]
-```
-
-```{r ExploreFlounderPlots, fig.cap="Plots of the relationship between raw counts and each of the variables of interest.",fig.height=4,fig.width=8.5}
-par(mfrow=c(1,4), las=1)
-plot(flounder_long$count~jitter(as.integer(flounder_long$Season)),
-     xlab="Season", ylab="Raw counts",col=alpha(seasonCols[flounder_long$Season],0.5),
-     pch=19,cex=2,bty='L',cex.lab=1.5,xaxt='n',cex.axis=1.5)
-axis(1,labels=levels(flounder_long$Season),at=1:length(levels(flounder_long$Season)), cex.axis=1.5)
-plot(flounder_long$count~jitter(as.numeric(flounder_long$seagrass_cover)),
-     xlab="Seagrass cover", ylab="", col=alpha(seagrassCs[flounder_long$seagrass_cover],0.5),
-     pch=19,cex=2,bty='L',cex.lab=1.5,xaxt='n',cex.axis=1.5)
-axis(1,labels=levels(flounder_long$seagrass_cover),at=1:length(levels(flounder_long$seagrass_cover)),cex.axis=1.5)
-plot(flounder_long$count~jitter(as.numeric(flounder_long$size)),
-     xlab="Size class",ylab="",col=alpha(size_cols[flounder_long$size],0.5),
-     pch=19,cex=2,bty='L',cex.lab=1.5,cex.axis=1.5,xaxt='n',cex.axis=1.5)
-axis(1,labels=levels(flounder_long$size),at=1:length(levels(flounder_long$size)),cex.axis=1.5)
-plot(flounder_long$count~flounder_long$towArea,
-     xlab="Tow Area", ylab="",col=alpha('#242424',0.5),
-     pch=19,cex=2,bty='L',cex.lab=1.5,cex.axis=1.5)
-```
-
-Before going forward, we should also check if covariates are highly correlated (they don't seem to be, and are categorical):
 
 ```{r}
-plot(flounder_long[,c("Season","seagrass_cover","size","towArea")])
-```
-
-Challenges with this dataset:
-
-- We are modelling count data, which is not well modeled by OLS
-- Log-transforming the data did not change the distribution sufficiently (\@ref(fig:flounderDistributions))
-- The variance is `r var(flounder_long$count)` and the mean is `r mean(flounder_long$count)`
-- The data has many zeroes
-
-```{r flounderDistributions}
-par(mfrow=c(2,2))
-hist(flounder_long$count,xlab="Counts", ylab="Number of observations", main="Distribution of raw counts")
-hist(flounder_long$count,xlab="ln(Counts)", ylab="Number of observations", main="Distribution of raw counts")
-hist(flounder_long$count,xlab="Density (counts/m^2)", ylab="Number of observations", main="Distribution of raw densities")
-hist(flounder_long$density,xlab="ln(Density)", ylab="Number of observations", main="Distribution of log-transformed densities")
-```
-
-
-All of this together points to the need to at a minimum use a negative binomial distribution, and possibly (probably) we will need to use a zero-inflated negative binomial. 
-
-
-My initial attempts using a negative binomial resulted in some models that don't fit that well, because they have some really large deviations from the assumptions of the homogeneity of variances in the residuals.
-
-```{r}
-flounderGLM8<-MASS::glm.nb(flounder_long$count ~ 1+ flounder_long$seagrass_cover/flounder_long$Season  * flounder_long$size *flounder_long$towArea)
-
-
-par(mfrow=c(1,5))
-plot(flounder_long$count,flounderGLM8$residuals)
-plot(as.factor(flounder_long$Season),flounderGLM8$residuals)
-plot(as.factor(flounder_long$seagrass_cover),flounderGLM8$residuals)
-plot(as.factor(flounder_long$size),flounderGLM8$residuals)
-plot(flounder_long$towArea,flounderGLM8$residuals)
-```
-
-```{r}
-flounderGLM8<-MASS::glm.nb(flounder_long$density ~ 1+ flounder_long$Season * flounder_long$seagrass_cover * flounder_long$size + flounder_long$towArea)
-
-
-par(mfrow=c(1,5))
-plot(flounder_long$count,flounderGLM8$residuals)
-plot(as.factor(flounder_long$Season),flounderGLM8$residuals)
-plot(as.factor(flounder_long$seagrass_cover),flounderGLM8$residuals)
-plot(as.factor(flounder_long$size),flounderGLM8$residuals)
-plot(flounder_long$towArea,flounderGLM8$residuals)
-```
-
-So now I'm going to try a zero-inflated negative binomial:
-
-```{r}
-library(pscl)
-m0<-zeroinfl(flounder_long$count ~ 1,
-             dist="negbin")
-m1<-zeroinfl(count ~ 1+ seagrass_cover*Season  + size +towArea,
-             dist="negbin", data=flounder_long)
-m2<-zeroinfl(flounder_long$count ~ 1+ flounder_long$seagrass_cover+flounder_long$Season  + flounder_long$size +flounder_long$towArea,
-             dist="negbin")
-
-
-
-aic<-AIC(m0,m1,m2)
-aic<-aic[order(aic[,2]),]
-kable(aic,"latex",booktab=TRUE)
-```
-```{r}
-plot(m1$fitted.values,m1$residuals,xlab="Fitted",ylab="Residuals")
-```
-
-
-```{r}
-par(mfrow=c(1,5))
-plot(flounder_long$count,m1$residuals)
-plot(as.factor(flounder_long$Season),m1$residuals)
-plot(as.factor(flounder_long$seagrass_cover),m1$residuals)
-plot(as.factor(flounder_long$size),m1$residuals)
-plot(flounder_long$towArea,m1$residuals)
-
-```
-```{r}
-# Dispersion Statistic
-E2 <- resid(m1, type = "pearson")
-N  <- nrow(flounder_long)
-p  <- length(coef(m1)) + 1 # '+1' is due to theta
-disp<-sum(E2^2) / (N - p)
-```
-
-The dispersion statistic is `r disp`, which seems reasonably small (and reasonably close to mean counts, which is `r mean(flounder_long$count)`).
-
-I'm checking the model fit based on the recommendations from [Stack Overflow](https://stackoverflow.com/questions/30103001/assessing-performance-of-a-zero-inflated-negative-binomial-model).
-
-```{r}
-# store observed values, and determine how many are nonzero
-obs <- flounder_long$count
-obs.nonzero <- obs > 0
-table(obs)
-nonzeroTab<-table(obs.nonzero)
-```
-
-There are `r nonzeroTab[[1]]` observations that are zero, and the remaining `r nonzeroTab[[2]]` are non-zero.
-
-
-```{r flounderPredsCount, fig.cap="Predicted counts from the zero-inflated negative binomial model."}
-# calculate predicted counts, and check their distribution
-preds.count <- predict(m1, type="response")
-plot(density(preds.count))
-```
-```{r flounderPredsProb, fig.cap="Predicted probability that each item iz non-zero."}
-# also the predicted probability that each item is nonzero
-preds <- 1-predict(m1, type = "prob")[,1]
-preds.nonzero <- preds > 0.5
-plot(density(preds))
-nonzeroPreds<-table(preds.nonzero)
-```
-
-The model predicts that there would be `r nonzeroPreds[[1]]` zero observations and `r nonzeroPreds[[2]]` non-zero observations.
-
-```{r}
-# the confusion matrix is obtained by tabulating the dichotomized observations and predictions
-confusion.matrix <- table(preds.nonzero, obs.nonzero)
-FNR <- confusion.matrix[2,1] / sum(confusion.matrix[,1])
-```
-
-Using the confusion matrix (tabulating the zero and non-zero observations and predictions), we can calculate the false negative rate to be `r FNR`.
-
-
-```{r, fig.cap="Predicted counts compared to observed counts. The model does well for the smaller counts but performs poorly for large count observations."}
- # let's look at how well the counts are being predicted
-library(ggplot2)
-output <- as.data.frame(list(preds.count=preds.count, obs=obs))
-ggplot(aes(x=obs, y=preds.count), data=output) + geom_point(alpha=0.3) + geom_smooth(col="blue")
-```
-```{r, fig.cap="Log-transformed observed counts compared to predicted counts, only showing non-zero counts."}
-output$log.obs <- log(output$obs)
-output$log.preds.count <- log(output$preds.count)
-ggplot(aes(x=log.obs, y=log.preds.count), data=output[!is.na(output$log.obs) & !is.na(output$log.preds.count),]) + geom_jitter(alpha=0.3, width=.15, size=2) + geom_smooth(col="blue") + labs(x="Observed count (non-zero, natural logarithm)", y="Predicted count (non-zero, natural logarithm)")
-
-```
-
-We can use a regression of observed counts on predicted counts to evaluate the relationship between non-zero predicted and actual counts.
-```{r}
-calibrate <- lm(log(preds.count) ~ log(obs), data=output[output$obs!=0 & output$preds.count!=0,])
-summary(calibrate)
-sigma <- summary(calibrate)$sigma
-```
-
-The relationship is significant (p = `r summary(calibrate)$coefficients[2,4]`), with an estimated slope of `r calibrate$coefficients[[2]]`. The residual standared error is `r sigma`.
-
-I'm content with this level of fit, so we'll move forward with actually interpreting the analysis.
-
-[This tutorial](https://stats.idre.ucla.edu/r/dae/zinb/) has an example of how to get confidence intervals for parameters using bootstrapping. 
-
-```{r}
-library(boot)
-
-cnts<-dput(round(coef(m1, "count"), 4))
-zros<-dput(round(coef(m1, "zero"), 4))
-
-f <- function(data, i) {
-  require(pscl)
-  m <- zeroinfl(count ~ 1+ seagrass_cover*Season  + size +towArea,
-    data = data[i, ], dist = "negbin",
-    start = list(count = cnts, 
-                 zero = zros))
-  as.vector(t(do.call(rbind, coef(summary(m)))[, 1:2]))
 PlotFlounderProbs<-function(predictedProbs, sgrs,
                             seagrassCs, seagrassPs){
   
@@ -670,26 +747,10 @@ PlotFlounderProbs<-function(predictedProbs, sgrs,
        lwd=2)
   })
 }
-
-
-set.seed(10)
-(res <- boot(flounder_long, f, R = 1200, parallel = "no", ncpus = 1))
 ```
 
-Get the predicteds:
 ```{r flounderPredicteds,fig.width=639,fig.height=478}
 
-```{r}
-combos <- data.frame(seagrass_cover = rep(c("bare","sparse", "patchy", "dense"), each=16), 
-                      Season = rep(c("Winter","Spring","Summer","Fall"),4),
-                     size = rep(levels(flounder_long$size),each=4),
-                     towArea = sample(flounder_long$towArea,64),
-                     stringsAsFactors = TRUE)
-combos$seagrass_cover<-factor(combos$seagrass_cover,
-                              levels=c("bare","sparse", "patchy", "dense"))
-combos$Season<-factor(combos$Season,
-                              levels=c("Winter","Spring","Summer","Fall"))
-combos$size<-factor(combos$size,levels=levels(flounder_long$size))
 par(mfcol=c(1,4),xpd=TRUE,mar=c(2,2,2,2),oma=c(3,4,3,2))
 fp<-lapply(levels(flounderPredicteds$seagrass_cover),
            PlotFlounderProbs,
@@ -697,12 +758,22 @@ fp<-lapply(levels(flounderPredicteds$seagrass_cover),
            seagrassCs=size_cols,
            seagrassPs=15:19)
 
-## store the predicted probabilities for each value of ses and write
-pp.combos <- cbind(combos, predict(m1, newdata = combos, type = "prob", se = TRUE))
+l<-outer_legend("top",
+             levels(flounderPredicteds$size),
+             col=size_cols,
+             pch=15:19,
+             lty=1:4,
+             lwd=2,
+             bty='n',
+             ncol=4,
+             cex=1.5)
+mtext("Predicted # Flounder per Tow",2,outer=TRUE,line=1.75)
 
-comboMelt <- reshape2::melt(pp.combos, id.vars = c("seagrass_cover", "Season","species"), value.name = "probability")
+mtext("absent",4,outer=TRUE,line=-5,las=1,padj=-14.5,font=2)
+mtext("adults",4,outer=TRUE,line=-5,las=1,padj=-4,font=2)
+mtext("juveniles",4,outer=TRUE,line=-5,las=1,padj=6.5,font=2)
+
 ```
-
 
 
 While controlling for sampling dates, and accounting for size classes, flounder were most abundant in fall and least abundant in summer.  
