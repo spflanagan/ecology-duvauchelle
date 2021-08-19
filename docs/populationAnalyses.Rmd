@@ -73,6 +73,69 @@ zoom <- 16  #zoom: 1 = furthest out (entire globe), larger numbers = closer in
 
 ```
 
+# Shrimp
+
+```{r}
+shrimp<-cbind(cleandat[,c("Day","Season","towArea","seagrass_cover",
+                            "lat_start","long_start","lat_stop","long_stop")],
+                        cleandat[,grep("shrimp",colnames(cleandat))])
+
+shrimp_long <- gather(shrimp, size, count, 9:10, factor_key=TRUE)
+shrimp_long$size<-factor(gsub("shrimp_","",shrimp_long$size),
+                         levels=c("below20mm","above20mm"))
+shrimp_long$Season<-factor(shrimp_long$Season,
+                           levels=c("Winter","Spring","Summer","Fall"))
+shrimp_long$seagrass_cover<-factor(shrimp_long$seagrass_cover,
+                           levels=c("bare","sparse","patchy","dense"))
+shrimp_long$density<-shrimp_long$count/shrimp_long$towArea
+
+
+```
+```{r shrimpDistributions}
+par(mfrow=c(2,2))
+hist(shrimp_long$count,xlab="Counts", ylab="Number of observations", main="Distribution of raw counts")
+hist(log(shrimp_long$count+1),xlab="ln(Counts)", ylab="Number of observations", main="Distribution of raw counts")
+hist(shrimp_long$density,xlab="Density (counts/m^2)", ylab="Number of observations", main="Distribution of raw densities")
+hist(log(shrimp_long$density+1),xlab="ln(Density)", ylab="Number of observations", main="Distribution of log-transformed densities")
+```
+
+log transform
+
+```{r}
+shrimpLM1<- lm(log(density+1) ~ 1,dat=shrimp_long)
+shrimpLM2<-  lm(log(density+1) ~ 1+ Season,dat=shrimp_long)
+shrimpLM3<-  lm(log(density+1) ~ 1+ seagrass_cover,dat=shrimp_long)
+shrimpLM4<-  lm(log(density+1) ~ 1+ size,dat=shrimp_long)
+shrimpLM5<-  lm(log(density+1) ~ 1+ Season + seagrass_cover,dat=shrimp_long)
+shrimpLM6<-  lm(log(density+1) ~ 1+ Season + size,dat=shrimp_long)
+shrimpLM7<-  lm(log(density+1) ~ 1+  seagrass_cover + size,dat=shrimp_long)
+shrimpLM8<-  lm(log(density+1) ~ 1+ Season + seagrass_cover + size,dat=shrimp_long)
+shrimpLM9<-  lm(log(density+1) ~ 1+ Season * seagrass_cover + size,dat=shrimp_long)
+shrimpLM10<-  lm(log(density+1) ~ 1+ Season + seagrass_cover * size,dat=shrimp_long)
+shrimpLM11<-  lm(log(density+1) ~ 1+ Season * size +seagrass_cover,dat=shrimp_long )
+shrimpLM12<-  lm(log(density+1) ~ 1+ Season * seagrass_cover * size,dat=shrimp_long)
+anova(shrimpLM1,shrimpLM2,shrimpLM3,shrimpLM4,shrimpLM5,shrimpLM6,shrimpLM7,shrimpLM8,shrimpLM9,shrimpLM10,shrimpLM11,shrimpLM12)
+```
+```{r}
+shrimpAIC<-AIC(shrimpLM1,shrimpLM2,shrimpLM3,shrimpLM4,shrimpLM5,shrimpLM6,shrimpLM7,shrimpLM8,shrimpLM9,shrimpLM10,shrimpLM11,shrimpLM12)
+shrimpAIC<-shrimpAIC[order(shrimpAIC$AIC),]
+kable(shrimpAIC,"latex",booktab=TRUE,caption="Comparison of AICc values for model selection of Poisson GLMs describing flounder abundances. The best-fitting model is the most complex one, with interactions between season, seagrass cover, flounder size, and tow area.")
+```
+
+
+```{r}
+par(mfrow=c(2,2))
+plot(shrimpLM12)
+```
+
+```{r}
+kable(anova(shrimpLM12),"latex",booktab=TRUE,
+      caption="Summary ANOVA table of the effects of season, seagrass cover, shrimp size, and their interactions on the density of shrimp in Duvauchelle Bay.")
+```
+
+```{r}
+shrimpCols<-c(below20mm='#d7301f',above20mm='#fdbb84')
+```
 
 # Flounder
 
@@ -969,97 +1032,6 @@ dev.off()
 
 
 
-# Shrimp
-
-```{r}
-shrimp<-cbind(cleandat[,c("Day","Season","towArea","seagrass_cover",
-                            "lat_start","long_start","lat_stop","long_stop")],
-                        cleandat[,grep("shrimp",colnames(cleandat))])
-
-shrimp_long <- gather(shrimp, size, count, 9:10, factor_key=TRUE)
-shrimp_long$size<-factor(gsub("shrimp_","",shrimp_long$size),
-                         levels=c("below20mm","above20mm"))
-shrimp_long$density<-shrimp_long$count/shrimp_long$towArea
 
 
-```
 
-```{r}
-par(mfrow=c(2,2),mar=c(3,4,3.5,2),oma=c(3,2,1,2))
-for(i in 1:length(seasonCols)){
-  sdat<-shrimp_long[shrimp_long$Season %in% names(seasonCols)[i],]
-  stripchart(sdat$count~sdat$size,
-           vertical=TRUE,
-           method="jitter",
-           jitter=0.05,
-           ylab="Number of shrimp",
-           pch=1,
-           frame.plot=FALSE,
-           axes=FALSE,
-           col=seasonCols[i],
-           main= names(seasonCols)[i],
-           cex.lab=1.2,
-           ylim=c(0,300),
-           cex=1.5)
-
-  axis(1,at=c(1,2),labels=levels(sdat$size),cex=1.2)
-  axis(2,las=2,cex=1.5)
-}
-
-
-```
-```{r shrimpGLMs}
-shrimpGLM1<-glm(shrimp_long$count ~ 1, family="poisson")
-# additive effects
-shrimpGLM2<-glm(shrimp_long$count ~ 1+ shrimp_long$Season,family="poisson")
-shrimpGLM3<-glm(shrimp_long$count ~ 1+ shrimp_long$Season + shrimp_long$seagrass_cover,family="poisson")
-shrimpGLM4<-glm(shrimp_long$count ~ 1+ shrimp_long$Season + shrimp_long$seagrass_cover + shrimp_long$size,family="poisson")
-shrimpGLM5<-glm(shrimp_long$count ~ 1+ shrimp_long$Season + shrimp_long$seagrass_cover + shrimp_long$size + shrimp_long$towArea,family="poisson")
-# interactions
-shrimpGLM6<-glm(shrimp_long$count ~ 1+ shrimp_long$Season * shrimp_long$seagrass_cover + shrimp_long$size,family="poisson")
-shrimpGLM7<-glm(shrimp_long$count ~ 1+ shrimp_long$Season * shrimp_long$seagrass_cover * shrimp_long$size + shrimp_long$towArea,family="poisson")
-shrimpGLM8<-glm(shrimp_long$count ~ 1+ as.factor(shrimp_long$Season) * as.factor(shrimp_long$seagrass_cover) * shrimp_long$size * shrimp_long$towArea,family="poisson")
-
-anova(shrimpGLM1,shrimpGLM2,shrimpGLM3,shrimpGLM4,shrimpGLM5,shrimpGLM6,shrimpGLM7,shrimpGLM8,test="Chisq")
-```
-
-```{r shrimpAICs}
-shrimpAICs<-AIC(shrimpGLM1,shrimpGLM2,shrimpGLM3,shrimpGLM4,shrimpGLM5,shrimpGLM6,shrimpGLM7,shrimpGLM8)
-
-shrimpAICs<-shrimpAICs[order(shrimpAICs$AIC),]
-kable(shrimpAICs,"latex",booktab=TRUE,caption="Comparison of AICc values for model selection of Poisson GLMs describing shrimp abundances. The best-fitting model is the most complex one, with interactions between season, seagrass cover, shrimp size, and tow area.")
-```
-
-```{r}
-shrimpGLM8<-glm(shrimp_long$count ~ 1+ as.factor(shrimp_long$Season) * as.factor(shrimp_long$seagrass_cover) * shrimp_long$size * shrimp_long$towArea,family="quasipoisson")
-
-shrimpGLM8<-glm(shrimp_long$count ~ 1+ as.factor(shrimp_long$Season) * as.factor(shrimp_long$seagrass_cover) * shrimp_long$size * shrimp_long$towArea,family="quasipoisson")
-```
-
-log transform
-
-```{r}
-shrimpLM1<- lm(log(shrimp_long$density+1) ~ 1)
-shrimpLM2<-  lm(log(shrimp_long$density+1) ~ 1+ as.factor(shrimp_long$Season))
-shrimpLM3<-  lm(log(shrimp_long$density+1) ~ 1+ as.factor(shrimp_long$seagrass_cover))
-shrimpLM4<-  lm(log(shrimp_long$density+1) ~ 1+ as.factor(shrimp_long$size))
-shrimpLM5<-  lm(log(shrimp_long$density+1) ~ 1+ as.factor(shrimp_long$Season) + as.factor(shrimp_long$seagrass_cover))
-shrimpLM6<-  lm(log(shrimp_long$density+1) ~ 1+ as.factor(shrimp_long$Season) + shrimp_long$size)
-shrimpLM7<-  lm(log(shrimp_long$density+1) ~ 1+  as.factor(shrimp_long$seagrass_cover) + shrimp_long$size)
-shrimpLM8<-  lm(log(shrimp_long$density+1) ~ 1+ as.factor(shrimp_long$Season) + as.factor(shrimp_long$seagrass_cover) + shrimp_long$size)
-shrimpLM9<-  lm(log(shrimp_long$density+1) ~ 1+ as.factor(shrimp_long$Season) * as.factor(shrimp_long$seagrass_cover) + shrimp_long$size)
-shrimpLM10<-  lm(log(shrimp_long$density+1) ~ 1+ as.factor(shrimp_long$Season) + as.factor(shrimp_long$seagrass_cover) * shrimp_long$size)
-shrimpLM11<-  lm(log(shrimp_long$density+1) ~ 1+ as.factor(shrimp_long$Season) * shrimp_long$size +as.factor(shrimp_long$seagrass_cover) )
-shrimpLM12<-  lm(log(shrimp_long$density+1) ~ 1+ as.factor(shrimp_long$Season) * as.factor(shrimp_long$seagrass_cover) * shrimp_long$size)
-anova(shrimpLM1,shrimpLM2,shrimpLM3,shrimpLM4,shrimpLM5,shrimpLM6,shrimpLM7,shrimpLM8,shrimpLM9,shrimpLM10,shrimpLM11,shrimpLM12)
-```
-```{r}
-shrimpAIC<-AIC(shrimpLM1,shrimpLM2,shrimpLM3,shrimpLM4,shrimpLM5,shrimpLM6,shrimpLM7,shrimpLM8,shrimpLM9,shrimpLM10,shrimpLM11,shrimpLM12)
-shrimpAIC<-shrimpAIC[order(shrimpAIC$AIC),]
-kable(shrimpAIC,"latex",booktab=TRUE,caption="Comparison of AICc values for model selection of Poisson GLMs describing flounder abundances. The best-fitting model is the most complex one, with interactions between season, seagrass cover, flounder size, and tow area.")
-```
-
-```{r}
-par(mfrow=c(2,2))
-plot(shrimpLM12)
-```
