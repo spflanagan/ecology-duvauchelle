@@ -447,8 +447,11 @@ m1<-zeroinfl(count ~ 1+ seagrass_cover*Season  + size +towArea,
 m2<-zeroinfl(flounder_long$count ~ 1+ flounder_long$seagrass_cover+flounder_long$Season  + flounder_long$size +flounder_long$towArea,
              dist="negbin")
 
+
+
 aic<-AIC(m0,m1,m2)
 aic<-aic[order(aic[,2]),]
+kable(aic,"latex",booktab=TRUE)
 ```
 ```{r}
 plot(m1$fitted.values,m1$residuals,xlab="Fitted",ylab="Residuals")
