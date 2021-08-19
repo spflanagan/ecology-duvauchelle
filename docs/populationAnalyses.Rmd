@@ -616,6 +616,59 @@ f <- function(data, i) {
     start = list(count = cnts, 
                  zero = zros))
   as.vector(t(do.call(rbind, coef(summary(m)))[, 1:2]))
+PlotFlounderProbs<-function(predictedProbs, sgrs,
+                            seagrassCs, seagrassPs){
+  
+  dat<-predictedProbs[which(predictedProbs$seagrass_cover==sgrs),]
+  
+  ymin<-0
+  ymax<-round(max(dat$upper,na.rm=TRUE)+0.5)
+  plot(counts~as.numeric(Season),
+       data=dat[which(dat$size=="below10mm"),],
+       pch=seagrassPs[1],
+       cex=2,
+       axes=FALSE,
+       bty='L',
+       xlab="Season",
+       col=seagrassCs[1],
+       ylim=c(ymin,ymax))
+  axis(1,at=1:4,labels=levels(dat$Season),pos=ymin,
+       cex.axis=1.5,lty=0)
+  axis(2,las=1,cex.axis=1.5)
+  
+  # add confidence intervals
+  lapply(1:length(levels(dat$size)),function(i){
+    cvr<-levels(dat$size)[i]
+    d<-dat[which(dat$size==cvr),]
+    arrows(x0 = as.numeric(d$Season),
+           x1= as.numeric(d$Season),
+           y0=d$lower, y1=d$upper,
+           col=seagrassCs[i],0.25, 
+           angle=90,
+           length=0,
+           lwd=2,
+           xpd=FALSE)
+  })
+   # add points
+  lapply(1:length(levels(dat$size)),function(i){
+    cvr<-levels(dat$size)[i]
+    points(counts~as.numeric(Season),
+       data=dat[which(dat$size==cvr),],
+       pch=seagrassPs[i],
+       col=seagrassCs[i],
+       cex=2)
+  })
+  # add connecting lines
+  lapply(1:length(levels(dat$size)),function(i){
+    cvr<-levels(dat$size)[i]
+    d<-dat[which(dat$size==cvr),]
+    points(counts~as.numeric(Season),
+       data=d[order(as.numeric(d$Season)),],
+       type='l',
+       lty=i,
+       col=seagrassCs[i],
+       lwd=2)
+  })
 }
 
 
@@ -624,6 +677,7 @@ set.seed(10)
 ```
 
 Get the predicteds:
+```{r flounderPredicteds,fig.width=639,fig.height=478}
 
 ```{r}
 combos <- data.frame(seagrass_cover = rep(c("bare","sparse", "patchy", "dense"), each=16), 
@@ -636,6 +690,12 @@ combos$seagrass_cover<-factor(combos$seagrass_cover,
 combos$Season<-factor(combos$Season,
                               levels=c("Winter","Spring","Summer","Fall"))
 combos$size<-factor(combos$size,levels=levels(flounder_long$size))
+par(mfcol=c(1,4),xpd=TRUE,mar=c(2,2,2,2),oma=c(3,4,3,2))
+fp<-lapply(levels(flounderPredicteds$seagrass_cover),
+           PlotFlounderProbs,
+           predictedProbs=flounderPredicteds,
+           seagrassCs=size_cols,
+           seagrassPs=15:19)
 
 ## store the predicted probabilities for each value of ses and write
 pp.combos <- cbind(combos, predict(m1, newdata = combos, type = "prob", se = TRUE))
