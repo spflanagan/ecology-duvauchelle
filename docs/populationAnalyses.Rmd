@@ -380,42 +380,6 @@ The relationship is significant (p = `r summary(calibrate)$coefficients[2,4]`), 
 
 I'm content with this level of fit, so we'll move forward with actually interpreting the analysis.
 
-[This tutorial](https://stats.idre.ucla.edu/r/dae/zinb/) has an example of how to get confidence intervals for parameters using bootstrapping. 
-
-```{r, eval=FALSE}
-library(boot)
-
-cnts<-dput(round(coef(m1, "count"), 4))
-zros<-dput(round(coef(m1, "zero"), 4))
-
-f <- function(data, i) {
-  require(pscl)
-  m <- zeroinfl(count ~ 1+ seagrass_cover*Season  + size +towArea,
-    data = data[i, ], dist = "negbin",
-    start = list(count = cnts, 
-                 zero = zros))
-  as.vector(t(do.call(rbind, coef(summary(m)))[, 1:2]))
-}
-
-
-set.seed(10)
-(res <- boot(flounder_long, f, R = 1200, parallel = "no", ncpus = 1))
-```
-```{r, eval=FALSE}
-parms<-t(sapply(c(1, 3, 5, 9, 11), function(i) {
-  out <- boot.ci(res, index = c(i, i + 1), type = c("perc", "bca"))
-  with(out, c(Est = t0, pLL = percent[4], pUL = percent[5],
-    bcaLL = bca[4], bcaUL = bca[5]))
-}))
-row.names(parms) <- names(coef(m1))
-```
-```{r}
-kable(parms,"latex",booktabs=TRUE)
-```
-
-Can get the incident risk ratio and odds ratio for the zero inflation model
-
-
 
 Get the predicteds:
 
