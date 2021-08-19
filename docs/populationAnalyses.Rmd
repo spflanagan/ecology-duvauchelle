@@ -536,6 +536,7 @@ sigma <- summary(calibrate)$sigma
 
 The relationship is significant (p = `r summary(calibrate)$coefficients[2,4]`), with an estimated slope of `r calibrate$coefficients[[2]]`. The residual standared error is `r sigma`.
 
+I'm content with this level of fit, so we'll move forward with actually interpreting the analysis.
 
 
 
