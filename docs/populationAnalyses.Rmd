@@ -538,11 +538,49 @@ The relationship is significant (p = `r summary(calibrate)$coefficients[2,4]`), 
 
 I'm content with this level of fit, so we'll move forward with actually interpreting the analysis.
 
+[This tutorial](https://stats.idre.ucla.edu/r/dae/zinb/) has an example of how to get confidence intervals for parameters using bootstrapping. 
+
+```{r}
+library(boot)
+
+cnts<-dput(round(coef(m1, "count"), 4))
+zros<-dput(round(coef(m1, "zero"), 4))
+
+f <- function(data, i) {
+  require(pscl)
+  m <- zeroinfl(count ~ 1+ seagrass_cover*Season  + size +towArea,
+    data = data[i, ], dist = "negbin",
+    start = list(count = cnts, 
+                 zero = zros))
+  as.vector(t(do.call(rbind, coef(summary(m)))[, 1:2]))
+}
 
 
+set.seed(10)
+(res <- boot(flounder_long, f, R = 1200, parallel = "no", ncpus = 1))
 ```
 
+Get the predicteds:
+
+```{r}
+combos <- data.frame(seagrass_cover = rep(c("bare","sparse", "patchy", "dense"), each=16), 
+                      Season = rep(c("Winter","Spring","Summer","Fall"),4),
+                     size = rep(levels(flounder_long$size),each=4),
+                     towArea = sample(flounder_long$towArea,64),
+                     stringsAsFactors = TRUE)
+combos$seagrass_cover<-factor(combos$seagrass_cover,
+                              levels=c("bare","sparse", "patchy", "dense"))
+combos$Season<-factor(combos$Season,
+                              levels=c("Winter","Spring","Summer","Fall"))
+combos$size<-factor(combos$size,levels=levels(flounder_long$size))
+
+## store the predicted probabilities for each value of ses and write
+pp.combos <- cbind(combos, predict(m1, newdata = combos, type = "prob", se = TRUE))
+
+comboMelt <- reshape2::melt(pp.combos, id.vars = c("seagrass_cover", "Season","species"), value.name = "probability")
 ```
+
+
 
 While controlling for sampling dates, and accounting for size classes, flounder were most abundant in fall and least abundant in summer.  
 (what about seagrass cover?)
