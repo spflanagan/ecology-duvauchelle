@@ -739,11 +739,6 @@ make_species_map(gpsdat,cleandat,"flounder",center,zoom,scale = 1)
 
 
 
-mtext("absent",4,outer=TRUE,line=-5,las=1,padj=-14.5,font=2)
-mtext("adults",4,outer=TRUE,line=-5,las=1,padj=-4,font=2)
-mtext("juveniles",4,outer=TRUE,line=-5,las=1,padj=6.5,font=2)
-
-
 While controlling for sampling dates, and accounting for size classes, flounder were most abundant in fall and least abundant in summer.  
 (what about seagrass cover?)
 
