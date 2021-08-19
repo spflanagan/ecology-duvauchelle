@@ -739,11 +739,6 @@ make_species_map(gpsdat,cleandat,"flounder",center,zoom,scale = 1)
 
 
 
-While controlling for sampling dates, and accounting for size classes, flounder were most abundant in fall and least abundant in summer.  
-(what about seagrass cover?)
-
-
-
 
 # Pipefish
 
