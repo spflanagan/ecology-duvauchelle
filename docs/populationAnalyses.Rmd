@@ -529,7 +529,7 @@ seagrassPlot<-function(flounderMeanCnts,flounderSEMCnts,cover){
     points(xs,
            subMean$value,pch=cnt+15,col=size_cols[cnt+1],cex=3)
      points(xs,
-           subMean$value,type='l',col=size_cols[cnt+1],cex=3)
+           subMean$value,type='l',col=size_cols[cnt+1],lwd=2,lty=(cnt+1))
     
     cnt<-cnt+1
   }
@@ -647,7 +647,9 @@ seagrassPlot(flounderMeanCnts,flounderSEMCnts,"patchy")
 seagrassPlot(flounderMeanCnts,flounderSEMCnts,"dense")
 mtext("Observed number",2,outer=FALSE,padj=-73.5,cex=1.25)
 
-outer_legend("top",bty='n',pch=15:18,col=size_cols,levels(flounderMeanCnts$SizeClass),ncol=4,cex=2,lwd=2)
+outer_legend("top",bty='n',
+             pch=15:18,col=size_cols,levels(flounderMeanCnts$SizeClass),
+             ncol=4,cex=2,lwd=3,lty=1:4,pt.cex=3)
 dev.off()
 ```
 ```{r getImages}
@@ -673,12 +675,12 @@ seagrassPhotos<-image_append(image_scale(c(
 ```
 
 ```{r}
-flounderfig<-image_convert(image_read("../figs/flounderPlots.png"), "png")
+flounderfig<-image_convert(image_read("../figs/flounderObsPred.png"), "png")
 flounderSeagrass<-image_append(c(flounderfig,
                                  seagrassPhotos), 
                                stack = TRUE)
 image_write(flounderSeagrass,
-            path = "../figs/FlounderSeagrass.png",
+            path = "../figs/FlounderFigure.png",
             format = "png")
 ```
 
