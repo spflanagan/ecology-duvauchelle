@@ -541,7 +541,8 @@ seagrassPlot<-function(flounderMeanCnts,flounderSEMCnts,cover){
 
 ```{r}
 PlotFlounderProbs<-function(predictedProbs, sgrs,
-                            seagrassCs, seagrassPs){
+                            seagrassCs, seagrassPs,
+                            xaxis=TRUE){
   
   dat<-predictedProbs[which(predictedProbs$seagrass_cover==sgrs),]
   
@@ -554,11 +555,15 @@ PlotFlounderProbs<-function(predictedProbs, sgrs,
        axes=FALSE,
        bty='L',
        xlab="Season",
+       ylab="",
        col=seagrassCs[1],
-       ylim=c(ymin,ymax))
-  axis(1,at=1:4,labels=levels(dat$Season),pos=ymin,
-       cex.axis=1.5,lty=0)
-  axis(2,las=1,cex.axis=1.5)
+       ylim=c(ymin,ymax),
+       cex.lab=2)
+  if(isTRUE(xaxis)){
+    axis(1,at=1:4,labels=levels(dat$Season),pos=ymin,
+         cex.axis=2,lty=0)
+  }
+  axis(2,las=1,cex.axis=2)
   
   # add confidence intervals
   lapply(1:length(levels(dat$size)),function(i){
@@ -580,7 +585,7 @@ PlotFlounderProbs<-function(predictedProbs, sgrs,
        data=dat[which(dat$size==cvr),],
        pch=seagrassPs[i],
        col=seagrassCs[i],
-       cex=2)
+       cex=3)
   })
   # add connecting lines
   lapply(1:length(levels(dat$size)),function(i){
@@ -603,7 +608,8 @@ fp<-lapply(levels(flounderPredicteds$seagrass_cover),
            PlotFlounderProbs,
            predictedProbs=flounderPredicteds,
            seagrassCs=size_cols,
-           seagrassPs=15:19)
+           seagrassPs=15:19,
+           xaxis=FALSE)
 
 l<-outer_legend("top",
              levels(flounderPredicteds$size),
@@ -621,13 +627,25 @@ mtext("Predicted # Flounder per Tow",2,outer=TRUE,line=1.75)
 
 
 ```{r makeFlounderPlots,eval=FALSE}
-png("../figs/flounderPlots.png",width = 1512, height = 300, res = 96)
-par(mfrow=c(1,4), oma=c(5,0,2,1), mar=c(2,5.5,1,1),xpd=TRUE)
+png("../figs/flounderObsPred.png",width = 1512, height = 600, res = 96)
+
+par(mfrow=c(2,4), oma=c(5,0,2,1), mar=c(2,5.5,1,1),xpd=TRUE)
+
+# predicted counts
+fp<-lapply(levels(flounderPredicteds$seagrass_cover),
+           PlotFlounderProbs,
+           predictedProbs=flounderPredicteds,
+           seagrassCs=size_cols,
+           seagrassPs=15:18,
+           xaxis=FALSE)
+mtext("Predcited density",2,outer=FALSE,padj=-73.5,cex=1.25)
+
+# observed counts
 seagrassPlot(flounderMeanCnts,flounderSEMCnts,"bare")
-mtext("Number of flounder",2,outer=FALSE,cex = 1.5,line=3.75)
 seagrassPlot(flounderMeanCnts,flounderSEMCnts,"sparse")
 seagrassPlot(flounderMeanCnts,flounderSEMCnts,"patchy")
 seagrassPlot(flounderMeanCnts,flounderSEMCnts,"dense")
+mtext("Observed number",2,outer=FALSE,padj=-73.5,cex=1.25)
 
 outer_legend("top",bty='n',pch=15:18,col=size_cols,levels(flounderMeanCnts$SizeClass),ncol=4,cex=2,lwd=2)
 dev.off()
