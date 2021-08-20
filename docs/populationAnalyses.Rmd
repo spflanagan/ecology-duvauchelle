@@ -23,6 +23,11 @@ library(tidyr)
 library(lme4)
 library(leaflet)
 library(mapview)
+library(pscl)
+library(ggplot2)
+library(boot)
+library(nnet)
+library(effects)
 ```
 
 ```{r spfTools}
@@ -281,7 +286,6 @@ plot(flounder_long$towArea,flounderGLM8$residuals)
 So now I'm going to try a zero-inflated negative binomial:
 
 ```{r}
-library(pscl)
 m0<-zeroinfl(flounder_long$count ~ 1,
              dist="negbin")
 m1<-zeroinfl(count ~ 1+ seagrass_cover*Season  + size +towArea,
@@ -358,7 +362,6 @@ Using the confusion matrix (tabulating the zero and non-zero observations and pr
 
 ```{r, fig.cap="Predicted counts compared to observed counts. The model does well for the smaller counts but performs poorly for large count observations."}
  # let's look at how well the counts are being predicted
-library(ggplot2)
 output <- as.data.frame(list(preds.count=preds.count, obs=obs))
 ggplot(aes(x=obs, y=preds.count), data=output) + geom_point(alpha=0.3) + geom_smooth(col="blue")
 ```
@@ -416,7 +419,6 @@ stat <- function(df, inds) {
 ```
 ```{r flounderPredicteds, eval=FALSE}
 set.seed(2018)
-library(boot)
 res <- boot(flounder_long, stat, R = 100)
 CI <- setNames(as.data.frame(t(sapply(1:nrow(combos), function(row)
     boot.ci(res, conf = 0.95, type = "basic", index = row)$basic[, 4:5]))),
@@ -783,8 +785,6 @@ plot(traitLM)
 Is status (juvenile, adult, absent) predicted by season and species? 
 
 ```{r}
-library(nnet)
-
 ageGLM0<-multinom(size~1, data=pipefishCnts) 
 ageGLM1<-multinom(size~1+Season*seagrass_cover*species, data=pipefishCnts) # does not converge
 ageGLM2<-multinom(size~1+seagrass_cover/Season*species, data=pipefishCnts)
@@ -853,7 +853,6 @@ comboMelt <- reshape2::melt(pp.combos, id.vars = c("seagrass_cover", "Season","s
 What if we want to add confidence intervals?
 ```{r}
 
-library(effects)
 fit.eff<-Effect(c("seagrass_cover","Season","species"), ageGLM4)
 
 
