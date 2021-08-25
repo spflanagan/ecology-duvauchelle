@@ -1,0 +1,464 @@
+---
+title: "Summarizing sampling effort and data"
+author: "Sarah Flanagan"
+date: "23/08/2021"
+output: pdf_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{css, echo=FALSE}
+browsable(
+   tagList(
+      list(
+         tags$head(
+            tags$style(
+               ".leaflet .legend {
+                 line-height: 30px;
+                 font-size: 30px;
+                 }",
+              ".leaflet .legend i{
+                width: 60px;
+                height: 60px;
+                 }"
+            )
+         ),
+       leaf)))
+```
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,out.extra='',fig.pos="H",
+                      fig.path = "../figs/",dpi = 300,fig.keep='last',dev='png')
+knitr::opts_knit$set(root.dir='../results/',fig_path="../figs/")
+```
+```{r loadLibs, include=FALSE, echo=FALSE}
+library(scales)
+library(knitr)
+library(vegan)
+library(dplyr)
+library(tidyr)
+library(leaflet)
+library(magick)
+library(adespatial)
+library(kableExtra)
+```
+
+```{r}
+files.sources <- list.files(path = "../R/hierDiversity",full.names = TRUE)
+tmp<-sapply(files.sources, source)
+
+tmp<-sapply(list.files(path="../../spfTools/R/",full.names = TRUE),source)
+```
+
+
+```{r getData}
+combdat<-read.csv("cleanedCombinedCommunity.csv",stringsAsFactors = TRUE)
+combdat$SeagrassCover<-factor(combdat$SeagrassCover,
+                              levels=c("bare","sparse","patchy","dense"))
+combdat$Season<-factor(combdat$Season,
+                       levels=c("Winter","Spring","Summer","Fall"))
+```
+```{r colsPchs}
+seasonCols<-c(Spring="coral",Summer="olivedrab3",Fall="gold",Winter="dodgerblue")
+seagrassCs<-c(bare="#d9f0a3",sparse="#78c679",patchy="#41ab5d",dense="#005a32")
+seasonPchs<-c(Spring=15,Summer=17,Fall=18,Winter=19)
+seagrassPs<-c(bare=16, sparse=18, patchy=17, dense=15)
+```
+```{r sppOrder}
+sppOrder<-c("shrimp",
+            "flounder",
+            "s.nigra",
+            "leptonotus",
+            "blue_cod_juv",
+            "kahawai",
+            "whitebait_below50mm",
+            "smelt",
+            "spotty",
+            "wrasse",
+            "blenny",
+            "paphies_australis",
+            "austrovenus",
+            "swimmer_crab",
+            "Pie_crust_crab",
+            "hermit_crab",
+            "mud_crab",
+            "stalkeyed_crab",
+            "arrowheadCrab",
+            "Lunella_smaragda",
+            "mud_whelk",
+            "whelk",
+            "mud_snail",
+            "Diloma",
+            "Seastar",
+            "limpet",
+            "bristleworm",
+            "sea_squirt",
+            "isopod"
+            )
+```
+
+
+```{r getGPS}
+gpsdat<-read.csv("../data/gpsdat.csv")
+```
+
+```{r centreGPS}
+
+center <- c(mean(c(gpsdat$lat_start,gpsdat$lat_stop)), 
+           172.9336)  #tell what point to center on
+zoom <- 17  #zoom: 1 = furthest out (entire globe), larger numbers = closer in
+
+```
+
+## Sampling distribution and effort
+
+We sampled on `r length(levels(combdat$Date))` occasions throughout the four seasons from October 2019 through October 2020. Each date had at least `r min(tapply(combdat$TowNum,combdat$Date,length))` individual tows through seagrass beds, with a total area covered across all sampling of `r sum(combdat$TowArea)`. 
+
+```{r towSum}
+TowSummary<-bind_cols(pivot_wider(combdat, 
+                        id_cols = 1:2,
+                        names_from = "SeagrassCover",
+                        values_from = "TowArea",
+                        names_prefix="N_",
+                        values_fn = list(TowArea = length)),
+                      pivot_wider(combdat, 
+                        id_cols = 1:2,
+                        names_prefix="Mean_",
+                        names_from = "SeagrassCover",
+                        values_from = "TowArea",
+                        values_fn = list(TowArea = mean)),
+                      pivot_wider(combdat, 
+                        id_cols = 1:2,
+                        names_prefix="SEM_",
+                        names_from = "SeagrassCover",
+                        values_from = "TowArea",
+                        values_fn = list(TowArea = sem))
+                      )
+TowSummary<-TowSummary[,-c(7,8,13,14)]
+colnames(TowSummary)[1:2]<-c("Date","Season")
+# rearrange column order
+TowSummary<-TowSummary[,c(1,2,
+                          grep("bare",colnames(TowSummary)),
+                          grep("sparse",colnames(TowSummary)),
+                          grep("patchy",colnames(TowSummary)),
+                          grep("dense",colnames(TowSummary)))]
+
+kable(TowSummary,"latex",booktab=TRUE,
+      caption="Table of the number of tows (N), mean tow area, and standard error of the mean (SEM) tow area for each seagrass cover type on each sampling date.")
+
+```
+```{r saveTowSummary,eval=FALSE}
+write.csv(TowSummary,"TowSummary.csv",row.names = FALSE,quote=FALSE)
+```
+
+We can also plot the locations of the tows on the map.
+
+```{r mapCover, fig.height=2,fig.width=4.5,res=300}
+  
+m<- leaflet() %>%
+  addTiles() %>%  # Add default OpenStreetMap map tiles
+  setView(lng=center[2], lat=center[1],zoom=zoom) %>% 
+  
+  #addProviderTiles("NASAGIBS.ViirsEarthAtNight2012")
+  addProviderTiles("Esri.WorldImagery") %>%
+  addLegend(position="topright",
+                  colors = seagrassCs, 
+                  labels = names(seagrassCs),
+                  title = "Seagrass cover",
+                  opacity = 1
+  ) %>%  
+  addMiniMap(tiles="Esri.WorldImagery",
+             width=200, height=200, position="bottomright") 
+for(i in 1:nrow(gpsdat)){
+  color<-seagrassCs[[combdat$SeagrassCover[combdat$TowNum==gpsdat[i,"TowNum"]]]]
+  m <- addPolylines(m, lat = as.numeric(gpsdat[i, c("lat_start", "lat_stop")]),
+                    lng = as.numeric(gpsdat[i, c("long_start", "long_stop")]),
+                    color = color)
+}
+
+  m
+```
+
+
+```{r mapSeason, fig.height=2,fig.width=4.5,res=300}
+  
+seasonCs<-seasonCols
+seasonCs[["Summer"]]<-"#9acd32"
+m<- leaflet() %>%
+  addTiles() %>%  # Add default OpenStreetMap map tiles
+  setView(lng=center[2], lat=center[1],zoom=zoom) %>% 
+  
+  #addProviderTiles("NASAGIBS.ViirsEarthAtNight2012")
+  addProviderTiles("Esri.WorldImagery") %>%
+  addLegend("topright",colors = seasonCs, labels = names(seasonCs),
+    title = "Season",
+    opacity = 1
+  ) %>%  
+  addMiniMap(tiles="Esri.WorldImagery",
+             height=200,width=200, position="bottomright")
+for(i in 1:nrow(gpsdat)){
+  color<-seasonCs[[combdat$Season[combdat$TowNum==gpsdat[i,"TowNum"]]]]
+  m <- addPolylines(m, lat = as.numeric(gpsdat[i, c("lat_start", "lat_stop")]),
+                    lng = as.numeric(gpsdat[i, c("long_start", "long_stop")]),
+                    color = color)
+}
+
+  m
+```
+
+## Overall counts data summary
+
+```{r makeOutputCounts}
+outputCounts<- as.data.frame(dplyr::bind_rows(
+  lapply(colnames(combdat[,-c(1:5)]),function(column){
+    tapply(combdat[,column], combdat$Season,sum)
+  }))
+)
+rownames(outputCounts)<-colnames(combdat[,-c(1:5)])
+write.csv(outputCounts,"TotalCountsAll.csv",quote=FALSE)
+```
+
+```{r outputCountsByBoth}
+outputCountsSxS<- as.data.frame(dplyr::bind_rows(
+  lapply(colnames(combdat[,-c(1:5)]),function(column){
+    tapply(combdat[,column], paste0(combdat$Season,"_",combdat$SeagrassCover),sum)
+  }))
+)
+rownames(outputCountsSxS)<-colnames(combdat[,-c(1:5)])
+colnames(outputCountsSxS)<-paste0(colnames(outputCountsSxS),"_N")
+outputCountsSxS<-outputCountsSxS[sppOrder,]
+
+densities<-combdat[,6:ncol(combdat)]/combdat[,"TowArea"]
+densityMeans<-as.data.frame(dplyr::bind_rows(
+  lapply(colnames(densities),function(column){
+    tapply(densities[,column], paste0(combdat$Season,"_",combdat$SeagrassCover),mean)
+  }))
+)
+rownames(densityMeans)<-colnames(densities)
+colnames(densityMeans)<-paste0(colnames(densityMeans),"_meanDensity")
+densityMeans<-densityMeans[sppOrder,]
+
+densitySEMs<-as.data.frame(dplyr::bind_rows(
+  lapply(colnames(densities),function(column){
+    tapply(densities[,column], paste0(combdat$Season,"_",combdat$SeagrassCover),sem)
+  }))
+)
+rownames(densitySEMs)<-colnames(densities)
+colnames(densitySEMs)<-paste0(colnames(densitySEMs),"_semDensity")
+densitySEMs<-densitySEMs[sppOrder,]
+
+SxSsummary<-as.data.frame(dplyr::bind_cols(outputCountsSxS,densityMeans,densitySEMs))
+
+
+# reorder columns
+levCombos<-NULL
+for(season in levels(combdat$Season)){
+  for(cover in levels(combdat$SeagrassCover)){
+    levCombos<-c(levCombos,paste0(season,"_",cover))
+  }
+}
+colOrder<-unlist(lapply(levCombos,grep,x=colnames(SxSsummary)))
+SxSsummary<-SxSsummary[,colOrder]
+
+
+```
+```{r saveSummaries}
+write.csv(SxSsummary[,grep("N",colnames(SxSsummary))],
+          "SeagrassSeasonCounts.csv",quote=FALSE,row.names = TRUE)
+write.csv(SxSsummary[,-grep("N",colnames(SxSsummary))],
+          "SeagrassSeasonDensities.csv",quote=FALSE,row.names = TRUE)
+write.csv(SxSsummary,"SeagrassSeasonSummary.csv",quote=FALSE,row.names = TRUE)
+```
+
+
+## High-level category summaries
+
+I can create a graph showing the numbers of species for each type of seagrass habitats.
+
+```{r duvSummary}
+duvSummary<-data.frame(
+  Status=paste(combdat$Season,combdat$SeagrassCover,sep="_"),
+  Leptonotus=combdat$leptonotus,
+  Stigmatopora=combdat$s.nigra,
+  Shrimp=combdat$shrimp,
+  Flounder=combdat$flounder,
+  Crabs=rowSums(combdat[,grep("crab",tolower(colnames(combdat)))]),
+  Molluscs=rowSums(combdat[,c("Diloma","austrovenus","Lunella_smaragda","mud_whelk","whelk","paphies_australis")]),
+  OtherFish=rowSums(combdat[,c("blenny","kahawai","spotty","wrasse","blue_cod_juv","whitebait_below50mm","smelt")]),
+  Other=rowSums(combdat[,c("Seastar","sea_squirt","isopod","bristleworm")])
+  )
+
+```
+
+```{r duvCounts}
+duvCounts<-as.data.frame(duvSummary %>%
+  group_by(Status) %>%
+  summarise_all( sum))
+duvCounts$Season<-factor(gsub("(\\w+)_\\w+","\\1",duvCounts$Status),
+                         levels=c("Winter","Spring","Summer","Fall"))
+duvCounts<-duvCounts[,c("Status","Season","Leptonotus","Stigmatopora","Shrimp","Flounder","Crabs","Molluscs","OtherFish","Other")]
+```
+
+```{r saveCountsSummary}
+outputCounts<- as.data.frame(dplyr::bind_rows(
+  lapply(colnames(duvCounts[,-c(1:2)]),function(column){
+    tapply(duvCounts[,column], duvCounts$Season,sum)
+  }))
+)
+rownames(outputCounts)<-colnames(duvCounts[,-c(1:2)])
+write.csv(outputCounts,"TotalCountsSummary.csv",quote=FALSE)
+```
+
+
+
+```{r CountsPlotFXN}
+# this plots each species over seasons
+#requires a column called "Season" that is a factor. 
+CountsPlot<-function(summaryMatrix, spp, sppCols,x.lim=c(0,7),y.lim=c(0,300)){
+  
+  # adjust the ylimit if necessary
+  if(max(summaryMatrix[,spp])>max(y.lim)){
+    y.lim[2]<-max(summaryMatrix[,spp])+50
+  }
+  # make an empty plot
+  plot(as.numeric(summaryMatrix[order(as.numeric(summaryMatrix[,"Season"])),"Season"]),
+       summaryMatrix[order(as.numeric(summaryMatrix[,"Season"])),spp[1]],
+       xlim=x.lim,
+       ylim=y.lim,
+       xlab="",
+       ylab="",
+       cex.lab=2,
+       axes=F,
+       type='n',
+       xpd=TRUE)
+  axis(1,at=as.numeric(summaryMatrix[order(as.numeric(summaryMatrix[,"Season"])),"Season"]),
+       labels=levels(summaryMatrix[order(as.numeric(summaryMatrix[,"Season"])),"Season"]),
+       lty = 0,las=2,cex.axis=2)
+  axis(2,las=1,cex.axis=2)
+  
+  
+  for(i in 1:length(spp)){
+    # add points for each species
+    points(as.numeric(summaryMatrix[order(as.numeric(summaryMatrix[,"Season"])),"Season"]),
+       summaryMatrix[order(as.numeric(summaryMatrix[,"Season"])),spp[i]],
+       col=sppCols[i],
+       lwd=2,
+       type = "l")
+    points(as.numeric(summaryMatrix[order(as.numeric(summaryMatrix[,"Season"])),"Season"]),
+       summaryMatrix[order(as.numeric(summaryMatrix[,"Season"])),spp[i]],
+       pch=21,
+       bg=scales::alpha(sppCols[i],0.75),
+       col="dark grey",
+       cex=3)
+  }
+}
+```
+
+
+```{r seagrassPlotSettings}
+spp<-colnames(duvCounts)[3:ncol(duvCounts)]
+sppCols<-c('#8dd3c7','#ffffb3','#b3de69','#80b1d3','#fb8072','#fdb462','#bebada','#fccde5')
+names(sppCols)<-duvCounts[,3:ncol(duvCounts)]
+
+```
+
+
+```{r seagrassPlots}
+par(mfrow=c(1,4),mar=c(5,3,2,0),xpd=TRUE,oma=c(0,0,0,0))
+CountsPlot(duvCounts[grep("bare",duvCounts$Status),],spp=spp,sppCols = sppCols,y.lim = c(0,3500))
+CountsPlot(duvCounts[grep("sparse",duvCounts$Status),],spp=spp,sppCols = sppCols,y.lim = c(0,3500))
+CountsPlot(duvCounts[grep("patchy",duvCounts$Status),],spp=spp,sppCols = sppCols,y.lim = c(0,3500))
+CountsPlot(duvCounts[grep("dense",duvCounts$Status),],spp=spp,sppCols = sppCols,y.lim = c(0,3500))
+```
+
+
+```{r reformatForDiversity}
+# only keep tows with > 0 observations
+divdat<-combdat[rowSums(combdat[,6:ncol(combdat)])>0,]
+divabunds<-as.matrix(divdat[rowSums(divdat[,6:ncol(divdat)])>0,6:ncol(divdat)])
+# relative
+relabunds<-decostand(divabunds,method="total",MARGIN = 1)
+# densities
+divdensities<-divabunds/divdat$TowArea
+```
+
+```{r relativeSummary}
+# plot the relative abundances
+
+duvRelSum<-data.frame(
+  Status=paste(divdat$Season,divdat$SeagrassCover,sep="_"),
+  Leptonotus=relabunds[,"leptonotus"],
+  Stigmatopora=relabunds[,"s.nigra"],
+  Shrimp=relabunds[,"shrimp"],
+  Flounder=relabunds[,"flounder"],
+  Crabs=rowSums(relabunds[,grep("crab",tolower(colnames(relabunds)))]),
+  Molluscs=rowSums(relabunds[,c("Diloma","austrovenus","Lunella_smaragda","mud_whelk","whelk","paphies_australis")]),
+  OtherFish=rowSums(relabunds[,c("blenny","kahawai","spotty","wrasse","blue_cod_juv","whitebait_below50mm","smelt")]),
+  Other=rowSums(relabunds[,c("Seastar","sea_squirt","isopod","bristleworm")])
+  )
+
+```
+
+```{r duvCountsOrdered}
+duvCounts<-as.data.frame(duvRelSum %>%
+  group_by(Status) %>%
+  summarise_all( sum))
+duvCounts$Season<-factor(gsub("(\\w+)_\\w+","\\1",duvCounts$Status),
+                         levels=c("Winter","Spring","Summer","Fall"))
+duvCounts<-duvCounts[,c("Status","Season","Leptonotus","Stigmatopora","Shrimp","Flounder","Crabs","Molluscs","OtherFish","Other")]
+```
+
+
+
+
+```{r getImages}
+bare <- image_read('../figs/seagrass_cover_images/Bare.PNG')
+bare_png <- image_convert(bare, "png")
+
+sparse <- image_read('../figs/seagrass_cover_images/Sparse.PNG')
+sparse_png <- image_convert(sparse, "png")
+
+patchy <- image_read('../figs/seagrass_cover_images/Patchy.PNG')
+patchy_png <- image_convert(patchy, "png")
+
+dense <- image_read('../figs/seagrass_cover_images/Dense.PNG')
+dense_png <- image_convert(dense, "png")
+
+seagrassPhotos<-image_append(image_scale(c(bare_png,sparse_png,patchy_png,dense_png)))
+```
+
+
+
+
+```{r relativeAbundanceFig}
+png("../figs/relativeAbundanceSummaries.png",width = 1512, height = 400, res = 96)
+par(mfrow=c(1,4), oma=c(4,0,2,0), mar=c(4,5.5,1,0),xpd=TRUE)
+CountsPlot(duvCounts[grep("bare",duvCounts$Status),],spp=spp,sppCols = sppCols,y.lim = c(0,30))
+#rasterImage(bare_png,xleft = 0,xright = 5,ytop = -26,ybottom=-30,xpd=TRUE)
+mtext("Relative abundance",side=2,outer=FALSE,line=3,cex=1.5)
+
+CountsPlot(duvCounts[grep("sparse",duvCounts$Status),],spp=spp,sppCols = sppCols,y.lim = c(0,30))
+#rasterImage(sparse_png,xleft = 0,xright = 5,ytop = -26,ybottom=-30,xpd=TRUE)
+
+CountsPlot(duvCounts[grep("patchy",duvCounts$Status),],spp=spp,sppCols = sppCols,y.lim = c(0,30))
+#rasterImage(patchy_png,xleft = 0,xright = 5,ytop = -26,ybottom=-30,xpd=TRUE)
+
+CountsPlot(duvCounts[grep("dense",duvCounts$Status),],spp=spp,sppCols = sppCols,y.lim = c(0,30))
+#rasterImage(dense_png,xleft = 0,xright = 5,ytop = -26,ybottom=-30,xpd=TRUE)
+
+
+outer_legend("top",spp,col=sppCols,pch=21,pt.bg=sppCols,lty=1,bty='n',ncol=8,cex=2,lwd=2,pt.cex=2)
+dev.off()
+```
+
+
+```{r saveRelAbundFig}
+relfig<-image_convert(image_read('../figs/relativeAbundanceSummaries.png'),"png")
+combinedSummary<-image_append(c(relfig,seagrassPhotos), stack = TRUE)
+image_write(combinedSummary,
+            path = "../figs/relativeAbundanceSeagrass.png",
+            format = "png")
+```
+
+
