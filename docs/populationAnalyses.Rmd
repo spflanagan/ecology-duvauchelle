@@ -591,7 +591,19 @@ kable(aic,"latex",booktab=TRUE)
 ```{r}
 plot(m1$fitted.values,m1$residuals,xlab="Fitted",ylab="Residuals")
 ```
+```{r modelSummaryflounder}
+summary(m1)
+sumM1<-summary(m1)
+sumM1_counts<-sumM1$coefficients$count
+colnames(sumM1_counts)<-paste0(colnames(sumM1_counts),"_Counts")
+sumM1_zeroes<-sumM1$coefficients$zero
+colnames(sumM1_zeroes)<-paste0(colnames(sumM1_zeroes),"_Zeroes")
+sumM1_zeroes<-rbind(sumM1_zeroes,rep(NA,4))
+rownames(sumM1_zeroes)[nrow(sumM1_zeroes)]<-"Log(theta)"
 
+m1sumcomb<-cbind(sumM1_counts,sumM1_zeroes)
+write.csv(m1sumcomb,"FlounderModelResults.csv",row.names = TRUE,quote=FALSE)
+```
 
 ```{r}
 par(mfrow=c(1,5))
