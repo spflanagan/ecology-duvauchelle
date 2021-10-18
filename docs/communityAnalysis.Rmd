@@ -173,7 +173,25 @@ plot(vp, digits=2, bg=c("green", "red", "blue"), Xnames = c("seagrass", "season"
 Because there are more spatial variables than either of the other explanatory variables, I need to only interpret the adjusted $R^2$ values. 
 
 ```{r}
-kable(dplyr::bind_rows(vp$part$fract,vp$part$indfract),
+vpTab<-dplyr::bind_rows(vp$part$fract,vp$part$indfract)
+rownames(vpTab)<-c("seagrass",
+                   "season",
+                   "spatial",
+                   "seagrass + season",
+                   "seagrass + spatial",
+                   "season + spatial",
+                   "all",
+                   "seagrass | season + spatial",
+                   "season | seagrass + spatial",
+                   "spatial | seagrass + season",
+                   "intersection seagrass + season",
+                   "intersection season + spatial",
+                   "intersection seagrass + spatial",
+                   "intersection seagrass + season + spatial",
+                   "Residuals")
+kable(vpTab,
+      "latex",
+      booktabs=TRUE,
       row.names = TRUE,
       caption="Results of variance partitioning using spatial variables as covariates.")
 ```
