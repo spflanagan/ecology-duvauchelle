@@ -542,7 +542,9 @@ points(globalInt,
        display="sites",
        scaling=3)
 
-ordiellipse(globalInt,ys$Season,col=seasonCols[levels(ys$Season)],lwd=5,choices=c(1,4))
+ordiellipse(globalInt,ys$Season,
+            col=seasonCols[levels(ys$Season)],
+            lwd=5,choices=c(1,4))
 
 arrows(x0=rep(0,nrow(plotSpp)),
        y0=rep(0,nrow(plotSpp)),
@@ -604,7 +606,9 @@ points(globalInt,
        display="sites",
        scaling=3)
 
-ordiellipse(globalInt,ys$SeagrassCover,col=seagrassCs[levels(ys$SeagrassCover)],lwd=5,choices=c(1,4))
+ordiellipse(globalInt,ys$SeagrassCover,
+            col=seagrassCs[levels(ys$SeagrassCover)],
+            lwd=5,choices=c(1,4))
 arrows(x0=rep(0,nrow(plotSpp)),
        y0=rep(0,nrow(plotSpp)),
        x1=plotSpp[,1]*0.1,
