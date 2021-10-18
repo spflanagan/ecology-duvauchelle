@@ -207,6 +207,29 @@ for(i in 1:nrow(gpsdat)){
   m
 ```
 
+We'll also create a map of NZ with Duvauchelle highlighted
+
+```{r largeMap}
+m<- leaflet() %>%
+  addTiles() %>%  # Add default OpenStreetMap map tiles
+  setView(lng=center[2], lat=center[1],zoom=5) %>% 
+  
+  #addProviderTiles("NASAGIBS.ViirsEarthAtNight2012")
+  addProviderTiles("Esri.WorldImagery") %>%  
+  addRectangles(lng1 = 172.9,#min(c(gpsdat$long_start,gpsdat$long_stop)),
+  lat1 = -43.7,#min(c(gpsdat$lat_start,gpsdat$lat_stop)),
+  lng2 = 173,#max(c(gpsdat$long_start,gpsdat$long_stop)),
+  lat2 = -43.8,#max(c(gpsdat$lat_start,gpsdat$lat_stop)),
+  color = "red") %>%
+  addMiniMap(zoomLevelFixed = 12,tiles="Esri.WorldImagery",
+             width=200, height=200, position="bottomright") 
+
+
+  m
+```
+
+I'll then stitch the static images together in GIMP.
+
 ## Overall counts data summary
 
 ```{r makeOutputCounts}
