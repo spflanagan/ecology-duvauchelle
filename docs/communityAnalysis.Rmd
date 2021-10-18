@@ -964,9 +964,9 @@ seasonsQ<-actualQdat[actualQdat$level %in% levels(combdat$Season) &
                                actualQdat$diversity == "pwTurnover",]
 seagrassQ<-actualQdat[actualQdat$level %in% levels(combdat$SeagrassCover) &
                                actualQdat$diversity == "pwTurnover",]
-par(mfrow=c(2,3),oma=c(1,1.5,1,0),mar=c(4,4,2,2),xpd=TRUE)
 plotQs(seagrassQ,levels(combdat$SeagrassCover),seagrassCs,seagrassPs,FALSE,ylims=c(0,0.8))
 legend("bottom",
+par(mfrow=c(2,3),oma=c(1,4,3,0),mar=c(4,4,2.5,2),xpd=TRUE)
        levels(combdat$SeagrassCover),
        col=seagrassCs,
        pch=seagrassPs,
