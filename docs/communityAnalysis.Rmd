@@ -911,19 +911,26 @@ legend(x=-0.25,y=33.5,xpd=TRUE,
 plotQs(seasonsQ,levels(combdat$Season),seasonCols,
        seasonPchs,FALSE,ylims=c(0,25))
 legend("topright","B",cex=2,bty='n')
+legend(x=-0.2,y=33.5,xpd=TRUE,
        levels(combdat$Season),
-       col=seasonCols,
-       pch=seasonPchs,
+       col=seasonCols[levels(combdat$Season)],
+       pch=seasonPchs[levels(combdat$Season)],
+       ncol=2,
+       cex=2,
+       bty='n')
+
 plotQs(actualQdat[actualQdat$level %in% "Duvauchelle" &
                                actualQdat$diversity == "alpha",],
        "Duvauchelle",c(Duvauchelle="#36454f"),c(Duvauchelle=19),
        FALSE,ylims=c(0,25))
 legend("topright","C",cex=2,bty='n')
+legend(x=0,y=33.5,xpd=TRUE,
+       "Overall",
+       col="#36454f",
+       pch=19,
        ncol=1,
-             bty='n',
-             cex=2)
-legend("top","Overall",col="#36454f",pch=19,bty='n',cex=2)
- 
+       cex=2,
+       bty='n')
 
 
 # Rarefied ones
