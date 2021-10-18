@@ -916,27 +916,39 @@ mtext("Predicted # Flounder per Tow",2,outer=TRUE,line=1.75)
 
 
 ```{r makeFlounderPlots,eval=FALSE}
-png("../figs/flounderObsPred.png",width = 1512, height = 600, res = 96)
+png("../figs/flounderObsPred.png", height=5,width=9,res = 300,units='in')
 
-par(mfrow=c(2,4), oma=c(5,0,2,1), mar=c(2,5.5,1,1),xpd=TRUE)
+par(mfrow=c(2,4), oma=c(8,1,2,1), mar=c(2,5.5,1,1),xpd=TRUE)
 
 # predicted counts
 fp<-lapply(levels(flounderPredicteds$seagrass_cover),
-           PlotFlounderProbs,
-           predictedProbs=flounderPredicteds,
-           seagrassCs=size_cols,
-           seagrassPs=15:18,
-           xaxis=FALSE)
-mtext("Predcited density",2,outer=FALSE,padj=-73.5,cex=1.25)
+           function(seagrass, labels){
+             PlotFlounderProbs(seagrass,
+                               predictedProbs=flounderPredicteds,
+                               seagrassCs=size_cols,
+                               seagrassPs=15:18,
+                               xaxis=FALSE,
+                               ymax=8)
+             mtext(seagrass,side=3,outer=FALSE,cex=1.25)
+             legend("topright",labels[seagrass],
+                    bty='n',cex=2)
+           },
+           labels=c(bare="A",sparse="B",patchy="C",dense="D")
+           )
+mtext("Predicted density",2,outer=FALSE,padj=-46.5,cex=1.25)
 
 # observed counts
 seagrassPlot(flounderMeanCnts,flounderSEMCnts,"bare")
+legend("topright","E",bty='n',cex=2)
 seagrassPlot(flounderMeanCnts,flounderSEMCnts,"sparse")
+legend("topright","F",bty='n',cex=2)
 seagrassPlot(flounderMeanCnts,flounderSEMCnts,"patchy")
+legend("topright","G",bty='n',cex=2)
 seagrassPlot(flounderMeanCnts,flounderSEMCnts,"dense")
-mtext("Observed number",2,outer=FALSE,padj=-73.5,cex=1.25)
+legend("topright","H",bty='n',cex=2)
+mtext("Observed number",2,outer=FALSE,padj=-46.5,cex=1.25)
 
-outer_legend("top",bty='n',
+outer_legend("bottom",bty='n',
              pch=15:18,col=size_cols,levels(flounderMeanCnts$SizeClass),
              ncol=4,cex=2,lwd=3,lty=1:4,pt.cex=3)
 dev.off()
