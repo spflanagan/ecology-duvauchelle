@@ -831,12 +831,12 @@ seagrassPlot<-function(flounderMeanCnts,flounderSEMCnts,cover){
 ```{r}
 PlotFlounderProbs<-function(predictedProbs, sgrs,
                             seagrassCs, seagrassPs,
-                            xaxis=TRUE){
+                            xaxis=TRUE, ymax=0){
   
   dat<-predictedProbs[which(predictedProbs$seagrass_cover==sgrs),]
   
   ymin<-0
-  ymax<-round(max(dat$upper,na.rm=TRUE)+0.5)
+  if(ymax==0) ymax<-round(max(dat$upper,na.rm=TRUE)+0.5)
   plot(counts~as.numeric(Season),
        data=dat[which(dat$size=="below10mm"),],
        pch=seagrassPs[1],
