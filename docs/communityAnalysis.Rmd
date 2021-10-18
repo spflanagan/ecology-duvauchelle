@@ -209,8 +209,16 @@ seagrass<-capscale(duvDetrend~ys$SeagrassCover)
 season<-capscale(duvDetrend~ys$Season)
 
 spaceCond<-capscale(duvDetrend~. + Condition(ys$SeagrassCover) + Condition(ys$Season),data=spaceAxes)
-```
-```{r}
+
+# create a formula with the conditional space axes
+form<-paste0("duvDetrend~ys$SeagrassCover + Condition(ys$Season)+",
+              paste0("Condition(",colnames(spaceAxes),")",collapse = "+"))
+seagrassCond<-capscale(formula(form),data=spaceAxes)
+       
+# now make seagrass conditional    
+form<-paste0("duvDetrend~ys$Season + Condition(ys$SeagrassCover)+",
+              paste0("Condition(",colnames(spaceAxes),")",collapse = "+"))              
+seasonCond<-capscale(formula(form),data=spaceAxes)
 anova(global)
 anova(space)
 anova(seagrass)
