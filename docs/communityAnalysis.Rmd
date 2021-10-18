@@ -23,6 +23,7 @@ library(tidyr)
 library(leaflet)
 library(magick)
 library(adespatial)
+library(kableExtra)
 ```
 
 ```{r}
