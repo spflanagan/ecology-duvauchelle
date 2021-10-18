@@ -70,6 +70,7 @@ zoom <- 16  #zoom: 1 = furthest out (entire globe), larger numbers = closer in
 ```{r}
 abunds<-as.matrix(combdat[rowSums(combdat[,6:ncol(combdat)])>4,
                           6:ncol(combdat)])
+colnames(abunds)<-tolower(colnames(abunds))
 ys<-combdat[rowSums(combdat[,6:ncol(combdat)])>4,
             c("SeagrassCover","Season","TowArea")]
 densities<-abunds/combdat[rowSums(combdat[,6:ncol(combdat)])>4,"TowArea"]
