@@ -301,9 +301,8 @@ text(x=plotSpp["austrovenus",1]*0.11+0.7,
      y=plotSpp["austrovenus",2]*0.11-0.1,
      labels = expression(italic("A. stutchburyi")))
 
-
-legend("topleft",c("Winter","Spring","Summer","Fall"),
 legend("topright","A",cex=2,bty='n')
+legend("bottom",c("Winter","Spring","Summer","Fall"),
        ncol=2,bty='n',
        col=c(seasonCols[c("Winter","Spring","Summer","Fall")]),
        bg=c(seasonCols[c("Winter","Spring","Summer","Fall")]),
@@ -366,9 +365,8 @@ text(x=plotSpp["austrovenus",1]*0.11+0.7,
      y=plotSpp["austrovenus",2]*0.11-0.1,
      labels = expression(italic("A. stutchburyi")))
 
-
-legend("topright",c("bare","sparse","patchy","dense"),
 legend("topright","B",cex=2,bty='n')
+legend("bottom",c("bare","sparse","patchy","dense"),
        ncol=2,
        lwd=4,
        lty=1,
