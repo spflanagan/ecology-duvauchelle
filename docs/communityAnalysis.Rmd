@@ -797,23 +797,31 @@ extract_rarefied_estimates<-function(hdOutputRDS){
     }))
     dat$level<-rownames(dat)
     
-    longdat<-tidyr::pivot_longer(data=dat,colnames(dat)[1:5],names_to="diversity")
+    longdat<-tidyr::pivot_longer(data=dat,colnames(dat)[1:6],
+                                 names_to="diversity")
     return(longdat)
   }))
   
-  meanQs<-tapply(estimatesQ$value,paste(estimatesQ$level,estimatesQ$diversity),mean)
+  meanQs<-tapply(estimatesQ$value,paste(estimatesQ$level,
+                                        estimatesQ$diversity),
+                 mean)
   meanQs<-data.frame(mu=meanQs,
                      level=gsub("(\\w+) (\\w+)","\\1",rownames(meanQs)),
                      diversity=gsub("(\\w+) (\\w+)","\\2",rownames(meanQs)),
                      row.names = NULL)
-  meanQs$SEM<-tapply(estimatesQ$value,paste(estimatesQ$level,estimatesQ$diversity),sem)
-  meanQs$CIvalue<-tapply(estimatesQ$value,paste(estimatesQ$level,estimatesQ$diversity),cim,output="value")
+  meanQs$SEM<-tapply(estimatesQ$value,paste(estimatesQ$level,
+                                            estimatesQ$diversity)
+                     ,sem)
+  meanQs$CIvalue<-tapply(estimatesQ$value,paste(estimatesQ$level,
+                                                estimatesQ$diversity),
+                         cim,output="value")
   return(meanQs)
 }
 ```
 
-```{r}
-rarefied_summaries<-lapply(list.files(pattern="rarefied_Q.*.RDS"),extract_rarefied_estimates)
+```{r extractRarefiedEstimates}
+rarefied_summaries<-lapply(list.files(pattern="rarefied_Q.*.RDS"),
+                           extract_rarefied_estimates)
 names(rarefied_summaries)<-list.files(pattern="rarefied_Q.*.RDS")
 
 for(q in 1:length(rarefied_summaries)){
