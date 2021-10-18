@@ -233,9 +233,11 @@ All of these are significant at `P < 0.001`, suggesting that we can consider bot
 ```{r}
 globalInt<-capscale(duvDetrend~as.matrix(spaceAxes)*ys$SeagrassCover*ys$Season)
 globalSum<-summary(globalInt)
+globalInt
 ```
-
 ```{r}
+anova(globalInt)
+```
 scrs <- scores(globalInt, display = c("sites", "species"), scaling = 3)
 sppScrs<-scrs$species
 plotSpp<-as.data.frame(sppScrs[which(abs(sppScrs[,1])>=1 | abs(sppScrs[,2])>=1),])
