@@ -380,7 +380,7 @@ legend("topright",c("bare","sparse","patchy","dense"),
 scrs <- scores(globalInt, display = "species", scaling = 3,choices = c(1,3,4))
 
 par(mfrow=c(2,2),xpd=FALSE)
-plotSpp<-as.data.frame(scrs[which(abs(scrs[,1])>=1 | abs(sppScrs[,2])>=1),])
+plotSpp<-as.data.frame(scrs[which(abs(scrs[,1])>=1 | abs(scrs[,2])>=1),])
 
 plot(globalInt,
      choices=c(1,3),
@@ -509,7 +509,7 @@ legend("topright",c("bare","sparse","patchy","dense"),
        bg=seagrassCs[c("bare","sparse","patchy","dense")])
 
 # 4th axis
-plotSpp<-as.data.frame(scrs[which(abs(scrs[,1])>=1 | abs(sppScrs[,3])>=1),])
+plotSpp<-as.data.frame(scrs[which(abs(scrs[,1])>=1 | abs(scrs[,3])>=1),])
 
 plot(globalInt,
      choices=c(1,4),
