@@ -362,9 +362,4 @@ write.csv(pipefishCnts,"../data/pipefishCnts.csv",row.names = FALSE,quote=FALSE)
 ```
 
 
-# Other size-classed organisms
-
-```{r}
-grep("mm$",colnames(rawdat),value=TRUE)
-```
 
