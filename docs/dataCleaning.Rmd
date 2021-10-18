@@ -270,6 +270,12 @@ Combine counts and trait data -- it is not perfect.
 
 I was hoping to correct the pipefish data to be adult/juvenile, if possible.
 
+```{r getPipedat}
+cleandat<-read.csv("../data/cleanedCommunity.csv")
+keep_cols<-c("Day","Season","seagrass_cover","towArea","TowNum","lat_start","long_start","lat_stop","long_stop",
+             grep("s\\.nigra",colnames(cleandat),value=T),grep("leptonotus",colnames(cleandat),value=T))
+pipedat<-cleandat[,keep_cols]
+```
 ```{r pipeLong}
 pipe_long<-tidyr::gather(pipedat, size, count, 10:13, factor_key=TRUE)
 pipe_long$species<-gsub("(.*)_.*$","\\1",pipe_long$size)
