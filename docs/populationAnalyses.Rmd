@@ -890,7 +890,7 @@ PlotFlounderProbs<-function(predictedProbs, sgrs,
 }
 ```
 
-```{r flounderPredicteds,fig.width=639,fig.height=478}
+```{r flounderPredicteds,fig.width=6.39,fig.height=4.78}
 
 par(mfcol=c(1,4),xpd=TRUE,mar=c(2,2,2,2),oma=c(3,4,3,2))
 fp<-lapply(levels(flounderPredicteds$seagrass_cover),
