@@ -126,15 +126,16 @@ listW<-listw.candidates(duvXY,nb='dnear',d2=thresh)
 duvThreshRes<-listw.select(x=duvDetrend,
                            candidates = listW)
 saveRDS(duvThreshRes,"duvThreshRes.RDS")
-```
 
 ```{r}
-duvThreshRes<-readRDS("duvThreshRes.RDS")
 duvThreshRes$best.id
 lwBest <- listW[[duvThreshRes$best.id]]
 ```
 
-Then use `dbmem` with that best threshold (`r duvThresRes$best.id`).
+duvThreshRes<-readRDS("duvThreshRes.RDS")
+```
+
+Then use `dbmem` with that best threshold (`r duvThreshRes$best.id`).
 
 
 ```{r}
