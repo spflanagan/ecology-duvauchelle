@@ -896,6 +896,7 @@ seagrassQ<-actualQdat[actualQdat$level %in% levels(combdat$SeagrassCover) &
 par(mfrow=c(2,3),oma=c(1,1.5,1,0),mar=c(4,4,2,2),xpd=TRUE)
 plotQs(seagrassQ,levels(combdat$SeagrassCover),seagrassCs,seagrassPs,FALSE,ylims=c(0,20))
 legend("topright",
+legend("topright","A",cex=2,bty='n')
        levels(combdat$SeagrassCover),
        col=seagrassCs,
        pch=seagrassPs,
@@ -905,9 +906,11 @@ legend("topright",
 mtext("observed alpha diversity",2,outer=FALSE,cex=1.5,line=3.5)
 plotQs(seasonsQ,levels(combdat$Season),seasonCols,seasonPchs,FALSE,ylims=c(0,20))
 legend("topright",
+legend("topright","B",cex=2,bty='n')
        levels(combdat$Season),
        col=seasonCols,
        pch=seasonPchs,
+legend("topright","C",cex=2,bty='n')
        ncol=1,
              bty='n',
              cex=2)
@@ -928,10 +931,13 @@ plotQs(seagrassQ,levels(combdat$SeagrassCover),seagrassCs,seagrassPs,FALSE,ylims
 mtext("rarefied alpha diversity",2,outer=FALSE,cex=1.5,line=3.5)
 plotQs(seasonsQ,levels(combdat$Season),seasonCols,seasonPchs,FALSE,ylims=c(0,20))
 
+legend("topright","D",cex=2,bty='n')
+legend("topright","E",cex=2,bty='n')
 plotQs(rarefied_summaries[rarefied_summaries$level %in% "Duvauchelle" &
                                rarefied_summaries$diversity == "alpha",],
        "Duvauchelle",c(Duvauchelle="#36454f"),c(Duvauchelle=19),FALSE,ylims=c(0,20))
 legend("top","Overall",col="#36454f",pch=19,bty='n',cex=2)
+legend("topright","F",cex=2,bty='n')
  
 
 
