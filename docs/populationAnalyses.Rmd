@@ -56,7 +56,7 @@ multi_tapply<-function(dat,focalCol,factors,FUN,...){
 ```
 
 
-```{r}
+```{r getData}
 cleandat<-read.csv("../data/cleanedCommunity.csv")
 seasonCols<-c(Spring="coral",Summer="olivedrab3",Fall="gold",Winter="dodgerblue")
 seagrassCs<-c(bare="#d9f0a3",sparse="#78c679",patchy="#41ab5d",dense="#005a32")
@@ -70,7 +70,7 @@ size_cols<-c("#a6bddb","#74a9cf","#2b8cbe","#045a8d")
 gpsdat<-read.csv("../data/gpsdat.csv")
 ```
 
-```{r}
+```{r setGPS}
 lat <- c(-43.794,-43.752) #define our map's ylim
 lon <- c(172.930,172.933) #define our map's xlim
 center <- c(mean(c(gpsdat$lat_start,gpsdat$lat_stop)), 
@@ -81,7 +81,7 @@ zoom <- 16  #zoom: 1 = furthest out (entire globe), larger numbers = closer in
 
 # Shrimp
 
-```{r}
+```{r shrimpLong}
 shrimp<-cbind(cleandat[,c("Day","Season","towArea","seagrass_cover",
                             "lat_start","long_start","lat_stop","long_stop")],
                         cleandat[,grep("shrimp",colnames(cleandat))])
@@ -107,7 +107,7 @@ hist(log(shrimp_long$density+1),xlab="ln(Density)", ylab="Number of observations
 
 ## Log-transformed OLS
 
-```{r}
+```{r shrimpLMs}
 shrimpLM1<- lm(log(density+1) ~ 1,dat=shrimp_long)
 shrimpLM2<-  lm(log(density+1) ~ 1+ Season,dat=shrimp_long)
 shrimpLM3<-  lm(log(density+1) ~ 1+ seagrass_cover,dat=shrimp_long)
@@ -122,19 +122,19 @@ shrimpLM11<-  lm(log(density+1) ~ 1+ Season * size +seagrass_cover,dat=shrimp_lo
 shrimpLM12<-  lm(log(density+1) ~ 1+ Season * seagrass_cover * size,dat=shrimp_long)
 anova(shrimpLM1,shrimpLM2,shrimpLM3,shrimpLM4,shrimpLM5,shrimpLM6,shrimpLM7,shrimpLM8,shrimpLM9,shrimpLM10,shrimpLM11,shrimpLM12)
 ```
-```{r}
+```{r shrimpAIC}
 shrimpAIC<-AIC(shrimpLM1,shrimpLM2,shrimpLM3,shrimpLM4,shrimpLM5,shrimpLM6,shrimpLM7,shrimpLM8,shrimpLM9,shrimpLM10,shrimpLM11,shrimpLM12)
 shrimpAIC<-shrimpAIC[order(shrimpAIC$AIC),]
 kable(shrimpAIC,"latex",booktabs=TRUE,caption="Comparison of AICc values for model selection of Poisson GLMs describing flounder abundances. The best-fitting model is the most complex one, with interactions between season, seagrass cover, flounder size, and tow area.")
 ```
 
 
-```{r}
+```{r plotShrimpLM12}
 par(mfrow=c(2,2))
 plot(shrimpLM12)
 ```
 
-```{r}
+```{r shrimpANOVAtable}
 kable(anova(shrimpLM12),"latex",booktabs=TRUE,
       caption="Summary ANOVA table of the effects of season, seagrass cover, shrimp size, and their interactions on the density of shrimp in Duvauchelle Bay.")
 ```
@@ -449,7 +449,7 @@ flounder_long$seagrass_cover<-factor(flounder_long$seagrass_cover,
                                      levels=c("bare","sparse","patchy","dense"))
 ```
 
-```{r}
+```{r plotFlounderSizes}
 par(mfrow=c(2,2))
 plot(as.Date(flounder$Day),flounder$flounder_below10mm)
 plot(as.Date(flounder$Day),flounder$flounder_10to20mm)
@@ -523,7 +523,7 @@ plot(flounder_long$count~flounder_long$towArea,
 
 Before going forward, we should also check if covariates are highly correlated (they don't seem to be, and are categorical):
 
-```{r}
+```{r plotCovariates}
 plot(flounder_long[,c("Season","seagrass_cover","size","towArea")])
 ```
 
@@ -548,7 +548,7 @@ All of this together points to the need to at a minimum use a negative binomial 
 
 My initial attempts using a negative binomial resulted in some models that don't fit that well, because they have some really large deviations from the assumptions of the homogeneity of variances in the residuals.
 
-```{r}
+```{r flounderGLMnested}
 flounderGLM8<-MASS::glm.nb(flounder_long$count ~ 1+ flounder_long$seagrass_cover/flounder_long$Season  * flounder_long$size *flounder_long$towArea)
 
 
@@ -560,7 +560,7 @@ plot(as.factor(flounder_long$size),flounderGLM8$residuals)
 plot(flounder_long$towArea,flounderGLM8$residuals)
 ```
 
-```{r}
+```{r glounderGLMmultiplicative}
 flounderGLM8<-MASS::glm.nb(flounder_long$count ~ 1+ flounder_long$Season * flounder_long$seagrass_cover * flounder_long$size + flounder_long$towArea)
 
 
@@ -574,7 +574,7 @@ plot(flounder_long$towArea,flounderGLM8$residuals)
 
 So now I'm going to try a zero-inflated negative binomial:
 
-```{r}
+```{r flounderZeroInflated}
 m0<-zeroinfl(flounder_long$count ~ 1,
              dist="negbin")
 m1<-zeroinfl(count ~ 1+ seagrass_cover*Season  + size +towArea,
@@ -588,7 +588,7 @@ aic<-AIC(m0,m1,m2)
 aic<-aic[order(aic[,2]),]
 kable(aic,"latex",booktabs=TRUE)
 ```
-```{r}
+```{r plotFlounderFittedResid}
 plot(m1$fitted.values,m1$residuals,xlab="Fitted",ylab="Residuals")
 ```
 ```{r modelSummaryflounder}
@@ -605,7 +605,8 @@ m1sumcomb<-cbind(sumM1_counts,sumM1_zeroes)
 write.csv(m1sumcomb,"FlounderModelResults.csv",row.names = TRUE,quote=FALSE)
 ```
 
-```{r}
+
+```{r plotFlounderResids}
 par(mfrow=c(1,5))
 plot(flounder_long$count,m1$residuals)
 plot(as.factor(flounder_long$Season),m1$residuals)
@@ -614,7 +615,7 @@ plot(as.factor(flounder_long$size),m1$residuals)
 plot(flounder_long$towArea,m1$residuals)
 
 ```
-```{r}
+```{r flounderDispersion}
 # Dispersion Statistic
 E2 <- resid(m1, type = "pearson")
 N  <- nrow(flounder_long)
@@ -626,7 +627,7 @@ The dispersion statistic is `r disp`, which seems reasonably small (and reasonab
 
 I'm checking the model fit based on the recommendations from [Stack Overflow](https://stackoverflow.com/questions/30103001/assessing-performance-of-a-zero-inflated-negative-binomial-model).
 
-```{r}
+```{r NonzeroVzero}
 # store observed values, and determine how many are nonzero
 obs <- flounder_long$count
 obs.nonzero <- obs > 0
@@ -652,7 +653,7 @@ nonzeroPreds<-table(preds.nonzero)
 
 The model predicts that there would be `r nonzeroPreds[[1]]` zero observations and `r nonzeroPreds[[2]]` non-zero observations.
 
-```{r}
+```{r flounderConfusionMatrix}
 # the confusion matrix is obtained by tabulating the dichotomized observations and predictions
 confusion.matrix <- table(preds.nonzero, obs.nonzero)
 FNR <- confusion.matrix[2,1] / sum(confusion.matrix[,1])
@@ -661,12 +662,12 @@ FNR <- confusion.matrix[2,1] / sum(confusion.matrix[,1])
 Using the confusion matrix (tabulating the zero and non-zero observations and predictions), we can calculate the false negative rate to be `r FNR`.
 
 
-```{r, fig.cap="Predicted counts compared to observed counts. The model does well for the smaller counts but performs poorly for large count observations."}
+```{r flounderPredictedvsObs, fig.cap="Predicted counts compared to observed counts. The model does well for the smaller counts but performs poorly for large count observations."}
  # let's look at how well the counts are being predicted
 output <- as.data.frame(list(preds.count=preds.count, obs=obs))
 ggplot(aes(x=obs, y=preds.count), data=output) + geom_point(alpha=0.3) + geom_smooth(col="blue")
 ```
-```{r, fig.cap="Log-transformed observed counts compared to predicted counts, only showing non-zero counts."}
+```{r flounder logPredObs, fig.cap="Log-transformed observed counts compared to predicted counts, only showing non-zero counts."}
 output$log.obs <- log(output$obs)
 output$log.preds.count <- log(output$preds.count)
 ggplot(aes(x=log.obs, y=log.preds.count), data=output[!is.na(output$log.obs) & !is.na(output$log.preds.count),]) + geom_jitter(alpha=0.3, width=.15, size=2) + geom_smooth(col="blue") + labs(x="Observed count (non-zero, natural logarithm)", y="Predicted count (non-zero, natural logarithm)")
@@ -674,7 +675,7 @@ ggplot(aes(x=log.obs, y=log.preds.count), data=output[!is.na(output$log.obs) & !
 ```
 
 We can use a regression of observed counts on predicted counts to evaluate the relationship between non-zero predicted and actual counts.
-```{r}
+```{r flounderCalibrate}
 calibrate <- lm(log(preds.count) ~ log(obs), data=output[output$obs!=0 & output$preds.count!=0,])
 summary(calibrate)
 sigma <- summary(calibrate)$sigma
@@ -687,7 +688,7 @@ I'm content with this level of fit, so we'll move forward with actually interpre
 
 Get the predicteds:
 
-```{r}
+```{r FlounderPredicteds}
 combos <- data.frame(seagrass_cover = rep(c("bare","sparse", "patchy", "dense"), each=16), 
                       Season = rep(c("Winter","Spring","Summer","Fall"),4),
                      size = rep(levels(flounder_long$size),each=4),
@@ -710,7 +711,7 @@ flounderPredicteds<-flounderPredicteds[,!colnames(flounderPredicteds) %in% "vari
 
 To get confidence intervals, we'll use bootstrapping, as suggested [on StackOverflow](https://stackoverflow.com/questions/58002334/how-to-add-confidence-intervals-for-a-zero-inflated-negative-binomial-function-i).
 
-```{r}
+```{r flounderCIs}
 stat <- function(df, inds) {
     model <- formula(count ~ 1+ seagrass_cover*Season  + size +towArea)
     predict(
@@ -718,7 +719,7 @@ stat <- function(df, inds) {
         newdata = combos)
 }
 ```
-```{r flounderPredicteds, eval=FALSE}
+```{r flounderPredictedsCIs, eval=FALSE}
 set.seed(2018)
 res <- boot(flounder_long, stat, R = 100)
 CI <- setNames(as.data.frame(t(sapply(1:nrow(combos), function(row)
@@ -729,7 +730,7 @@ flounderPredicteds<-dplyr::bind_cols(flounderPredicteds,CI)
 flounderPredicteds$lower[flounderPredicteds$lower<0]<-0
 write.csv(flounderPredicteds,"flounderPredicteds.csv",row.names = FALSE,quote=FALSE)
 ```
-```{r}
+```{r readFlounderPredicteds}
 flounderPredicteds<-read.csv("flounderPredicteds.csv",
                              stringsAsFactors = TRUE)
 ```
@@ -738,7 +739,7 @@ flounderPredicteds<-read.csv("flounderPredicteds.csv",
 
 
 
-```{r}
+```{r flounderCnts}
 flounderCnts<-data.frame(count=tapply(flounder_long$count,
                      paste(flounder_long$seagrass_cover,
                            flounder_long$Day,
@@ -785,7 +786,7 @@ flounderSEMCnts$Season<-factor(flounderSEMCnts$Season,
 
 ```
 
-```{r}
+```{r seagrassPlotFxn2}
 seagrassPlot<-function(flounderMeanCnts,flounderSEMCnts,cover){
   plot(as.numeric(flounderMeanCnts$Season[flounderMeanCnts$SeagrassCover %in% cover]),
      flounderMeanCnts$value[flounderMeanCnts$SeagrassCover %in% cover],
@@ -841,7 +842,7 @@ seagrassPlot<-function(flounderMeanCnts,flounderSEMCnts,cover){
 
 
 
-```{r}
+```{r PlotFlounderProbsFxn2}
 PlotFlounderProbs<-function(predictedProbs, sgrs,
                             seagrassCs, seagrassPs,
                             xaxis=TRUE, ymax=0){
@@ -969,7 +970,7 @@ dev.off()
 ```
 
 
-```{r}
+```{r saveFlounderFig, eval=FALSE}
 flounderfig<-image_convert(image_read("../figs/flounderObsPred.png"), "png")
 flounderSeagrass<-image_append(c(flounderfig,
                                  seagrassPhotos), 
@@ -1049,7 +1050,7 @@ m
 
 ```
 
-```{r }
+```{r flounderMap, eval=FALSE}
 cleandat$flounder<-rowSums(cleandat[,grep("flounder",colnames(cleandat))])
 make_species_map(gpsdat,cleandat,"flounder",center,zoom,scale = 1)
 ```
@@ -1067,31 +1068,31 @@ Questions:
 - Do the two species differ in these patterns?
 
 
-```{r}
+```{r getPipedat}
 
 keep_cols<-c("Day","Season","seagrass_cover","towArea","TowNum","lat_start","long_start","lat_stop","long_stop",
              grep("s\\.nigra",colnames(cleandat),value=T),grep("leptonotus",colnames(cleandat),value=T))
 pipedat<-cleandat[,keep_cols]
 ```
 
-```{r}
+```{r readPipeTraits}
 pipeTraits<-read.csv("../data/pipefishTraits.csv",stringsAsFactors = TRUE)
 pipefishCnts<-read.csv("../data/pipefishCnts.csv",stringsAsFactors=TRUE)
 ```
-```{r}
+```{r setpipefishCols}
 pipecols<-c(Leptonotus='#8dd3c7',Stigmatopora='#ffffb3')
 ```
 
 
 
 
-```{r}
+```{r plotLengths}
 
 par(mfrow=c(1,2))
 plot(pipeTraits$TotalLength_Avg~pipeTraits$Season*as.factor(pipeTraits$Species))
 
 ```
-```{r}
+```{r pipefishTraitLM}
 traitLM<-lm(pipeTraits$TotalLength_Avg~pipeTraits$Season*pipeTraits$Species)
 par(mfrow=c(2,2))
 plot(traitLM)
@@ -1099,7 +1100,7 @@ plot(traitLM)
 
 Is status (juvenile, adult, absent) predicted by season and species? 
 
-```{r}
+```{r pipefishAgeGLM}
 ageGLM0<-multinom(size~1, data=pipefishCnts) 
 ageGLM1<-multinom(size~1+Season*seagrass_cover*species, data=pipefishCnts) # does not converge
 ageGLM2<-multinom(size~1+seagrass_cover/Season*species, data=pipefishCnts)
@@ -1109,7 +1110,7 @@ ageGLM4<-multinom(size~1+seagrass_cover*Season+species, data=pipefishCnts)
 AIC(ageGLM0,ageGLM1,ageGLM2,ageGLM3,ageGLM4)
 ```
 
-```{r}
+```{r pipefishAgeGLMsummaries}
 z0 <- summary(ageGLM0)$coefficients/summary(ageGLM0)$standard.errors
 z3 <- summary(ageGLM3)$coefficients/summary(ageGLM3)$standard.errors
 z4 <- summary(ageGLM4)$coefficients/summary(ageGLM4)$standard.errors
@@ -1119,7 +1120,7 @@ p3 <- (1 - pnorm(abs(z3), 0, 1)) * 2
 p4 <- (1 - pnorm(abs(z4), 0, 1)) * 2
 ```
 
-```{r}
+```{r pipefishGLManova}
 anova(ageGLM0,ageGLM3,ageGLM4)
 ```
 
@@ -1129,7 +1130,7 @@ Checking the model assumptions:
 
 no outliers, high leverage values, or highly influential points for the scale/continuous variables.
 
-```{r}
+```{r pipefishGLMmodelAssumptions}
 
 par(mfrow=c(1,4))
 plot(pipefishCnts$size,ageGLM4$residuals)
@@ -1143,7 +1144,7 @@ The residuals seem to be reasonably centred around zero?
 
 We can test the goodness of fit by examining the predicted values. We'll use the * model for now, as I'm more confident that it is specified correctly.
 
-```{r}
+```{r pipefishBestMod}
 summary(predict(ageGLM4))
 ```
 ```{r}
@@ -1158,7 +1159,7 @@ write.csv(pipeTab,"pipefishMultinomTable.csv",row.names = TRUE,quote=FALSE)
 
 All of the predictions, when categorized as a count, are for an absence.
 
-```{r}
+```{r pipefishPredicteds}
 combos <- data.frame(seagrass_cover = rep(c("bare","sparse", "patchy", "dense"), each=8), 
                       Season = rep(c("Winter","Spring","Summer","Fall"),4),
                      species = rep(c("stigmatopora","leptonotus"),each=4),
@@ -1175,9 +1176,9 @@ comboMelt <- reshape2::melt(pp.combos, id.vars = c("seagrass_cover", "Season","s
 ```
 
 What if we want to add confidence intervals?
-```{r}
+```{r pipefishFitEffects}
 
-fit.eff<-Effect(c("seagrass_cover","Season","species"), ageGLM4)
+fit.eff<-Effect(c("seagrass_cover","Season","species"), ageGLM4,se=list(level=0.99))
 
 
 pipefishProbs<-data.frame(fit.eff$x, 
@@ -1203,7 +1204,7 @@ pipePivot$Season<-factor(pipePivot$Season,
 pipePivot$variable<-as.factor(pipePivot$variable)
 ```
 
-```{r}
+```{r plotPipefishProbsFxn}
 PlotPipefishProbs<-function(predictedProbs, spp,stt,
                             seagrassCs, seagrassPs){
   
@@ -1310,7 +1311,7 @@ mtext("Leptonotus elevatus",3,outer=TRUE,font=3,adj=0.8)
 
 ## violin plots
 
-```{r}
+```{r pipefishViolinPlots}
 sppCols<-c('#8dd3c7','#ffffb3','#b3de69','#80b1d3','#fb8072','#fdb462','#bebada','#fccde5')
 names(sppCols)<-c("Leptonotus","Stigmatopora","Shrimp","Flounder","Crabs","Molluscs","OtherFish","Other")
 
@@ -1342,7 +1343,7 @@ with(pipeTraits[pipeTraits$Species=="Leptonotus elevatus",] , violin_plot(
 
 ## pipefish map
 
-```{r makeSpeciesMap}
+```{r makeTwoSpeciesMap}
 make_2spp_map<-function(gpsdat,
                         species1dat,
                         species2dat,
@@ -1411,7 +1412,7 @@ mapshot(m, file = "../figs/pipefishMap.png")
 
 
 
-```{r, eval=FALSE}
+```{r DuvauchelleTrendsPlot, eval=FALSE}
 png("../figs/DuvauchelleTrends.png",height=6,width=6,units="in",res=300)
 par(mfrow=c(2,1),oma=c(1,1,1,1),mar=c(4,4,1,1))
 # counts
