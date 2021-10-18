@@ -2,6 +2,7 @@
 title: "Community analysis"
 output:
   pdf_document: default
+  word_document: default
   html_notebook: default
 editor_options:
   chunk_output_type: console
