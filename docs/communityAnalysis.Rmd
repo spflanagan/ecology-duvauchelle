@@ -268,10 +268,10 @@ plot(globalInt,
 points(globalInt,
        cex=1.5,
        col=scales::alpha(
-         "light gray",0.5
+         "dark gray",0.5
        ),
        bg=scales::alpha(
-         "light gray",0.5
+         "dark gray",0.5
        ),
        pch=19,
        display="sites",
@@ -330,10 +330,10 @@ plot(globalInt,
 points(globalInt,
        cex=1.5,
        col=scales::alpha(
-         "light gray",0.5
+         "dark gray",0.5
        ),
        bg=scales::alpha(
-         "light gray",0.5
+         "dark gray",0.5
        ),
        pch=19,
        display="sites",
