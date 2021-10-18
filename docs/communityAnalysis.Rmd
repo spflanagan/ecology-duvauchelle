@@ -640,14 +640,18 @@ legend("topright",c("bare","sparse","patchy","dense"),
 
 
 
-### Indicator species analysis
+### Analysis of multivariate patterns of association
 
 ```{r}
+Patterns of abundance associated with seagrass cover:
+
 coverIndics<-multipatt(abunds,ys$SeagrassCover)
 summary(coverIndics)
 ```
 
 ```{r}
+Patterns of abundance associated with season:
+
 seasonIndics<-multipatt(abunds,ys$Season)
 summary(seasonIndics)
 ```
