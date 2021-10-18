@@ -281,8 +281,8 @@ ordiellipse(globalInt,ys$Season,col=seasonCols[levels(ys$Season)],lwd=5)
 
 arrows(x0=rep(0,nrow(plotSpp)),
        y0=rep(0,nrow(plotSpp)),
-       x1=plotSpp[,1]*0.1,
-       y1=plotSpp[,2]*0.1,
+       x1=plotSpp[,1]*0.12,
+       y1=plotSpp[,2]*0.12,
        length = 0.1,
        lwd=2)
 text(x=plotSpp[c("shrimp","flounder"),1]*0.1+0.2,
@@ -342,8 +342,8 @@ points(globalInt,
 ordiellipse(globalInt,ys$SeagrassCover,col=seagrassCs[levels(ys$SeagrassCover)],lwd=5)
 arrows(x0=rep(0,nrow(plotSpp)),
        y0=rep(0,nrow(plotSpp)),
-       x1=plotSpp[,1]*0.1,
-       y1=plotSpp[,2]*0.1,
+       x1=plotSpp[,1]*0.12,
+       y1=plotSpp[,2]*0.12,
        length = 0.1,
        lwd=2)
 text(x=plotSpp[c("shrimp","flounder"),1]*0.1+0.2,
