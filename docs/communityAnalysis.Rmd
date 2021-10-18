@@ -703,9 +703,7 @@ relrar<-readRDS("rarefiedCommunities.RDS")
 ### Hill numbers analysis
 
 Within seagrass pairwise beta diversity
-then you'd use those to calculate the upper levels?
 
-Should my abundances be densities? - try it
 
 ```{r}
 # hierDiversity takes the non-relativized abundances
