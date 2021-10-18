@@ -709,7 +709,8 @@ Should my abundances be densities? - try it
 
 ```{r}
 # hierDiversity takes the non-relativized abundances
-grps<-as.matrix(cbind(divdat[,c("SeagrassCover","Season")], # least inclusive to most inclusive L->R
+# least inclusive to most inclusive L->R
+grps<-as.matrix(cbind(divdat[,c("SeagrassCover","Season")], 
             Site="Duvauchelle"))
 
 divDensitiesQs<-lapply(list.files(pattern="divDensitiesQ.*RDS"),readRDS)
