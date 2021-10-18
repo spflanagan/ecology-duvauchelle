@@ -586,7 +586,7 @@ m2<-zeroinfl(flounder_long$count ~ 1+ flounder_long$seagrass_cover+flounder_long
 
 aic<-AIC(m0,m1,m2)
 aic<-aic[order(aic[,2]),]
-kable(aic,"latex",booktab=TRUE)
+kable(aic,"latex",booktabs=TRUE)
 ```
 ```{r}
 plot(m1$fitted.values,m1$residuals,xlab="Fitted",ylab="Residuals")
