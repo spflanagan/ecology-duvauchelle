@@ -105,7 +105,7 @@ hist(shrimp_long$density,xlab="Density (counts/m^2)", ylab="Number of observatio
 hist(log(shrimp_long$density+1),xlab="ln(Density)", ylab="Number of observations", main="Distribution of log-transformed densities")
 ```
 
-log transform
+## Log-transformed OLS
 
 ```{r}
 shrimpLM1<- lm(log(density+1) ~ 1,dat=shrimp_long)
