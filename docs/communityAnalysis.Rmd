@@ -968,6 +968,7 @@ seagrassQ<-actualQdat[actualQdat$level %in% levels(combdat$SeagrassCover) &
 par(mfrow=c(2,3),oma=c(1,4,3,0),mar=c(4,4,2.5,2),xpd=TRUE)
 plotQs(seagrassQ,levels(combdat$SeagrassCover),
        seagrassCs,seagrassPs,FALSE,ylims=c(0,0.9))
+legend("topright","A",cex=2,bty='n')
 legend(x=-0.25,y=1.2,xpd=TRUE,
        levels(combdat$SeagrassCover),
 mtext("observed pairwise turnover",2,outer=FALSE,cex=1.5,line=3.5)
@@ -977,8 +978,10 @@ mtext("observed pairwise turnover",2,outer=FALSE,cex=1.5,line=3.5)
        cex=2,
        bty='n')
 
+mtext("observed\npairwise turnover",2,outer=FALSE,cex=1.5,line=4)
 plotQs(seasonsQ,levels(combdat$Season),
        seasonCols,seasonPchs,FALSE,ylims=c(0,0.9))
+legend("topright","B",cex=2,bty='n')
 legend(x=-0.25,y=1.2,xpd=TRUE,
        levels(combdat$Season),
        col=seasonCols[levels(combdat$Season)],
@@ -991,6 +994,7 @@ plotQs(actualQdat[actualQdat$level %in% "Duvauchelle" &
                                actualQdat$diversity == "pwTurnover",],
        "Duvauchelle",c(Duvauchelle="#36454f"),c(Duvauchelle=19),
        FALSE,ylims=c(0,0.9))
+legend("topright","C",cex=2,bty='n')
 legend(x=0,y=1.2,xpd=TRUE,
        "Overall",
        col="#36454f",
@@ -1008,8 +1012,10 @@ seagrassQ<-rarefied_summaries[rarefied_summaries$level %in% levels(combdat$Seagr
 mtext("rarefied pairwise turnover",2,outer=FALSE,cex=1.5,line=3.5)
 plotQs(seagrassQ,levels(combdat$SeagrassCover),
        seagrassCs,seagrassPs,FALSE,ylims=c(0,0.9))
+legend("topright","D",cex=2,bty='n')
 plotQs(seasonsQ,levels(combdat$Season),
        seasonCols,seasonPchs,FALSE,ylims=c(0,0.9))
+legend("topright","E",cex=2,bty='n')
 
 plotQs(rarefied_summaries[rarefied_summaries$level %in% "Duvauchelle" &
                                rarefied_summaries$diversity == "pwTurnover",],
