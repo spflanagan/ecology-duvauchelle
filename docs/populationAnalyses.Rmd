@@ -901,7 +901,7 @@ fp<-lapply(levels(flounderPredicteds$seagrass_cover),
            xaxis=FALSE)
 
 l<-outer_legend("top",
-             levels(flounderPredicteds$size),
+             legend=levels(flounderPredicteds$size),
              col=size_cols,
              pch=15:19,
              lty=1:4,
