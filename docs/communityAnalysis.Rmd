@@ -675,7 +675,11 @@ divdensities<-divabunds/divdat$TowArea
 ### Rarefaction
 
 ```{r}
-rarecurve(t(divabunds))
+par(mfrow=c(1,2))
+rarecurve(divabunds, main="By tow")
+rarecurve(t(divabunds), 
+          ylab="Number of individuals",
+          main="By species")
 ```
 ```{r, eval=FALSE}
 set.seed(8675309)
