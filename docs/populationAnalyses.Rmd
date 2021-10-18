@@ -718,7 +718,8 @@ flounderPredicteds$lower[flounderPredicteds$lower<0]<-0
 write.csv(flounderPredicteds,"flounderPredicteds.csv",row.names = FALSE,quote=FALSE)
 ```
 ```{r}
-flounderPredicteds<-read.csv("flounderPredicteds.csv")
+flounderPredicteds<-read.csv("flounderPredicteds.csv",
+                             stringsAsFactors = TRUE)
 ```
 
 ## Flounder plots
