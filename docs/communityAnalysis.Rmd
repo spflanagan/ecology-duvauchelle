@@ -898,10 +898,10 @@ plotQs(seagrassQ,levels(combdat$SeagrassCover),
        seagrassCs,seagrassPs,FALSE,ylims=c(0,25))
 
 
+mtext(expression("observed"~alpha),2,outer=FALSE,cex=1.5,line=3.5)
 legend("topright","A",cex=2,bty='n')
 legend(x=-0.25,y=33.5,xpd=TRUE,
        levels(combdat$SeagrassCover),
-mtext("observed alpha diversity",2,outer=FALSE,cex=1.5,line=3.5)
        col=seagrassCs[levels(combdat$SeagrassCover)],
        pch=seagrassPs[levels(combdat$SeagrassCover)],
        ncol=2,
