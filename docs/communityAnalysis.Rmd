@@ -196,6 +196,10 @@ kable(vpTab,
       caption="Results of variance partitioning using spatial variables as covariates.")
 ```
 
+```{r saveVP}
+write.csv(vpTab,"variationPartitioning.csv",row.names = TRUE,quote=FALSE)
+```
+
 Those that are marked as `testable=TRUE` [can be tested in an rda framework](https://www.davidzeleny.net/anadat-r/doku.php/en:varpart_examples), so we need rdas for the overall model, for each variable independently, and for each variable with conditioning effects of the others.
 
 ```{r}
