@@ -971,7 +971,6 @@ plotQs(seagrassQ,levels(combdat$SeagrassCover),
 legend("topright","A",cex=2,bty='n')
 legend(x=-0.25,y=1.2,xpd=TRUE,
        levels(combdat$SeagrassCover),
-mtext("observed pairwise turnover",2,outer=FALSE,cex=1.5,line=3.5)
        col=seagrassCs[levels(combdat$SeagrassCover)],
        pch=seagrassPs[levels(combdat$SeagrassCover)],
        ncol=2,
@@ -1009,10 +1008,10 @@ seasonsQ<-rarefied_summaries[rarefied_summaries$level %in% levels(combdat$Season
 seagrassQ<-rarefied_summaries[rarefied_summaries$level %in% levels(combdat$SeagrassCover) &
                                rarefied_summaries$diversity == "pwTurnover",]
 
-mtext("rarefied pairwise turnover",2,outer=FALSE,cex=1.5,line=3.5)
 plotQs(seagrassQ,levels(combdat$SeagrassCover),
        seagrassCs,seagrassPs,FALSE,ylims=c(0,0.9))
 legend("topright","D",cex=2,bty='n')
+mtext("rarefied\npairwise turnover",2,outer=FALSE,cex=1.5,line=4)
 plotQs(seasonsQ,levels(combdat$Season),
        seasonCols,seasonPchs,FALSE,ylims=c(0,0.9))
 legend("topright","E",cex=2,bty='n')
