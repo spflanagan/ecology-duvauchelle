@@ -25,7 +25,7 @@ library(geosphere)
 
 # Community data
 
-```{r}
+```{r readrawdat}
 rawdat<-read.csv("../data/MonthlyRawSampling_Duvauchelle_2020.csv")
 
 # remove unnecessary column
@@ -35,13 +35,13 @@ rawdat<-subset(rawdat,select=-X)
 
 First, check for NAs that should be zeros
 
-```{r}
+```{r NAtoZero}
 rawdat[,17:62][is.na(rawdat[,17:62])]<-0
 ```
 
 Then add a date column
 
-```{r}
+```{r Dates}
 rawdat$Day<-as.Date(
   paste0(
     gsub("^(\\d)$","0\\1",rawdat$Date),
@@ -52,7 +52,7 @@ rawdat$Day<-as.Date(
 
 And group them by season
 
-```{r}
+```{r seasons}
 rawdat$Season<-gsub("\\d+-(\\d+)-\\d+","\\1",rawdat$Day)
 rawdat$Season[rawdat$Season %in% c("09","10","11")]<-"Spring"
 rawdat$Season[rawdat$Season %in% c("12","01","02")]<-"Summer"
@@ -63,7 +63,7 @@ rawdat$Season[rawdat$Season %in% c("06","07","08")]<-"Winter"
 
 Calculate the area of the tows
 
-```{r}
+```{r towarea}
 towArea<-apply(rawdat,1,function(dat){
   towArea<-distm(c(as.numeric(dat["long_start"]),
           as.numeric(dat["lat_start"])),
@@ -81,36 +81,36 @@ rawdat$towArea<-towArea
 
 Finally remove any rows with missing seagrass covers
 
-```{r}
+```{r removeMissingSeagrass}
 rawdat<-rawdat[!is.na(rawdat$seagrass_cover),]
 ```
 
 Fix inconsistent seagrass cover typing
 
-```{r}
+```{r fixInconsistencies}
 rawdat$seagrass_cover<-tolower(rawdat$seagrass_cover)
 rawdat$seagrass_cover[rawdat$seagrass_cover=="spare"]<-"sparse"
 ```
 
 Remove commas from Comments column
 
-```{r}
+```{r removeCommas}
 rawdat$Comments<-gsub(",","",rawdat$Comments)
 ```
 
-```{r}
+```{r addTowNumbers}
 rawdat$TowNum<-rownames(rawdat)
 ```
 
 
-```{r}
+```{r saveCleanedData, eval=FALSE}
 write.csv(rawdat,"../data/cleanedCommunity.csv",quote=FALSE, row.names = FALSE)
 ```
 
 
 Combine columns so that each organism has its a single column
 
-```{r}
+```{r combineColumns}
 combNames<-grep("mm$",colnames(rawdat),value=TRUE)
 combNames<-combNames[combNames!="whitebait_below50mm"] # only whitebait instance
 combPatts<-unique(gsub("_.*$","",combNames))
@@ -134,7 +134,7 @@ nonCombNames<-nonCombNames[!nonCombNames %in% c("isopod","green_centipede")]
 
 Create summary data frame
 
-```{r}
+```{r makeCombdat}
 combdat<-data.frame(cbind(
   Date=rawdat$Day,
   Season=rawdat$Season,
@@ -147,14 +147,14 @@ combdat<-data.frame(cbind(
 )
 ```
 
-```{r, eval=FALSE}
+```{r saveCombdat, eval=FALSE}
 write.csv(combdat,"cleanedCombinedCommunity.csv",quote=FALSE, row.names = FALSE)
 ```
-```{r}
+```{r readCombdat}
 combdat<-read.csv("cleanedCombinedCommunity.csv")
 ```
 
-```{r}
+```{r createGPSdat,eval=FALSE}
 gpsdat<-cbind(TowNum=rownames(rawdat),
               rawdat[,c("long_start","long_stop","lat_start","lat_stop")])
 write.csv(gpsdat,"../data/gpsdat.csv",quote=FALSE,row.names=FALSE)
@@ -181,7 +181,7 @@ kable(names,booktabs=TRUE)
 
 To ensure that the varying levels of lowest taxonomic identification don't impact the results, I'll create a data.frame where all of the animals have been grouped at the level of Order -- so I'll sum up any of the obervations at lower levels.  
 
-```{r}
+```{r ordAbund}
 orders<-combdat
 names<-names[match(colnames(orders[,4:ncol(orders)]),names$ID ),]
 colnames(orders)[4:ncol(orders)]<-as.character(names$order)
@@ -200,7 +200,7 @@ colnames(ordAbund)<-levels(as.factor(names$order))
 ordAbund<-cbind(combdat[,c("Season","SeagrassCover","TowArea")],ordAbund)
 ```
  
-```{r}
+```{r saveOrdAbund,eval=FALSE}
 ordAbund<-write.csv(ordAbund,"cleanedCommunityOrders.csv",quote=FALSE,row.names = FALSE)
 ```
 
