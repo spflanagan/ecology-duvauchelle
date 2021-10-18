@@ -125,7 +125,7 @@ anova(shrimpLM1,shrimpLM2,shrimpLM3,shrimpLM4,shrimpLM5,shrimpLM6,shrimpLM7,shri
 ```{r}
 shrimpAIC<-AIC(shrimpLM1,shrimpLM2,shrimpLM3,shrimpLM4,shrimpLM5,shrimpLM6,shrimpLM7,shrimpLM8,shrimpLM9,shrimpLM10,shrimpLM11,shrimpLM12)
 shrimpAIC<-shrimpAIC[order(shrimpAIC$AIC),]
-kable(shrimpAIC,"latex",booktab=TRUE,caption="Comparison of AICc values for model selection of Poisson GLMs describing flounder abundances. The best-fitting model is the most complex one, with interactions between season, seagrass cover, flounder size, and tow area.")
+kable(shrimpAIC,"latex",booktabs=TRUE,caption="Comparison of AICc values for model selection of Poisson GLMs describing flounder abundances. The best-fitting model is the most complex one, with interactions between season, seagrass cover, flounder size, and tow area.")
 ```
 
 
@@ -135,7 +135,7 @@ plot(shrimpLM12)
 ```
 
 ```{r}
-kable(anova(shrimpLM12),"latex",booktab=TRUE,
+kable(anova(shrimpLM12),"latex",booktabs=TRUE,
       caption="Summary ANOVA table of the effects of season, seagrass cover, shrimp size, and their interactions on the density of shrimp in Duvauchelle Bay.")
 ```
 
