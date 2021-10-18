@@ -27,7 +27,7 @@ library(adespatial)
 library(kableExtra)
 ```
 
-```{r}
+```{r loadCustomScripts}
 files.sources <- list.files(path = "../R/hierDiversity",full.names = TRUE)
 tmp<-sapply(files.sources, source)
 
@@ -42,7 +42,7 @@ combdat$SeagrassCover<-factor(combdat$SeagrassCover,
 combdat$Season<-factor(combdat$Season,
                        levels=c("Winter","Spring","Summer","Fall"))
 ```
-```{r}
+```{r setCols}
 seasonCols<-c(Spring="coral",Summer="olivedrab3",Fall="gold",Winter="dodgerblue")
 seagrassCs<-c(bare="#d9f0a3",sparse="#78c679",patchy="#41ab5d",dense="#005a32")
 seasonPchs<-c(Spring=15,Summer=17,Fall=18,Winter=19)
@@ -53,7 +53,7 @@ seagrassPs<-c(bare=16, sparse=18, patchy=17, dense=15)
 gpsdat<-read.csv("../data/gpsdat.csv")
 ```
 
-```{r}
+```{r setGPS}
 lat <- c(-43.794,-43.752) #define our map's ylim
 lon <- c(172.930,172.933) #define our map's xlim
 center <- c(mean(c(gpsdat$lat_start,gpsdat$lat_stop)), 
@@ -67,7 +67,7 @@ zoom <- 16  #zoom: 1 = furthest out (entire globe), larger numbers = closer in
 ## Community analysis
 
 
-```{r}
+```{r abunds}
 abunds<-as.matrix(combdat[rowSums(combdat[,6:ncol(combdat)])>4,
                           6:ncol(combdat)])
 colnames(abunds)<-tolower(colnames(abunds))
@@ -104,7 +104,7 @@ s.label(duvXY)
 
 Then, I need to test for linear trends and detrend the data if the trend surface is significant. This means to regress all variables on the X – Y coordinates and retain the residuals. This can most easily be done using the function `lm()` (Borcard et al. 2011).
 
-```{r}
+```{r detrendData}
 duvXY<-duvXY[which(rowSums(combdat[,6:ncol(combdat)])>4),]
 anova(rda(reldensities,duvXY))
 # if significant, detrend
@@ -116,7 +116,7 @@ duvDetrend<-resid(lm(as.matrix(reldensities)~ ., data=as.data.frame(duvXY)))
 
 Use adespatial to identify the best threshold level
 
-```{r, eval=FALSE}
+```{r listW, eval=FALSE}
 thresh<-seq(50,100,10)
 
 # convert neighborhoods to listw objects
@@ -127,18 +127,18 @@ duvThreshRes<-listw.select(x=duvDetrend,
                            candidates = listW)
 saveRDS(duvThreshRes,"duvThreshRes.RDS")
 
-```{r}
 duvThreshRes$best.id
 lwBest <- listW[[duvThreshRes$best.id]]
 ```
 
+```{r readDuvThreshRes}
 duvThreshRes<-readRDS("duvThreshRes.RDS")
 ```
 
 Then use `dbmem` with that best threshold (`r duvThreshRes$best.id`).
 
 
-```{r}
+```{r dbmem}
 xydbmem<-as.data.frame(dbmem(duvXY,silent=FALSE,thresh=70))
 # Create null model for forward selection, IF we have a significant result.
 MEMrdaNULL <- capscale(duvDetrend ~ 1, data=xydbmem)
@@ -150,20 +150,20 @@ anova(MEMrda) # suggests spatial relationship
 
 Perform forward selection of the dbmem models. 
 
-```{r}
+```{r forwardSelection}
 forwardSpace <- ordiR2step(MEMrdaNULL, MEMrda, trace=FALSE)
 forwardSpace$call
 ```
 
 And combine the selected forward-selected axes with the space axes. 
 
-```{r}
+```{r space}
 spaceAxes <- cbind(duvXY, xydbmem[, attr(forwardSpace$terms, "term.labels")])
 ```
 
 Finally, use both environmental variables (separately) in the variance partitioning, along with space. 
 
-```{r}
+```{r variationPartitioning}
 vp<-varpart(duvDetrend,ys$SeagrassCover,ys$Season,spaceAxes)
 par(mfrow=c(1,2))
 showvarparts(3,col=c("green", "red", "blue"))
@@ -172,7 +172,7 @@ plot(vp, digits=2, bg=c("green", "red", "blue"), Xnames = c("seagrass", "season"
 
 Because there are more spatial variables than either of the other explanatory variables, I need to only interpret the adjusted $R^2$ values. 
 
-```{r}
+```{r showVP}
 vpTab<-dplyr::bind_rows(vp$part$fract,vp$part$indfract)
 rownames(vpTab)<-c("seagrass",
                    "season",
@@ -202,7 +202,7 @@ write.csv(vpTab,"variationPartitioning.csv",row.names = TRUE,quote=FALSE)
 
 Those that are marked as `testable=TRUE` [can be tested in an rda framework](https://www.davidzeleny.net/anadat-r/doku.php/en:varpart_examples), so we need rdas for the overall model, for each variable independently, and for each variable with conditioning effects of the others.
 
-```{r}
+```{r capscaleMods}
 global<-capscale(duvDetrend~.,data=bind_cols(spaceAxes,SeagrassCover=ys$SeagrassCover,Season=ys$Season))
 space<-capscale(duvDetrend~.,data=spaceAxes)
 seagrass<-capscale(duvDetrend~ys$SeagrassCover)
@@ -219,6 +219,8 @@ seagrassCond<-capscale(formula(form),data=spaceAxes)
 form<-paste0("duvDetrend~ys$Season + Condition(ys$SeagrassCover)+",
               paste0("Condition(",colnames(spaceAxes),")",collapse = "+"))              
 seasonCond<-capscale(formula(form),data=spaceAxes)
+```
+```{r anovaCapscale}
 anova(global)
 anova(space)
 anova(seagrass)
@@ -230,7 +232,7 @@ anova(seasonCond)
 
 All of these are significant at `P < 0.001`, suggesting that we can consider both the marginal and conditional components are relevant/significant.
 
-```{r}
+```{r globalMod}
 globalInt<-capscale(duvDetrend~as.matrix(spaceAxes)*ys$SeagrassCover*ys$Season)
 globalSum<-summary(globalInt)
 globalInt
@@ -238,13 +240,16 @@ globalInt
 ```{r}
 anova(globalInt)
 ```
+
+
+```{r getSppScores}
 scrs <- scores(globalInt, display = c("sites", "species"), scaling = 3)
 sppScrs<-scrs$species
 plotSpp<-as.data.frame(sppScrs[which(abs(sppScrs[,1])>=1 | abs(sppScrs[,2])>=1),])
 ```
 
 
-```{r globalRDAplot}
+```{r globalRDAplot, fig.height=6,fig.width=9,dpi=300}
 par(mfrow=c(1,2),xpd=FALSE)
 plot(globalInt,
      display="sites",
@@ -376,7 +381,7 @@ legend("bottom",c("bare","sparse","patchy","dense"),
 ```
 
 
-```{r globalRDAplot2}
+```{r globalRDAplot2, fig.height=8,fig.width=8,dpi=300}
 scrs <- scores(globalInt, display = "species", scaling = 3,choices = c(1,3,4))
 
 par(mfrow=c(2,2),xpd=FALSE)
@@ -642,16 +647,16 @@ legend("topright",c("bare","sparse","patchy","dense"),
 
 ### Analysis of multivariate patterns of association
 
-```{r}
 Patterns of abundance associated with seagrass cover:
 
+```{r coverMultipatt}
 coverIndics<-multipatt(abunds,ys$SeagrassCover)
 summary(coverIndics)
 ```
 
-```{r}
 Patterns of abundance associated with season:
 
+```{r seasonMultipatt}
 seasonIndics<-multipatt(abunds,ys$Season)
 summary(seasonIndics)
 ```
@@ -674,14 +679,15 @@ divdensities<-divabunds/divdat$TowArea
 
 ### Rarefaction
 
-```{r}
+```{r rarefactionCurve, fig.cap="Fig. S1. Rarefaction curve showing each tow.", fig.keep='last',fig.path='../figs/rarefactionCurve.png'}
 par(mfrow=c(1,2))
 rarecurve(divabunds, main="By tow")
 rarecurve(t(divabunds), 
           ylab="Number of individuals",
           main="By species")
 ```
-```{r, eval=FALSE}
+
+```{r rarefyDiv, eval=FALSE}
 set.seed(8675309)
 rars<-lapply(1:999,function(i,dat=divdat){
   dat<-divdat[,6:ncol(divdat)]
@@ -699,7 +705,7 @@ rars<-lapply(1:999,function(i,dat=divdat){
 relrar<-lapply(rars,decostand,method="total",MARGIN=1)
 saveRDS(relrar,"rarefiedCommunities.RDS")
 ```
-```{r}
+```{r readRelrar}
 relrar<-readRDS("rarefiedCommunities.RDS")
 ```
 
@@ -709,7 +715,7 @@ relrar<-readRDS("rarefiedCommunities.RDS")
 Within seagrass pairwise beta diversity
 
 
-```{r}
+```{r listHierDivOutput}
 # hierDiversity takes the non-relativized abundances
 # least inclusive to most inclusive L->R
 grps<-as.matrix(cbind(divdat[,c("SeagrassCover","Season")], 
@@ -738,7 +744,7 @@ getDivValues<-function(hierare){
 }
 ```
 
-```{r}
+```{r extractDivDensities}
 qdat<-lapply(divDensitiesQs,getDivValues)
 
 
@@ -754,7 +760,7 @@ actualQdat<-spread(qdat,estimate,value)
 ```
 
 
-```{r, eval=FALSE}
+```{r getRarefiedDivs, eval=FALSE}
 rareQ0<-lapply(rars,
                hierDiversity,
                group=grps,
@@ -787,7 +793,7 @@ saveRDS(rareQ2,"rarefied_Q2.RDS")
 ```
 
 
-```{r}
+```{r extractRarefiedEstimatesFxn}
 extract_rarefied_estimates<-function(hdOutputRDS){
   rareQ<-readRDS(hdOutputRDS)
   estimatesQ<-dplyr::bind_rows(lapply(rareQ,function(hierare){
@@ -835,7 +841,7 @@ rarefied_summaries<-dplyr::bind_rows(rarefied_summaries)
 ```
 
 
-```{r}
+```{r plotQsFxn}
 plotQs<-function(qdat,levs,cols,pchs,makeLeg=TRUE,ylims=NULL,SEM=TRUE){
   if(is.null(ylims)){
     ylims<-c(0,max(qdat$mu+0.2))
@@ -890,7 +896,7 @@ plotQs<-function(qdat,levs,cols,pchs,makeLeg=TRUE,ylims=NULL,SEM=TRUE){
 
 
 
-```{r plotAlpha}
+```{r plotAlpha, fig.height=6,fig.width=9,dpi=300}
 seasonsQ<-actualQdat[actualQdat$level %in% levels(combdat$Season) &
                                actualQdat$diversity == "alpha",]
 seagrassQ<-actualQdat[actualQdat$level %in% levels(combdat$SeagrassCover) &
@@ -961,7 +967,8 @@ legend("topright","F",cex=2,bty='n')
 ```
 
 
-```{r plotPWturnover}
+
+```{r plotPWturnover, fig.height=6,fig.width=9,dpi=300}
 
 seasonsQ<-actualQdat[actualQdat$level %in% levels(combdat$Season) &
                                actualQdat$diversity == "pwTurnover",]
