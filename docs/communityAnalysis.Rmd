@@ -303,6 +303,7 @@ text(x=plotSpp["austrovenus",1]*0.11+0.7,
 
 
 legend("topleft",c("Winter","Spring","Summer","Fall"),
+legend("topright","A",cex=2,bty='n')
        ncol=2,bty='n',
        col=c(seasonCols[c("Winter","Spring","Summer","Fall")]),
        bg=c(seasonCols[c("Winter","Spring","Summer","Fall")]),
@@ -367,6 +368,7 @@ text(x=plotSpp["austrovenus",1]*0.11+0.7,
 
 
 legend("topright",c("bare","sparse","patchy","dense"),
+legend("topright","B",cex=2,bty='n')
        ncol=2,
        lwd=4,
        lty=1,
