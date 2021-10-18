@@ -1257,21 +1257,29 @@ PlotPipefishProbs<-function(predictedProbs, spp,stt,
 }
 ```
 
-```{r pipefishProbabilities,fig.width=639,fig.height=478}
+```{r pipefishProbabilities,fig.width=6.39,fig.height=4.78}
 
-par(mfcol=c(3,2),xpd=TRUE,mar=c(2,2,2,2),oma=c(3,4,3,2))
-sp<-lapply(levels(pipePivot$variable),
-           PlotPipefishProbs,
-           predictedProbs=pipePivot,
-           spp="stigmatopora",
-           seagrassCs=seagrassCs,
-           seagrassPs=seagrassPs)
-sl<-lapply(levels(pipePivot$variable),
-           PlotPipefishProbs,
-           predictedProbs=pipePivot,
-           spp="leptonotus",
-           seagrassCs=seagrassCs,
-           seagrassPs=seagrassPs)
+par(mfcol=c(2,2),xpd=TRUE,mar=c(2,2,2,2),oma=c(3,4,3,2))
+sp<-lapply(c("adult","juvenile"),
+           function(age, labels){
+             PlotPipefishProbs(age, 
+                               predictedProbs=pipePivot,
+                               spp="stigmatopora",
+                               seagrassCs=seagrassCs,
+                               seagrassPs=seagrassPs)
+             legend("topright",labels[age],bty='n',cex=2)
+           }, labels=c(adult="A",juvenile="B")
+           )
+sl<-lapply(c("adult","juvenile"),
+           function(age,labels){
+             PlotPipefishProbs(age,
+                               predictedProbs=pipePivot,
+                               spp="leptonotus",
+                               seagrassCs=seagrassCs,
+                               seagrassPs=seagrassPs)
+             legend("topright",labels[age],bty='n',cex=2)
+           }, labels=c(adult="C",juvenile="D")
+           )
 l<-outer_legend("bottom",
              levels(pipePivot$seagrass_cover),
              col=seagrassCs,
@@ -1283,9 +1291,9 @@ l<-outer_legend("bottom",
              cex=1.5)
 mtext("Probability",2,outer=TRUE,line=1.75)
 
-mtext("absent",4,outer=TRUE,line=-5,las=1,padj=-14.5,font=2)
-mtext("adults",4,outer=TRUE,line=-5,las=1,padj=-4,font=2)
-mtext("juveniles",4,outer=TRUE,line=-5,las=1,padj=6.5,font=2)
+
+mtext("adults   ",2,outer=TRUE,line=-3,las=1,padj=-15,font=2)
+mtext("juveniles",2,outer=TRUE,line=-3,las=1,padj=2,font=2)
 
 mtext("Stigmatopora nigra",3,outer=TRUE,font=3,adj=0.1)
 mtext("Leptonotus elevatus",3,outer=TRUE,font=3,adj=0.8)
