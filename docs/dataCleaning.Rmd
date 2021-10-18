@@ -61,7 +61,7 @@ rawdat$Season[rawdat$Season %in% c("06","07","08")]<-"Winter"
 ```
 
 
-Calculate the distance of the tows
+Calculate the area of the tows
 
 ```{r}
 towArea<-apply(rawdat,1,function(dat){
