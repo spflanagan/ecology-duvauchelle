@@ -285,18 +285,21 @@ arrows(x0=rep(0,nrow(plotSpp)),
        y1=plotSpp[,2]*0.12,
        length = 0.1,
        lwd=2)
-text(x=plotSpp[c("shrimp","flounder"),1]*0.1+0.2,
-     y=plotSpp[c("shrimp","flounder"),2]*0.1+0.2,
-     labels = c("shrimp","flounder"))
-text(x=plotSpp["Diloma",1]*0.12,
-     y=plotSpp["Diloma",2]*0.12,
-     labels="Diloma")
-text(x=plotSpp["mud_snail",1]*0.11+0.52,
-     y=plotSpp["mud_snail",2]*0.11,
-     labels = "mud_snail")
+text(x=plotSpp["shrimp",1]*0.11-0.1,
+     y=plotSpp["shrimp",2]*0.11+0.2,
+     labels = expression(italic("Caridea")))
+text(x=plotSpp["flounder",1]*0.11+0.2,
+     y=plotSpp["flounder",2]*0.11+0.2,
+     expression(italic("Rhombosolea spp.")))
+text(x=plotSpp["diloma",1]*0.14,
+     y=plotSpp["diloma",2]*0.14,
+     labels=expression(italic("D. subrostrata")))
+text(x=plotSpp["mud_snail",1]*0.12+0.7,
+     y=plotSpp["mud_snail",2]*0.12,
+     labels = expression(italic("P. antipodarum")))
 text(x=plotSpp["austrovenus",1]*0.11+0.7,
      y=plotSpp["austrovenus",2]*0.11-0.1,
-     labels = "austrovenus")
+     labels = expression(italic("A. stutchburyi")))
 
 
 legend("topleft",c("Winter","Spring","Summer","Fall"),
@@ -346,18 +349,21 @@ arrows(x0=rep(0,nrow(plotSpp)),
        y1=plotSpp[,2]*0.12,
        length = 0.1,
        lwd=2)
-text(x=plotSpp[c("shrimp","flounder"),1]*0.1+0.2,
-     y=plotSpp[c("shrimp","flounder"),2]*0.1+0.2,
-     labels = c("shrimp","flounder"))
-text(x=plotSpp["Diloma",1]*0.12,
-     y=plotSpp["Diloma",2]*0.12,
-     labels="Diloma")
-text(x=plotSpp["mud_snail",1]*0.11+0.52,
-     y=plotSpp["mud_snail",2]*0.11,
-     labels = "mud_snail")
+text(x=plotSpp["shrimp",1]*0.11-0.1,
+     y=plotSpp["shrimp",2]*0.11+0.2,
+     labels = expression(italic("Caridea")))
+text(x=plotSpp["flounder",1]*0.11+0.2,
+     y=plotSpp["flounder",2]*0.11+0.2,
+     expression(italic("Rhombosolea spp.")))
+text(x=plotSpp["diloma",1]*0.14,
+     y=plotSpp["diloma",2]*0.14,
+     labels=expression(italic("D. subrostrata")))
+text(x=plotSpp["mud_snail",1]*0.12+0.7,
+     y=plotSpp["mud_snail",2]*0.12,
+     labels = expression(italic("P. antipodarum")))
 text(x=plotSpp["austrovenus",1]*0.11+0.7,
      y=plotSpp["austrovenus",2]*0.11-0.1,
-     labels = "austrovenus")
+     labels = expression(italic("A. stutchburyi")))
 
 
 legend("topright",c("bare","sparse","patchy","dense"),
