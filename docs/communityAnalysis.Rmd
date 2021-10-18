@@ -263,7 +263,7 @@ plot(globalInt,
        round(globalSum$concont$importance[2,2]*100,2),
        "% of constrained)"),
      xlim=c(-1.5,2),
-     ylim=c(-2,2)
+     ylim=c(-1.5,1.5)
      )
 points(globalInt,
        cex=1.5,
