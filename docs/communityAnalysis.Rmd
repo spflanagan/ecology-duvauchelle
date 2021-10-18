@@ -845,7 +845,7 @@ plotQs<-function(qdat,levs,cols,pchs,makeLeg=TRUE,ylims=NULL,SEM=TRUE){
      ylim=ylims,
      axes=FALSE,
      cex.lab=2)
-  axis(1, pos=0,at=-1:2,cex.axis=2)
+  axis(1, pos=0,at=0:2,cex.axis=2)
 
   axis(2, las=1,cex.axis=2)
   for(grp in levs){
