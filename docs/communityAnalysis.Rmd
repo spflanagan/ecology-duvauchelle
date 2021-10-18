@@ -23,7 +23,6 @@ library(tidyr)
 library(leaflet)
 library(magick)
 library(adespatial)
-source("../R/iDIP.R")
 ```
 
 ```{r}
