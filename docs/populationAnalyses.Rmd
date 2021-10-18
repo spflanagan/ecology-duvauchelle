@@ -1140,6 +1140,15 @@ We can test the goodness of fit by examining the predicted values. We'll use the
 ```{r}
 summary(predict(ageGLM4))
 ```
+```{r}
+glmSumm<-summary(ageGLM4)
+pipeTab<-t(glmSumm$coefficients)
+colnames(pipeTab)<-paste0(colnames(pipeTab),"_coef")
+pipeTab<-cbind(pipeTab,t(glmSumm$standard.errors))
+colnames(pipeTab)[3:4]<-paste0(colnames(pipeTab)[3:4],"_se")
+#pipeTab<-exp(pipeTab)
+write.csv(pipeTab,"pipefishMultinomTable.csv",row.names = TRUE,quote=FALSE)
+```
 
 All of the predictions, when categorized as a count, are for an absence.
 
