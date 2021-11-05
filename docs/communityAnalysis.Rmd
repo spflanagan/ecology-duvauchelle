@@ -703,6 +703,7 @@ coverIndics<-multipatt(abunds,ys$SeagrassCover)
 summary(coverIndics)
 ```
 
+
 Patterns of abundance associated with season:
 
 ```{r seasonMultipatt}
