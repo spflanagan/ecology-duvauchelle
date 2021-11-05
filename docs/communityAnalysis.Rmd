@@ -86,7 +86,7 @@ reldensities<-decostand(densities,method="total",MARGIN = 1)
 ```
 
 
-add space as a covariate using dbMEM -- this basically maxes it into a case of multiplying the sites/species matrix by the environment matrix and the matrix of locations. 
+To analyze the data, I will add space as a covariate using dbMEM -- this basically maxes it into a case of multiplying the sites/species matrix by the environment matrix and the matrix of locations. 
 
 
 ```{r spatialPackages}
