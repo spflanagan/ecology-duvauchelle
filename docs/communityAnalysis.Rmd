@@ -67,6 +67,13 @@ zoom <- 16  #zoom: 1 = furthest out (entire globe), larger numbers = closer in
 ## Community analysis
 
 
+```{r summaryStatsCommunity}
+comsum<-colSums(combdat[,6:ncol(combdat)])
+comsum<-comsum[order(comsum,decreasing = TRUE)]
+```
+
+The most abundant organism was `r names(which.max(comsum))`, with a total of `r max(comsum)` individuals captured (`r max(comsum)/sum(comsum)*100`%). The next two most common species were `r names(comsum)[2]` and `r names(comsum)[3]`, comprising `r comsum[2]/sum(comsum)*100`% and `r comsum[3]/sum(comsum)*100`%, respectively.
+
 ```{r abunds}
 abunds<-as.matrix(combdat[rowSums(combdat[,6:ncol(combdat)])>4,
                           6:ncol(combdat)])
