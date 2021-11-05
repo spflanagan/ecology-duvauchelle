@@ -711,6 +711,32 @@ seasonIndics<-multipatt(abunds,ys$Season)
 summary(seasonIndics)
 ```
 
+To dive into a bit of depth about the fish species and when they occur, we can look at total numbers by season.- Doing this, we can easily see which species occurred in each season and which occurred in only one season (Table \@ref(tab:fishCounts)). Despite flounder not being associated with any habitat types, if we look at the breakdown we can see that <10% of flounder were caught in dense seagrass, but it was a large number of them (Table @\ref(tab:habTab)).
+
+```{r fishCounts}
+fish<-c("leptonotus",
+        "s.nigra",
+        "flounder",
+        "blenny",
+        "kahawai",
+        "spotty",
+        "wrasse",
+        "whitebait_below50mm",
+        "smelt",
+        "blue_cod_juv")
+fishTab<-aggregate(combdat[,fish],data.frame(combdat$Season),sum)
+
+kable(fishTab,"latex",booktab=TRUE,
+      caption="Total counts of all fish species throughout the year.")
+```
+
+
+```{r habTab}
+habTab<-aggregate(combdat[,c(fish,"shrimp")],data.frame(combdat$SeagrassCover),sum)
+
+kable(fishTab,"latex",booktab=TRUE,
+      caption="Total counts of all fish species plus shrimp (the most common taxon) across all habitat types.")
+```
 
 
 ## Diversity analysis
