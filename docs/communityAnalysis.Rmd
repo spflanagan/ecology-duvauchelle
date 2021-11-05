@@ -177,7 +177,7 @@ showvarparts(3,col=c("green", "red", "blue"))
 plot(vp, digits=2, bg=c("green", "red", "blue"), Xnames = c("seagrass", "season","spatial"))
 ```
 
-Because there are more spatial variables than either of the other explanatory variables, I need to only interpret the adjusted $R^2$ values. 
+Because there are more spatial variables than either of the other explanatory variables, I need to only interpret the adjusted $R^2$ values. The total sums of squares was `r vp$part$SS.Y` with a variance of 0.27331, for `r vp$part$n` observations and `r vp$part$nsets` explanatory tables.
 
 ```{r showVP}
 vpTab<-dplyr::bind_rows(vp$part$fract,vp$part$indfract)
