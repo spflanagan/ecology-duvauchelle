@@ -66,7 +66,7 @@ seasonPchs<-c(Spring=15,Summer=17,Fall=18,Winter=19)
 seagrassPs<-c(bare=16, sparse=18, patchy=17, dense=15)
 ```
 ```{r sppOrder}
-sppOrder<-c("shrimp",
+sppOrder<-c(
             "flounder",
             "s.nigra",
             "leptonotus",
@@ -79,6 +79,7 @@ sppOrder<-c("shrimp",
             "blenny",
             "paphies_australis",
             "austrovenus",
+            "shrimp",
             "swimmer_crab",
             "Pie_crust_crab",
             "hermit_crab",
