@@ -650,6 +650,48 @@ legend("topright",c("bare","sparse","patchy","dense"),
        bg=seagrassCs[c("bare","sparse","patchy","dense")])
 ```
 
+We can try to uncover what's going on with the space axes
+
+
+```{r allSpaceAxes,fig.cap="For all of the forward-selected axes, the points with the highest loadings are shown in grey points, scaled and made transparent by their weightings."}
+par(mfrow=c(4,7 ), mar=c(1,1,1,1))
+apply(spaceAxes[,3:ncol(spaceAxes)],
+      2,
+      function(weights,pts){
+        plot(pts,cex=0.5,pch=19)
+        points(pts,
+             cex=weights,
+             col=alpha("dark grey",weights),
+             pch=19)
+      },pts=duvXY)
+```
+
+```{r}
+globSum<-summary(global)
+
+impConst<-globSum$biplot
+bestrows<-apply(impConst,2,which.max)
+
+bestCaps<-rownames(impConst)[bestrows]
+names(bestCaps)<-names(bestrows)
+```
+
+```{r bestSelMEMs,fig.cap="Regions of Duvauchelle Bay that had the highest eigenvalue in the constrained axes of the global model, with the weightings of each point in the dbMEM shown in grey, with size based on its importance. These grey points are the ones that contributed the most variation to the spatial component of the analysis, and whose variation was partitioned out in the analysis of the global model.", fig.height=4}
+selMEMs<-grep("MEM",bestCaps,value=TRUE)
+par(mfrow=c(1,length(selMEMs)))
+apply(spaceAxes[,selMEMs],
+      2,
+      function(weights,pts){
+        plot(pts,cex=0.5,pch=19)
+        points(pts,
+             cex=weights,
+             col=alpha("dark grey",weights*2),
+             bg=col=alpha("dark grey",weights),
+             pch=21)
+      },pts=duvXY)
+```
+
+
 
 
 ### Analysis of multivariate patterns of association
