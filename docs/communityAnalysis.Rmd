@@ -678,24 +678,9 @@ names(bestCaps)<-names(bestrows)
 
 ```{r bestSelMEMs,fig.cap="Regions of Duvauchelle Bay that had the highest eigenvalue in the constrained axes of the global model, with the weightings of each point in the dbMEM shown in grey, with size based on its importance. These grey points are the ones that contributed the most variation to the spatial component of the analysis, and whose variation was partitioned out in the analysis of the global model.", fig.height=3,fig.width=8}
 selMEMs<-grep("MEM",bestCaps,value=TRUE)
+MEMCols<-c('#a6cee3','#1f78b4','#b2df8a')
+names(MEMCols)<-selMEMs
 par(mfrow=c(1,length(selMEMs)))
-apply(spaceAxes[,selMEMs],
-      2,
-      function(weights,pts){
-        plot(pts,cex=0.5,pch=19)
-        plot(pts,cex=0.5,pch=19,
-             xaxt='n',
-             yaxt='n',
-             xlab="",
-             ylab="",
-             xlim=c(0,900),
-             ylim=c(1350,1800))
-        points(pts,
-             cex=weights,
-             col=alpha("dark grey",weights*2),
-             bg=alpha("grey",weights),
-             pch=21
-             )
         text(x=10,y=1350,xpd=TRUE,
              "West")
         text(x=900,y=1300,xpd=TRUE,
@@ -705,6 +690,24 @@ apply(spaceAxes[,selMEMs],
         text(x=-150,y=1800,xpd=TRUE,
              "North")
       },pts=duvXY,colMems=MEMCols)
+for(cname in selMEMs){
+  plot(duvXY,
+       cex=0.5,
+       pch=19,
+       xaxt='n',
+       yaxt='n',
+       xlab="",
+       ylab="",
+       xlim=c(0,900),
+       ylim=c(1350,1800),
+       main=cname)
+    points(duvXY,
+         cex=spaceAxes[,cname],
+         col=MEMCols[cname],
+         bg=alpha(MEMCols[cname],spaceAxes[,cname]),
+         pch=21
+         )
+}
 ```
 
 
