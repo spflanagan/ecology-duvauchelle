@@ -689,6 +689,15 @@ apply(spaceAxes[,selMEMs],
              bg=col=alpha("dark grey",weights),
              pch=21)
       },pts=duvXY)
+        text(x=10,y=1350,xpd=TRUE,
+             "West")
+        text(x=900,y=1300,xpd=TRUE,
+             "East")
+        text(x=-150,y=1350,xpd=TRUE,
+             "South")
+        text(x=-150,y=1800,xpd=TRUE,
+             "North")
+      },pts=duvXY,colMems=MEMCols)
 ```
 
 
