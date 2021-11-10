@@ -683,6 +683,13 @@ apply(spaceAxes[,selMEMs],
       2,
       function(weights,pts){
         plot(pts,cex=0.5,pch=19)
+        plot(pts,cex=0.5,pch=19,
+             xaxt='n',
+             yaxt='n',
+             xlab="",
+             ylab="",
+             xlim=c(0,900),
+             ylim=c(1350,1800))
         points(pts,
              cex=weights,
              col=alpha("dark grey",weights*2),
