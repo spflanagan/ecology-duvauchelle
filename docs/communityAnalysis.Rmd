@@ -686,8 +686,6 @@ apply(spaceAxes[,selMEMs],
         points(pts,
              cex=weights,
              col=alpha("dark grey",weights*2),
-             pch=21)
-      },pts=duvXY)
              bg=alpha("grey",weights),
         text(x=10,y=1350,xpd=TRUE,
              "West")
