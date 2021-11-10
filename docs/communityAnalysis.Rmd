@@ -681,15 +681,6 @@ selMEMs<-grep("MEM",bestCaps,value=TRUE)
 MEMCols<-c('#a6cee3','#1f78b4','#b2df8a')
 names(MEMCols)<-selMEMs
 par(mfrow=c(1,length(selMEMs)))
-        text(x=10,y=1350,xpd=TRUE,
-             "West")
-        text(x=900,y=1300,xpd=TRUE,
-             "East")
-        text(x=-150,y=1350,xpd=TRUE,
-             "South")
-        text(x=-150,y=1800,xpd=TRUE,
-             "North")
-      },pts=duvXY,colMems=MEMCols)
 for(cname in selMEMs){
   plot(duvXY,
        cex=0.5,
@@ -707,6 +698,7 @@ for(cname in selMEMs){
          bg=alpha(MEMCols[cname],spaceAxes[,cname]),
          pch=21
          )
+    compassRose(x=800, y=1400)
 }
 ```
 
