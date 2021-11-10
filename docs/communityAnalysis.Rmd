@@ -25,6 +25,7 @@ library(leaflet)
 library(magick)
 library(adespatial)
 library(kableExtra)
+library(graphicsutils)
 ```
 
 ```{r loadCustomScripts}
@@ -698,7 +699,7 @@ for(cname in selMEMs){
          bg=alpha(MEMCols[cname],spaceAxes[,cname]),
          pch=21
          )
-    compassRose(x=800, y=1400)
+    graphicsutils::compassRose(x=800, y=1400)
 }
 ```
 
