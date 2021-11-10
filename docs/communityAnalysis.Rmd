@@ -676,7 +676,7 @@ bestCaps<-rownames(impConst)[bestrows]
 names(bestCaps)<-names(bestrows)
 ```
 
-```{r bestSelMEMs,fig.cap="Regions of Duvauchelle Bay that had the highest eigenvalue in the constrained axes of the global model, with the weightings of each point in the dbMEM shown in grey, with size based on its importance. These grey points are the ones that contributed the most variation to the spatial component of the analysis, and whose variation was partitioned out in the analysis of the global model.", fig.height=4}
+```{r bestSelMEMs,fig.cap="Regions of Duvauchelle Bay that had the highest eigenvalue in the constrained axes of the global model, with the weightings of each point in the dbMEM shown in grey, with size based on its importance. These grey points are the ones that contributed the most variation to the spatial component of the analysis, and whose variation was partitioned out in the analysis of the global model.", fig.height=3,fig.width=8}
 selMEMs<-grep("MEM",bestCaps,value=TRUE)
 par(mfrow=c(1,length(selMEMs)))
 apply(spaceAxes[,selMEMs],
