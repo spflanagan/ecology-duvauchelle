@@ -694,6 +694,8 @@ apply(spaceAxes[,selMEMs],
              cex=weights,
              col=alpha("dark grey",weights*2),
              bg=alpha("grey",weights),
+             pch=21
+             )
         text(x=10,y=1350,xpd=TRUE,
              "West")
         text(x=900,y=1300,xpd=TRUE,
